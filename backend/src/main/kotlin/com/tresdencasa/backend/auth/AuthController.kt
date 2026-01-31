@@ -42,8 +42,9 @@ class AuthController(
 
                 val savedUser = userRepository.save(user)
 
-                // Generar token
-                val token = jwtService.generateToken(savedUser)
+                // Generar token con role
+                val token =
+                        jwtService.generateToken(mapOf("role" to savedUser.role.name), savedUser)
 
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .body(
@@ -72,7 +73,8 @@ class AuthController(
                                 ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(mapOf("error" to "Usuario no encontrado"))
 
-                val token = jwtService.generateToken(user)
+                // Generar token con role
+                val token = jwtService.generateToken(mapOf("role" to user.role.name), user)
 
                 return ResponseEntity.ok(
                         AuthResponse(token = token, email = user.email, fullName = user.fullName)

@@ -19,7 +19,7 @@ export function CategoryCard({ name, slug, imageUrl }: CategoryCardProps) {
         <Link href={`/categoria/${slug}`} className="group block">
             <div className="bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md aspect-square relative">
                 {/* Imagen centrada con padding generoso */}
-                <div className="absolute inset-0 p-8 flex items-center justify-center">
+                <div className="absolute inset-0 p-12 flex items-center justify-center">
                     <div className="relative w-full h-full">
                         <Image
                             src={image}

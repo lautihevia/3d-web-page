@@ -40,7 +40,7 @@ export default async function HomePage() {
     return (
       <>
         <Hero />
-        <section className="bg-white py-16">
+        <section className="py-16">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-8">Nuestros Productos</h2>
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
@@ -65,27 +65,21 @@ export default async function HomePage() {
       <Hero />
 
       {/* Categorías - 5 tarjetas fijas */}
-      <section className="bg-slate-50 py-16">
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-2">Categorías</h2>
-            <p className="text-muted-foreground">
-              Explorá nuestras categorías de productos
-            </p>
-          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            <CategoryCard name="Impresoras" slug="impresoras" />
-            <CategoryCard name="Impresoras" slug="impresoras" />
-            <CategoryCard name="Impresoras" slug="impresoras" />
-            <CategoryCard name="Impresoras" slug="impresoras" />
-            <CategoryCard name="Impresoras" slug="impresoras" />
+            <CategoryCard name="Bambu Lab" slug="impresoras/bambulab" imageUrl="/categorias/bambulab-categoria.jpeg" />
+            <CategoryCard name="Creality" slug="impresoras/creality" imageUrl="/categorias/creality-categoria.jpeg" />
+            <CategoryCard name="Hellbot" slug="impresoras/hellbot" imageUrl="/categorias/hellbot-categoria.jpeg" />
+            <CategoryCard name="W3D" slug="insumos/w3d" imageUrl="/categorias/w3d-categoria.jpeg" />
+            <CategoryCard name="Arduino" slug="electronica/arduino" imageUrl="/categorias/arduino-categoria.jpeg" />
           </div>
         </div>
       </section>
 
       {/* Catálogo de Productos */}
-      <section id="productos" className="bg-white py-16">
+      <section id="productos" className="py-16">
         <div className="container mx-auto px-4">
           {/* Header de la página */}
           <div className="mb-8">

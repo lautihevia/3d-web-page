@@ -16,7 +16,7 @@ export function Navbar() {
     };
 
     return (
-        <nav className="sticky top-0 z-50 bg-slate-950 border-b border-slate-800">
+        <nav className="sticky top-0 z-50 bg-blue-600 border-b border-b-blue-600">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo - Izquierda */}

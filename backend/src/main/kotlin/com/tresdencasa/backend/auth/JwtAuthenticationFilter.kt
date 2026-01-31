@@ -1,0 +1,54 @@
+package com.tresdencasa.backend.auth
+
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.stereotype.Component
+import org.springframework.web.filter.OncePerRequestFilter
+
+/** Filtro JWT que intercepta cada request y valida el token. */
+@Component
+class JwtAuthenticationFilter(
+        private val jwtService: JwtService,
+        private val userDetailsService: UserDetailsService
+) : OncePerRequestFilter() {
+
+    override fun doFilterInternal(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            filterChain: FilterChain
+    ) {
+        val authHeader = request.getHeader("Authorization")
+
+        // Si no hay header o no es Bearer, continuar sin autenticar
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        val jwt = authHeader.substring(7)
+        val email = jwtService.extractEmail(jwt)
+
+        // Si hay email y no hay autenticación previa en el contexto
+        if (email != null && SecurityContextHolder.getContext().authentication == null) {
+            val userDetails = userDetailsService.loadUserByUsername(email)
+
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                val authToken =
+                        UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.authorities
+                        )
+                authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+                SecurityContextHolder.getContext().authentication = authToken
+            }
+        }
+
+        filterChain.doFilter(request, response)
+    }
+}

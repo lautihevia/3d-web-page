@@ -1,5 +1,6 @@
 import { ProductCard } from "@/components/products/ProductCard";
 import { Hero } from "@/components/home/Hero";
+import { CategoryCard } from "@/components/home/CategoryCard";
 import type { PaginatedProducts } from "@/types/product";
 
 /**
@@ -39,17 +40,19 @@ export default async function HomePage() {
     return (
       <>
         <Hero />
-        <main className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-8">Nuestros Productos</h1>
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
-            <p className="text-destructive font-medium">
-              Error al cargar los productos. Por favor, verifica que el backend esté corriendo.
-            </p>
-            <p className="text-muted-foreground text-sm mt-2">
-              Asegúrate de que el servidor esté disponible en {API_BASE_URL}
-            </p>
+        <section className="bg-white py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold mb-8">Nuestros Productos</h2>
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
+              <p className="text-destructive font-medium">
+                Error al cargar los productos. Por favor, verifica que el backend esté corriendo.
+              </p>
+              <p className="text-muted-foreground text-sm mt-2">
+                Asegúrate de que el servidor esté disponible en {API_BASE_URL}
+              </p>
+            </div>
           </div>
-        </main>
+        </section>
       </>
     );
   }
@@ -61,38 +64,60 @@ export default async function HomePage() {
       {/* Hero Section */}
       <Hero />
 
-      {/* Catálogo de Productos */}
-      <main id="productos" className="container mx-auto px-4 py-16">
-        {/* Header de la página */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Nuestros Productos</h2>
-          <p className="text-muted-foreground">
-            {productsData.totalElements} producto{productsData.totalElements !== 1 ? "s" : ""} encontrado{productsData.totalElements !== 1 ? "s" : ""}
-          </p>
-        </div>
-
-        {/* Grilla de productos */}
-        {products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">
-              No hay productos disponibles en este momento.
+      {/* Categorías - 5 tarjetas fijas */}
+      <section className="bg-slate-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-2">Categorías</h2>
+            <p className="text-muted-foreground">
+              Explorá nuestras categorías de productos
             </p>
           </div>
-        )}
 
-        {/* Info de paginación */}
-        {productsData.totalPages > 1 && (
-          <div className="mt-8 text-center text-sm text-muted-foreground">
-            Página {productsData.number + 1} de {productsData.totalPages}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            <CategoryCard name="Impresoras" slug="impresoras" />
+            <CategoryCard name="Impresoras" slug="impresoras" />
+            <CategoryCard name="Impresoras" slug="impresoras" />
+            <CategoryCard name="Impresoras" slug="impresoras" />
+            <CategoryCard name="Impresoras" slug="impresoras" />
           </div>
-        )}
-      </main>
+        </div>
+      </section>
+
+      {/* Catálogo de Productos */}
+      <section id="productos" className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          {/* Header de la página */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-2">Nuestros Productos</h2>
+            <p className="text-muted-foreground">
+              {productsData.totalElements} producto{productsData.totalElements !== 1 ? "s" : ""} encontrado{productsData.totalElements !== 1 ? "s" : ""}
+            </p>
+          </div>
+
+          {/* Grilla de productos */}
+          {products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                No hay productos disponibles en este momento.
+              </p>
+            </div>
+          )}
+
+          {/* Info de paginación */}
+          {productsData.totalPages > 1 && (
+            <div className="mt-8 text-center text-sm text-muted-foreground">
+              Página {productsData.number + 1} de {productsData.totalPages}
+            </div>
+          )}
+        </div>
+      </section>
     </>
   );
 }

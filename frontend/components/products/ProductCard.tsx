@@ -1,7 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import type { Product } from "@/types/product";
 
 interface ProductCardProps {
@@ -32,70 +30,43 @@ function formatPrice(price: number): string {
 }
 
 /**
- * Card de producto para la grilla del catálogo.
+ * Card de producto estilo "Apple Card" - minimalista y elegante.
+ * Fondo blanco, bordes redondeados, imagen centrada, texto en esquina inferior izquierda.
  */
 export function ProductCard({ product }: ProductCardProps) {
     const minPrice = getMinPrice(product);
 
     // Imagen placeholder si no hay imagen
-    const imageUrl = product.mainImageUrl || "https://via.placeholder.com/400x300?text=Sin+Imagen";
+    const imageUrl = product.mainImageUrl || "https://via.placeholder.com/400x400?text=Sin+Imagen";
 
     return (
-        <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-            {/* Imagen del producto */}
-            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <Image
-                    src={imageUrl}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {/* Badge de marca */}
-                {product.brand && (
-                    <span className="absolute top-2 left-2 bg-primary/90 text-primary-foreground text-xs font-medium px-2 py-1 rounded-md">
-                        {product.brand}
-                    </span>
-                )}
-            </div>
-
-            <CardHeader className="py-4">
-                <CardTitle className="text-lg line-clamp-2">{product.name}</CardTitle>
-            </CardHeader>
-
-            <CardContent className="py-0">
-                {product.description && (
-                    <p className="text-muted-foreground text-sm line-clamp-2">
-                        {product.description}
-                    </p>
-                )}
-
-                {/* Precio */}
-                <div className="mt-3 font-semibold text-lg">
-                    {minPrice !== null ? (
-                        <span>
-                            Desde <span className="text-primary">{formatPrice(minPrice)}</span>
-                        </span>
-                    ) : (
-                        <span className="text-muted-foreground">Ver precio</span>
-                    )}
+        <Link href={`/products/${product.id}`} className="group block">
+            <div className="bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md aspect-square relative">
+                {/* Imagen centrada con padding generoso */}
+                <div className="absolute inset-0 p-8 flex items-center justify-center">
+                    <div className="relative w-full h-full">
+                        <Image
+                            src={imageUrl}
+                            alt={product.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                            className="object-contain transition-transform duration-300 group-hover:scale-105"
+                        />
+                    </div>
                 </div>
 
-                {/* Variantes disponibles */}
-                {product.variants.length > 0 && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                        {product.variants.length} variante{product.variants.length > 1 ? "s" : ""} disponible{product.variants.length > 1 ? "s" : ""}
-                    </p>
-                )}
-            </CardContent>
-
-            <CardFooter className="pt-4">
-                <Button asChild className="w-full">
-                    <Link href={`/products/${product.id}`}>
-                        Ver Detalle
-                    </Link>
-                </Button>
-            </CardFooter>
-        </Card>
+                {/* Texto en esquina inferior izquierda */}
+                <div className="absolute bottom-0 left-0 p-6">
+                    <h3 className="font-bold text-sm text-slate-900 line-clamp-2">
+                        {product.name}
+                    </h3>
+                    {minPrice !== null && (
+                        <p className="text-xs text-slate-600 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Desde {formatPrice(minPrice)}
+                        </p>
+                    )}
+                </div>
+            </div>
+        </Link>
     );
 }

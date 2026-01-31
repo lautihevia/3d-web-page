@@ -10,14 +10,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
  */
 export function Hero() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const totalSlides = 4;
+    const totalSlides = 3;
 
     // Imágenes locales hardcodeadas
     const slides = [
         { id: 1, src: "/banners/banner-1.jpeg", alt: "Banner Promocional 1" },
         { id: 2, src: "/banners/banner-2.jpeg", alt: "Banner Promocional 2" },
         { id: 3, src: "/banners/banner-3.jpeg", alt: "Banner Promocional 3" },
-        { id: 4, src: "/banners/banner-4.jpeg", alt: "Banner Promocional 4" },
     ];
 
     // Auto-avance cada 3 segundos

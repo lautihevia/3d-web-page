@@ -16,7 +16,7 @@ export function CategoryCard({ name, slug, imageUrl }: CategoryCardProps) {
     const image = imageUrl || "https://via.placeholder.com/400x400?text=" + encodeURIComponent(name);
 
     return (
-        <Link href={`/categoria/${slug}`} className="group block">
+        <Link href={`/store/${slug}`} className="group block">
             <div className="bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md aspect-square relative">
                 {/* Imagen centrada con padding generoso */}
                 <div className="absolute inset-0 p-12 flex items-center justify-center">

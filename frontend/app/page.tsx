@@ -69,11 +69,11 @@ export default async function HomePage() {
         <div className="container mx-auto px-4">
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            <CategoryCard name="Bambu Lab" slug="impresoras/bambulab" imageUrl="/categorias/bambulab-categoria.jpeg" />
-            <CategoryCard name="Creality" slug="impresoras/creality" imageUrl="/categorias/creality-categoria.jpeg" />
-            <CategoryCard name="Hellbot" slug="impresoras/hellbot" imageUrl="/categorias/hellbot-categoria.jpeg" />
-            <CategoryCard name="W3D" slug="insumos/w3d" imageUrl="/categorias/w3d-categoria.jpeg" />
-            <CategoryCard name="Arduino" slug="electronica/arduino" imageUrl="/categorias/arduino-categoria.jpeg" />
+            <CategoryCard name="Bambu Lab" slug="bambu lab" imageUrl="/categorias/bambulab-categoria.jpeg" />
+            <CategoryCard name="Creality" slug="creality" imageUrl="/categorias/creality-categoria.jpeg" />
+            <CategoryCard name="Hellbot" slug="hellbot" imageUrl="/categorias/hellbot-categoria.jpeg" />
+            <CategoryCard name="W3D" slug="w3d" imageUrl="/categorias/w3d-categoria.jpeg" />
+            <CategoryCard name="Arduino" slug="arduino" imageUrl="/categorias/arduino-categoria.jpeg" />
           </div>
         </div>
       </section>
@@ -93,7 +93,14 @@ export default async function HomePage() {
           {products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  description={product.description ?? undefined}
+                  imageUrl={product.mainImageUrl ?? undefined}
+                  price={product.variants[0]?.price}
+                />
               ))}
             </div>
           ) : (

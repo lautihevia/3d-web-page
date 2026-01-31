@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Search, User, ShoppingCart, ChevronDown } from "lucide-react";
+import { Search, User, ChevronDown } from "lucide-react";
+import { CartSheet } from "@/components/cart/CartSheet";
 
 /**
  * Navbar global de la aplicación.
@@ -120,23 +121,13 @@ export function Navbar() {
                             <Search className="h-5 w-5" />
                         </button>
                         <Link
-                            href="/login"
+                            href="/auth/login"
                             aria-label="Iniciar sesión"
                             className="text-slate-300 hover:text-white transition-colors"
                         >
                             <User className="h-5 w-5" />
                         </Link>
-                        <Link
-                            href="/carrito"
-                            aria-label="Carrito de compras"
-                            className="text-slate-300 hover:text-white transition-colors relative"
-                        >
-                            <ShoppingCart className="h-5 w-5" />
-                            {/* Badge de cantidad (opcional) */}
-                            {/* <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                3
-              </span> */}
-                        </Link>
+                        <CartSheet />
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
  */
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -34,7 +35,9 @@ export default function LoginPage() {
 
         try {
             await login(data.email, data.password);
-            router.push("/");
+            // Redirigir a la URL especificada o a home
+            const redirectTo = searchParams.get("redirect") || "/";
+            router.push(redirectTo);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error al iniciar sesión");
         } finally {

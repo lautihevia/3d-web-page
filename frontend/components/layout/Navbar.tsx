@@ -1,19 +1,52 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Search, User, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Search, User, ChevronDown, LogOut, LayoutDashboard, UserCircle } from "lucide-react";
 import { CartSheet } from "@/components/cart/CartSheet";
+import { useAuthStore } from "@/store/auth";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 /**
  * Navbar global de la aplicación.
  * Incluye logo, menú con dropdowns, y acciones (búsqueda, usuario, carrito).
  */
 export function Navbar() {
+    const router = useRouter();
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const { user, isAuthenticated, isLoading, logout, initialize } = useAuthStore();
+
+    // Inicializar auth store al montar
+    useEffect(() => {
+        initialize();
+    }, [initialize]);
 
     const toggleDropdown = (menu: string) => {
         setOpenDropdown(openDropdown === menu ? null : menu);
+    };
+
+    const handleLogout = () => {
+        logout();
+        router.push("/");
+    };
+
+    // Obtener iniciales del usuario
+    const getInitials = (name: string) => {
+        return name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
     };
 
     return (
@@ -97,7 +130,7 @@ export function Navbar() {
 
                         {/* Link: Contacto */}
                         <Link
-                            href="/contacto"
+                            href="/contact"
                             className="text-slate-300 hover:text-white transition-colors"
                         >
                             Contacto
@@ -105,7 +138,7 @@ export function Navbar() {
 
                         {/* Link: Sobre Nosotros */}
                         <Link
-                            href="/sobre-nosotros"
+                            href="/about"
                             className="text-slate-300 hover:text-white transition-colors"
                         >
                             Sobre Nosotros
@@ -120,13 +153,63 @@ export function Navbar() {
                         >
                             <Search className="h-5 w-5" />
                         </button>
-                        <Link
-                            href="/auth/login"
-                            aria-label="Iniciar sesión"
-                            className="text-slate-300 hover:text-white transition-colors"
-                        >
-                            <User className="h-5 w-5" />
-                        </Link>
+
+                        {/* User Icon / Avatar Dropdown */}
+                        {isLoading ? (
+                            <div className="w-8 h-8 rounded-full bg-slate-500/50 animate-pulse" />
+                        ) : isAuthenticated && user ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="focus:outline-none focus:ring-2 focus:ring-white/50 rounded-full">
+                                        <Avatar className="h-8 w-8 bg-violet-600 hover:bg-violet-500 transition-colors cursor-pointer">
+                                            <AvatarFallback className="bg-violet-600 text-white text-sm font-medium">
+                                                {getInitials(user.fullName)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">Hola, {user.fullName.split(" ")[0]}</span>
+                                            <span className="text-xs text-muted-foreground">{user.email}</span>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile" className="cursor-pointer">
+                                            <UserCircle className="mr-2 h-4 w-4" />
+                                            Mi Perfil
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    {user.role === "ADMIN" && (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/admin" className="cursor-pointer">
+                                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                Panel Admin
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={handleLogout}
+                                        className="text-red-600 focus:text-red-600 cursor-pointer"
+                                    >
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        Cerrar Sesión
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <Link
+                                href="/auth/login"
+                                aria-label="Iniciar sesión"
+                                className="text-slate-300 hover:text-white transition-colors"
+                            >
+                                <User className="h-5 w-5" />
+                            </Link>
+                        )}
+
                         <CartSheet />
                     </div>
                 </div>

@@ -6,11 +6,13 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormData } from "@/lib/validators/auth";
-import { login } from "@/services/auth";
+import { useAuthStore } from "@/store/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 /**
  * Página de inicio de sesión.
@@ -20,6 +22,7 @@ export default function LoginPage() {
     const searchParams = useSearchParams();
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const { login } = useAuthStore();
 
     const {
         register,
@@ -34,7 +37,21 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            await login(data.email, data.password);
+            const response = await fetch(`${API_URL}/api/v1/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: data.email, password: data.password }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Email o contraseña incorrectos");
+            }
+
+            // Actualizar el store de Zustand (esto actualiza el Navbar)
+            login(result.token, { email: result.email, fullName: result.fullName });
+
             // Redirigir a la URL especificada o a home
             const redirectTo = searchParams.get("redirect") || "/";
             router.push(redirectTo);

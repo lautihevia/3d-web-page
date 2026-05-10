@@ -426,7 +426,7 @@ export default function AboutPage() {
             <p
               style={{ fontSize: 16, marginTop: 16, opacity: 0.85, maxWidth: 500 }}
             >
-              Visitanos en Buenos Aires y probá los equipos en vivo. Atención
+              Visitanos en Rafaela Santa Fe y probá los equipos en vivo. Atención
               personalizada con turno previo.
             </p>
           </div>

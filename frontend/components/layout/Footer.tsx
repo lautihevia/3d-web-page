@@ -20,9 +20,9 @@ const SECTIONS = [
   {
     title: "Contacto",
     items: [
-      { label: "contacto@3dencasa.com", href: null },
-      { label: "+54 11 1234-5678", href: null },
-      { label: "Buenos Aires, Argentina", href: null },
+      { label: "3dencasa@gmail.com", href: null },
+      { label: "+54 3492 280435", href: null },
+      { label: "Rafaela, Santa Fe, Argentina", href: null },
     ],
   },
 ];

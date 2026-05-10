@@ -10,17 +10,17 @@ const CONTACT_INFO = [
   {
     icon: <Mail size={18} />,
     label: "Email",
-    value: "contacto@3dencasa.com",
+    value: "3dencasastore@gmail.com",
   },
   {
     icon: <Phone size={18} />,
     label: "Teléfono",
-    value: "+54 11 1234-5678",
+    value: "+54 3492 280435",
   },
   {
     icon: <MapPin size={18} />,
     label: "Showroom",
-    value: "Buenos Aires, Argentina",
+    value: "Rafaela, Santa Fe, Argentina",
   },
 ];
 

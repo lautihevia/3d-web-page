@@ -28,7 +28,7 @@ const BRANDS = [
     name: "W3D",
     tag: "Filamentos",
     slug: "w3d",
-    imageUrl: "/categorias/W3e.jpeg",
+    imageUrl: "/categorias/W3d.jpeg",
   },
   {
     id: "anycubic",
@@ -146,6 +146,7 @@ export default async function HomePage() {
                       fill
                       sizes="20vw"
                       className="object-contain p-2"
+                      style={{ mixBlendMode: "multiply" }}
                     />
                   </div>
                   <div>

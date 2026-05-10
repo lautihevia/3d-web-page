@@ -10,9 +10,14 @@ import { adminHeaders, getAdminToken } from "@/lib/adminAuth";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
 
-const BRANDS = [
-  "Bambu Lab", "Creality", "Anycubic", "W3D", "Arduino",
-  "Filamentos", "Electrónica", "Otro",
+const BRANDS = ["Bambu Lab", "Creality", "Anycubic", "W3D", "Arduino", "Filamentos", "Electrónica", "Otro"];
+const CATEGORIES = ["Impresoras", "Filamentos", "Electrónica", "Repuestos", "Accesorios"];
+
+const IMAGE_SLOTS = [
+  { key: "imageUrl" as const, label: "Imagen principal" },
+  { key: "imageUrl2" as const, label: "Imagen 2" },
+  { key: "imageUrl3" as const, label: "Imagen 3" },
+  { key: "imageUrl4" as const, label: "Imagen 4" },
 ];
 
 export default function NewProductPage() {
@@ -25,17 +30,19 @@ export default function NewProductPage() {
     name: "",
     brand: "Bambu Lab",
     customBrand: "",
+    category: "Impresoras",
     description: "",
     imageUrl: "",
+    imageUrl2: "",
+    imageUrl3: "",
+    imageUrl4: "",
     price: "",
     stock: "0",
     isActive: true,
   });
 
-  const set = (key: keyof typeof form, val: string | boolean) =>
+  const set = (key: string, val: string | boolean) =>
     setForm((f) => ({ ...f, [key]: val }));
-
-  const previewUrl = form.imageUrl.trim().startsWith("http") ? form.imageUrl.trim() : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +55,12 @@ export default function NewProductPage() {
     const body = new FormData();
     body.append("name", form.name.trim());
     if (brand) body.append("brand", brand.trim());
+    if (form.category) body.append("category", form.category);
     if (form.description.trim()) body.append("description", form.description.trim());
     if (form.imageUrl.trim()) body.append("imageUrl", form.imageUrl.trim());
+    if (form.imageUrl2.trim()) body.append("imageUrl2", form.imageUrl2.trim());
+    if (form.imageUrl3.trim()) body.append("imageUrl3", form.imageUrl3.trim());
+    if (form.imageUrl4.trim()) body.append("imageUrl4", form.imageUrl4.trim());
     body.append("price", form.price || "0");
     body.append("stock", form.stock || "0");
 
@@ -60,10 +71,7 @@ export default function NewProductPage() {
         body,
       });
 
-      if (res.status === 401 || res.status === 403) {
-        router.push("/admin/login");
-        return;
-      }
+      if (res.status === 401 || res.status === 403) { router.push("/admin/login"); return; }
       if (!res.ok) throw new Error("Error al crear");
 
       setSuccess(true);
@@ -78,9 +86,7 @@ export default function NewProductPage() {
   if (success) {
     return (
       <div style={{ padding: "80px 40px", textAlign: "center" }}>
-        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#dcfce7", color: "#16a34a", fontSize: 24, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-          ✓
-        </div>
+        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#dcfce7", color: "#16a34a", fontSize: 24, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>✓</div>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: "#0b0d12" }}>Producto creado</h2>
         <p style={{ color: "rgba(0,0,0,.5)", marginTop: 8 }}>Redirigiendo...</p>
       </div>
@@ -88,13 +94,10 @@ export default function NewProductPage() {
   }
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 760 }}>
+    <div style={{ padding: "32px 40px", maxWidth: 820 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
-        <Link
-          href="/admin"
-          style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid rgba(0,0,0,.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(0,0,0,.5)", textDecoration: "none" }}
-        >
+        <Link href="/admin" style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid rgba(0,0,0,.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(0,0,0,.5)", textDecoration: "none" }}>
           <ArrowLeft size={16} />
         </Link>
         <div>
@@ -115,41 +118,33 @@ export default function NewProductPage() {
           {/* Name */}
           <div style={{ gridColumn: "1 / -1" }}>
             <Field label="Nombre del producto *">
-              <input
-                required
-                value={form.name}
-                onChange={(e) => set("name", e.target.value)}
-                placeholder="Ej: Bambu Lab P1S Combo"
-                style={inputStyle}
-              />
+              <input required value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Ej: Bambu Lab P1S Combo" style={inputStyle} />
             </Field>
           </div>
 
           {/* Brand */}
           <div>
             <Field label="Marca">
-              <select
-                value={form.brand}
-                onChange={(e) => set("brand", e.target.value)}
-                style={inputStyle}
-              >
-                {BRANDS.map((b) => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
+              <select value={form.brand} onChange={(e) => set("brand", e.target.value)} style={inputStyle}>
+                {BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
+              </select>
+            </Field>
+          </div>
+
+          {/* Category */}
+          <div>
+            <Field label="Categoría">
+              <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inputStyle}>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
           </div>
 
           {/* Custom brand */}
           {form.brand === "Otro" && (
-            <div>
-              <Field label="Nombre de la marca">
-                <input
-                  value={form.customBrand}
-                  onChange={(e) => set("customBrand", e.target.value)}
-                  placeholder="Ej: Prusa"
-                  style={inputStyle}
-                />
+            <div style={{ gridColumn: "1 / -1" }}>
+              <Field label="Nombre de la marca personalizada">
+                <input value={form.customBrand} onChange={(e) => set("customBrand", e.target.value)} placeholder="Ej: Prusa" style={inputStyle} />
               </Field>
             </div>
           )}
@@ -157,151 +152,75 @@ export default function NewProductPage() {
           {/* Price */}
           <div>
             <Field label="Precio (ARS) *">
-              <input
-                required
-                type="number"
-                min="0"
-                step="1"
-                value={form.price}
-                onChange={(e) => set("price", e.target.value)}
-                placeholder="1290000"
-                style={inputStyle}
-              />
+              <input required type="number" min="0" step="1" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="1290000" style={inputStyle} />
             </Field>
           </div>
 
           {/* Stock */}
           <div>
             <Field label="Stock">
-              <input
-                type="number"
-                min="0"
-                value={form.stock}
-                onChange={(e) => set("stock", e.target.value)}
-                placeholder="0"
-                style={inputStyle}
-              />
+              <input type="number" min="0" value={form.stock} onChange={(e) => set("stock", e.target.value)} placeholder="0" style={inputStyle} />
             </Field>
           </div>
 
-          {/* Image URL */}
+          {/* Images section */}
           <div style={{ gridColumn: "1 / -1" }}>
-            <Field label="URL de imagen (Cloudinary)">
-              <input
-                value={form.imageUrl}
-                onChange={(e) => set("imageUrl", e.target.value)}
-                placeholder="https://res.cloudinary.com/tu-cloud/image/upload/..."
-                style={inputStyle}
-              />
-            </Field>
-            {/* Preview */}
-            <div
-              style={{
-                marginTop: 12,
-                width: 100,
-                height: 100,
-                borderRadius: 12,
-                background: "#f5f6fa",
-                border: "1px solid rgba(0,0,0,.08)",
-                overflow: "hidden",
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {previewUrl ? (
-                <Image src={previewUrl} alt="Preview" fill className="object-contain p-2" />
-              ) : (
-                <ImageIcon size={24} color="rgba(0,0,0,.25)" />
-              )}
+            <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(0,0,0,.65)", marginBottom: 12 }}>
+              Imágenes del producto — pegá URLs de Cloudinary
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {IMAGE_SLOTS.map(({ key, label }) => {
+                const url = (form[key] as string).trim().startsWith("http") ? (form[key] as string).trim() : null;
+                return (
+                  <div key={key} style={{ display: "flex", gap: 12, alignItems: "center", background: "#f9fafb", border: "1px solid rgba(0,0,0,.07)", borderRadius: 12, padding: "10px 14px" }}>
+                    <div style={{ width: 60, height: 60, borderRadius: 8, background: "#fff", border: "1px solid rgba(0,0,0,.08)", overflow: "hidden", position: "relative", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {url ? (
+                        <Image src={url} alt={label} fill className="object-contain p-1" />
+                      ) : (
+                        <ImageIcon size={18} color="rgba(0,0,0,.2)" />
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(0,0,0,.4)", letterSpacing: ".04em", textTransform: "uppercase", marginBottom: 5 }}>{label}</div>
+                      <input
+                        value={form[key] as string}
+                        onChange={(e) => set(key, e.target.value)}
+                        placeholder="https://res.cloudinary.com/..."
+                        style={{ ...inputStyle, background: "#fff" }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           {/* Description */}
           <div style={{ gridColumn: "1 / -1" }}>
             <Field label="Descripción">
-              <textarea
-                value={form.description}
-                onChange={(e) => set("description", e.target.value)}
-                rows={4}
-                placeholder="Describí el producto: características, materiales, uso recomendado..."
-                style={{ ...inputStyle, resize: "vertical" }}
-              />
+              <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={4} placeholder="Describí el producto: características, materiales, uso recomendado..." style={{ ...inputStyle, resize: "vertical" }} />
             </Field>
           </div>
 
-          {/* Active */}
+          {/* Active toggle */}
           <div style={{ gridColumn: "1 / -1" }}>
             <label style={{ display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}>
-              <div
-                onClick={() => set("isActive", !form.isActive)}
-                style={{
-                  width: 44,
-                  height: 24,
-                  borderRadius: 999,
-                  background: form.isActive ? PRIMARY : "rgba(0,0,0,.15)",
-                  position: "relative",
-                  cursor: "pointer",
-                  transition: "background .2s",
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 4,
-                    left: form.isActive ? 23 : 4,
-                    width: 16,
-                    height: 16,
-                    borderRadius: "50%",
-                    background: "#fff",
-                    transition: "left .2s",
-                    boxShadow: "0 1px 4px rgba(0,0,0,.2)",
-                  }}
-                />
+              <div onClick={() => set("isActive", !form.isActive)} style={{ width: 44, height: 24, borderRadius: 999, background: form.isActive ? PRIMARY : "rgba(0,0,0,.15)", position: "relative", cursor: "pointer", transition: "background .2s", flexShrink: 0 }}>
+                <div style={{ position: "absolute", top: 4, left: form.isActive ? 23 : 4, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left .2s", boxShadow: "0 1px 4px rgba(0,0,0,.2)" }} />
               </div>
               <div>
                 <div style={{ fontWeight: 600, fontSize: 14, color: "#0b0d12" }}>Producto activo</div>
-                <div style={{ fontSize: 12, color: "rgba(0,0,0,.45)", marginTop: 2 }}>
-                  {form.isActive ? "Visible en el catálogo" : "Oculto del catálogo"}
-                </div>
+                <div style={{ fontSize: 12, color: "rgba(0,0,0,.45)", marginTop: 2 }}>{form.isActive ? "Visible en el catálogo" : "Oculto del catálogo"}</div>
               </div>
             </label>
           </div>
         </div>
 
-        {/* Actions */}
         <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              background: loading ? "rgba(0,0,0,.15)" : PRIMARY,
-              color: "#fff",
-              border: "none",
-              padding: "13px 28px",
-              borderRadius: 12,
-              fontWeight: 700,
-              fontSize: 15,
-              cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "inherit",
-            }}
-          >
+          <button type="submit" disabled={loading} style={{ background: loading ? "rgba(0,0,0,.15)" : PRIMARY, color: "#fff", border: "none", padding: "13px 28px", borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
             {loading ? "Guardando..." : "Guardar producto"}
           </button>
-          <Link
-            href="/admin"
-            style={{
-              padding: "13px 20px",
-              borderRadius: 12,
-              border: "1px solid rgba(0,0,0,.1)",
-              fontSize: 14,
-              color: "rgba(0,0,0,.6)",
-              textDecoration: "none",
-              fontWeight: 500,
-            }}
-          >
+          <Link href="/admin" style={{ padding: "13px 20px", borderRadius: 12, border: "1px solid rgba(0,0,0,.1)", fontSize: 14, color: "rgba(0,0,0,.6)", textDecoration: "none", fontWeight: 500 }}>
             Cancelar
           </Link>
         </div>
@@ -313,23 +232,14 @@ export default function NewProductPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "rgba(0,0,0,.65)", marginBottom: 6 }}>
-        {label}
-      </label>
+      <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "rgba(0,0,0,.65)", marginBottom: 6 }}>{label}</label>
       {children}
     </div>
   );
 }
 
 const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "10px 13px",
-  borderRadius: 10,
-  border: "1px solid rgba(0,0,0,.1)",
-  fontSize: 14,
-  fontFamily: "inherit",
-  outline: "none",
-  boxSizing: "border-box",
-  color: "#0b0d12",
-  background: "#fff",
+  width: "100%", padding: "10px 13px", borderRadius: 10,
+  border: "1px solid rgba(0,0,0,.1)", fontSize: 14, fontFamily: "inherit",
+  outline: "none", boxSizing: "border-box", color: "#0b0d12", background: "#fff",
 };

@@ -20,7 +20,11 @@ interface Product {
   name: string;
   description?: string;
   brand?: string;
+  category?: string;
   mainImageUrl?: string;
+  imageUrl2?: string;
+  imageUrl3?: string;
+  imageUrl4?: string;
   isActive: boolean;
   variants: ProductVariant[];
 }
@@ -137,6 +141,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         <ProductGallery
           mainImageUrl={product.mainImageUrl}
           productName={product.name}
+          extraImageUrls={[product.imageUrl2, product.imageUrl3, product.imageUrl4].filter(Boolean) as string[]}
         />
 
         {/* Info + CTA */}

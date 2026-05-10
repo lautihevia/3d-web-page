@@ -29,8 +29,9 @@ const SECTIONS = [
 
 export function Footer() {
   return (
-    <footer style={{ background: "#0a0d18", color: "#fff", padding: "56px 48px 28px" }}>
+    <footer className="rsp-footer" style={{ background: "#0a0d18", color: "#fff", padding: "56px 48px 28px" }}>
       <div
+        className="rsp-footer-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1.5fr 1fr 1fr 1fr",

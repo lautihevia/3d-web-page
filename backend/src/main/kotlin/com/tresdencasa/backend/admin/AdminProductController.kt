@@ -15,9 +15,13 @@ data class UpdateProductRequest(
         val name: String? = null,
         val description: String? = null,
         val brand: String? = null,
+        val category: String? = null,
         val price: BigDecimal? = null,
         val stock: Int? = null,
         val imageUrl: String? = null,
+        val imageUrl2: String? = null,
+        val imageUrl3: String? = null,
+        val imageUrl4: String? = null,
         val isActive: Boolean? = null
 )
 
@@ -28,23 +32,24 @@ class AdminProductController(
         private val fileUploadService: FileUploadService
 ) {
 
+    private fun Product.toDto() = AdminProductDto(
+            id = id,
+            name = name,
+            description = description,
+            brand = brand,
+            category = category,
+            mainImageUrl = mainImageUrl,
+            imageUrl2 = imageUrl2,
+            imageUrl3 = imageUrl3,
+            imageUrl4 = imageUrl4,
+            isActive = isActive,
+            price = variants.firstOrNull()?.price,
+            stock = variants.firstOrNull()?.stockQuantity,
+            variantCount = variants.size
+    )
+
     @GetMapping
-    fun listProducts(): List<AdminProductDto> {
-        return productRepository.findAll().map { product ->
-            val firstVariant = product.variants.firstOrNull()
-            AdminProductDto(
-                    id = product.id,
-                    name = product.name,
-                    description = product.description,
-                    brand = product.brand,
-                    mainImageUrl = product.mainImageUrl,
-                    isActive = product.isActive,
-                    price = firstVariant?.price,
-                    stock = firstVariant?.stockQuantity,
-                    variantCount = product.variants.size
-            )
-        }
-    }
+    fun listProducts(): List<AdminProductDto> = productRepository.findAll().map { it.toDto() }
 
     /**
      * Crea producto. Acepta imagen como archivo (image) o como URL de Cloudinary (imageUrl).
@@ -55,9 +60,13 @@ class AdminProductController(
             @RequestParam name: String,
             @RequestParam(required = false) description: String?,
             @RequestParam(required = false) brand: String?,
+            @RequestParam(required = false) category: String?,
             @RequestParam price: BigDecimal,
             @RequestParam stock: Int,
             @RequestParam(required = false) imageUrl: String?,
+            @RequestParam(required = false) imageUrl2: String?,
+            @RequestParam(required = false) imageUrl3: String?,
+            @RequestParam(required = false) imageUrl4: String?,
             @RequestParam(required = false) image: MultipartFile?
     ): ResponseEntity<AdminProductDto> {
         val finalImageUrl = when {
@@ -70,7 +79,11 @@ class AdminProductController(
                 name = name,
                 description = description,
                 brand = brand,
-                mainImageUrl = finalImageUrl
+                category = category?.ifBlank { null },
+                mainImageUrl = finalImageUrl,
+                imageUrl2 = imageUrl2?.ifBlank { null },
+                imageUrl3 = imageUrl3?.ifBlank { null },
+                imageUrl4 = imageUrl4?.ifBlank { null }
         )
         val defaultVariant = ProductVariant(
                 product = product,
@@ -80,20 +93,7 @@ class AdminProductController(
         )
         product.addVariant(defaultVariant)
         val saved = productRepository.save(product)
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                AdminProductDto(
-                        id = saved.id,
-                        name = saved.name,
-                        description = saved.description,
-                        brand = saved.brand,
-                        mainImageUrl = saved.mainImageUrl,
-                        isActive = saved.isActive,
-                        price = defaultVariant.price,
-                        stock = defaultVariant.stockQuantity,
-                        variantCount = 1
-                )
-        )
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved.toDto())
     }
 
     /** Actualiza campos de un producto (JSON body, todos opcionales). */
@@ -106,9 +106,13 @@ class AdminProductController(
                 ?: return ResponseEntity.notFound().build()
 
         if (request.name != null) product.name = request.name
-        if (request.description != null) product.description = request.description
-        if (request.brand != null) product.brand = request.brand
+        if (request.description != null) product.description = request.description.ifBlank { null }
+        if (request.brand != null) product.brand = request.brand.ifBlank { null }
+        if (request.category != null) product.category = request.category.ifBlank { null }
         if (request.imageUrl != null) product.mainImageUrl = request.imageUrl.ifBlank { null }
+        if (request.imageUrl2 != null) product.imageUrl2 = request.imageUrl2.ifBlank { null }
+        if (request.imageUrl3 != null) product.imageUrl3 = request.imageUrl3.ifBlank { null }
+        if (request.imageUrl4 != null) product.imageUrl4 = request.imageUrl4.ifBlank { null }
         if (request.isActive != null) product.isActive = request.isActive
 
         val firstVariant = product.variants.firstOrNull()
@@ -118,19 +122,7 @@ class AdminProductController(
         }
 
         val saved = productRepository.save(product)
-        return ResponseEntity.ok(
-                AdminProductDto(
-                        id = saved.id,
-                        name = saved.name,
-                        description = saved.description,
-                        brand = saved.brand,
-                        mainImageUrl = saved.mainImageUrl,
-                        isActive = saved.isActive,
-                        price = saved.variants.firstOrNull()?.price,
-                        stock = saved.variants.firstOrNull()?.stockQuantity,
-                        variantCount = saved.variants.size
-                )
-        )
+        return ResponseEntity.ok(saved.toDto())
     }
 
     @DeleteMapping("/{id}")

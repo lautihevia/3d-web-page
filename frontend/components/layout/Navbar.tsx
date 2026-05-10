@@ -133,7 +133,7 @@ export function Navbar() {
             position: "fixed", inset: 0, zIndex: 200,
             background: "#0a0d18",
             display: "flex", flexDirection: "column",
-            overflowY: "auto",
+            overflowY: "auto", overflowX: "hidden",
           }}
         >
           {/* Header */}

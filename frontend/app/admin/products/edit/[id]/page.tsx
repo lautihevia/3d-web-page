@@ -11,6 +11,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
 
 const BRANDS = ["Bambu Lab", "Creality", "Anycubic", "W3D", "Arduino", "Filamentos", "Electrónica", "Otro"];
+const CATEGORIES = ["Impresoras", "Filamentos", "Electrónica", "Repuestos", "Accesorios"];
+
+const IMAGE_SLOTS = [
+  { key: "imageUrl" as const, label: "Imagen principal" },
+  { key: "imageUrl2" as const, label: "Imagen 2" },
+  { key: "imageUrl3" as const, label: "Imagen 3" },
+  { key: "imageUrl4" as const, label: "Imagen 4" },
+];
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -24,14 +32,18 @@ export default function EditProductPage() {
     name: "",
     brand: "Bambu Lab",
     customBrand: "",
+    category: "Impresoras",
     description: "",
     imageUrl: "",
+    imageUrl2: "",
+    imageUrl3: "",
+    imageUrl4: "",
     price: "",
     stock: "0",
     isActive: true,
   });
 
-  const set = (key: keyof typeof form, val: string | boolean) =>
+  const set = (key: string, val: string | boolean) =>
     setForm((f) => ({ ...f, [key]: val }));
 
   useEffect(() => {
@@ -43,12 +55,17 @@ export default function EditProductPage() {
         if (!res.ok) throw new Error("Not found");
         const p = await res.json();
         const knownBrand = BRANDS.includes(p.brand) ? p.brand : "Otro";
+        const knownCategory = CATEGORIES.includes(p.category) ? p.category : "Impresoras";
         setForm({
           name: p.name || "",
           brand: knownBrand,
           customBrand: knownBrand === "Otro" ? (p.brand || "") : "",
+          category: knownCategory,
           description: p.description || "",
           imageUrl: p.mainImageUrl || "",
+          imageUrl2: p.imageUrl2 || "",
+          imageUrl3: p.imageUrl3 || "",
+          imageUrl4: p.imageUrl4 || "",
           price: p.variants?.[0]?.price?.toString() || "",
           stock: p.variants?.[0]?.stockQuantity?.toString() || "0",
           isActive: p.isActive,
@@ -78,8 +95,12 @@ export default function EditProductPage() {
         body: JSON.stringify({
           name: form.name.trim(),
           brand: brand?.trim() || null,
+          category: form.category || null,
           description: form.description.trim() || null,
           imageUrl: form.imageUrl.trim() || null,
+          imageUrl2: form.imageUrl2.trim() || null,
+          imageUrl3: form.imageUrl3.trim() || null,
+          imageUrl4: form.imageUrl4.trim() || null,
           price: form.price ? parseFloat(form.price) : null,
           stock: parseInt(form.stock) || 0,
           isActive: form.isActive,
@@ -96,8 +117,6 @@ export default function EditProductPage() {
     }
   };
 
-  const previewUrl = form.imageUrl.trim().startsWith("http") ? form.imageUrl.trim() : null;
-
   if (fetching) return <div style={{ padding: "60px 40px", color: "rgba(0,0,0,.4)", fontSize: 14 }}>Cargando...</div>;
 
   if (success) {
@@ -110,7 +129,7 @@ export default function EditProductPage() {
   }
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 760 }}>
+    <div style={{ padding: "32px 40px", maxWidth: 820 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
         <Link href="/admin" style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid rgba(0,0,0,.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(0,0,0,.5)", textDecoration: "none" }}>
           <ArrowLeft size={16} />
@@ -129,9 +148,15 @@ export default function EditProductPage() {
 
       <form onSubmit={handleSubmit}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+
+          {/* Name */}
           <div style={{ gridColumn: "1 / -1" }}>
-            <Field label="Nombre *"><input required value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Nombre del producto" style={inputStyle} /></Field>
+            <Field label="Nombre *">
+              <input required value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Nombre del producto" style={inputStyle} />
+            </Field>
           </div>
+
+          {/* Brand */}
           <div>
             <Field label="Marca">
               <select value={form.brand} onChange={(e) => set("brand", e.target.value)} style={inputStyle}>
@@ -139,26 +164,80 @@ export default function EditProductPage() {
               </select>
             </Field>
           </div>
-          {form.brand === "Otro" && (
-            <div><Field label="Nombre de marca"><input value={form.customBrand} onChange={(e) => set("customBrand", e.target.value)} placeholder="Ej: Prusa" style={inputStyle} /></Field></div>
-          )}
+
+          {/* Category */}
           <div>
-            <Field label="Precio (ARS)"><input type="number" min="0" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="0" style={inputStyle} /></Field>
-          </div>
-          <div>
-            <Field label="Stock"><input type="number" min="0" value={form.stock} onChange={(e) => set("stock", e.target.value)} placeholder="0" style={inputStyle} /></Field>
-          </div>
-          <div style={{ gridColumn: "1 / -1" }}>
-            <Field label="URL de imagen (Cloudinary)">
-              <input value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder="https://res.cloudinary.com/..." style={inputStyle} />
+            <Field label="Categoría">
+              <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inputStyle}>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
             </Field>
-            <div style={{ marginTop: 12, width: 100, height: 100, borderRadius: 12, background: "#f5f6fa", border: "1px solid rgba(0,0,0,.08)", overflow: "hidden", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {previewUrl ? <Image src={previewUrl} alt="Preview" fill className="object-contain p-2" /> : <ImageIcon size={24} color="rgba(0,0,0,.25)" />}
+          </div>
+
+          {/* Custom brand */}
+          {form.brand === "Otro" && (
+            <div style={{ gridColumn: "1 / -1" }}>
+              <Field label="Nombre de marca personalizada">
+                <input value={form.customBrand} onChange={(e) => set("customBrand", e.target.value)} placeholder="Ej: Prusa" style={inputStyle} />
+              </Field>
+            </div>
+          )}
+
+          {/* Price */}
+          <div>
+            <Field label="Precio (ARS)">
+              <input type="number" min="0" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="0" style={inputStyle} />
+            </Field>
+          </div>
+
+          {/* Stock */}
+          <div>
+            <Field label="Stock">
+              <input type="number" min="0" value={form.stock} onChange={(e) => set("stock", e.target.value)} placeholder="0" style={inputStyle} />
+            </Field>
+          </div>
+
+          {/* Images section */}
+          <div style={{ gridColumn: "1 / -1" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(0,0,0,.65)", marginBottom: 12 }}>
+              Imágenes del producto — pegá URLs de Cloudinary
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {IMAGE_SLOTS.map(({ key, label }) => {
+                const val = form[key] as string;
+                const url = val.trim().startsWith("http") ? val.trim() : null;
+                return (
+                  <div key={key} style={{ display: "flex", gap: 12, alignItems: "center", background: "#f9fafb", border: "1px solid rgba(0,0,0,.07)", borderRadius: 12, padding: "10px 14px" }}>
+                    <div style={{ width: 60, height: 60, borderRadius: 8, background: "#fff", border: "1px solid rgba(0,0,0,.08)", overflow: "hidden", position: "relative", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {url ? (
+                        <Image src={url} alt={label} fill className="object-contain p-1" />
+                      ) : (
+                        <ImageIcon size={18} color="rgba(0,0,0,.2)" />
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(0,0,0,.4)", letterSpacing: ".04em", textTransform: "uppercase", marginBottom: 5 }}>{label}</div>
+                      <input
+                        value={val}
+                        onChange={(e) => set(key, e.target.value)}
+                        placeholder="https://res.cloudinary.com/..."
+                        style={{ ...inputStyle, background: "#fff" }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
+
+          {/* Description */}
           <div style={{ gridColumn: "1 / -1" }}>
-            <Field label="Descripción"><textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={4} placeholder="Describí el producto..." style={{ ...inputStyle, resize: "vertical" }} /></Field>
+            <Field label="Descripción">
+              <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={4} placeholder="Describí el producto..." style={{ ...inputStyle, resize: "vertical" }} />
+            </Field>
           </div>
+
+          {/* Active toggle */}
           <div style={{ gridColumn: "1 / -1" }}>
             <label style={{ display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}>
               <div onClick={() => set("isActive", !form.isActive)} style={{ width: 44, height: 24, borderRadius: 999, background: form.isActive ? PRIMARY : "rgba(0,0,0,.15)", position: "relative", cursor: "pointer", transition: "background .2s", flexShrink: 0 }}>

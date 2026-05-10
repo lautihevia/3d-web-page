@@ -107,7 +107,7 @@ export default async function HomePage() {
                 color: "#0b0d12",
               }}
             >
-              Por marca
+              Marcas
             </h2>
             <div style={{ fontSize: 13, color: "rgba(0,0,0,.5)" }}>
               Las mejores marcas del mercado

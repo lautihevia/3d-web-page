@@ -14,7 +14,11 @@ class Product(
         @Column(nullable = false) var name: String,
         @Column(columnDefinition = "TEXT") var description: String? = null,
         var brand: String? = null,
+        var category: String? = null,
         @Column(name = "main_image_url") var mainImageUrl: String? = null,
+        @Column(name = "image_url_2") var imageUrl2: String? = null,
+        @Column(name = "image_url_3") var imageUrl3: String? = null,
+        @Column(name = "image_url_4") var imageUrl4: String? = null,
         @Column(name = "is_active") var isActive: Boolean = true,
         @Column(name = "created_at", updatable = false) val createdAt: Instant = Instant.now(),
         @OneToMany(

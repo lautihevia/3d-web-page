@@ -1,9 +1,9 @@
 FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /app
-COPY gradle gradle
-COPY gradlew settings.gradle.kts build.gradle.kts ./
+COPY backend/gradle gradle
+COPY backend/gradlew backend/settings.gradle.kts backend/build.gradle.kts ./
 RUN ./gradlew dependencies --no-daemon 2>/dev/null || true
-COPY src src
+COPY backend/src src
 RUN ./gradlew bootJar --no-daemon -x test
 
 FROM eclipse-temurin:21-jre-alpine

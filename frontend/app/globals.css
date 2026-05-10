@@ -190,14 +190,20 @@ body {
     width: 100% !important;
     box-sizing: border-box !important;
   }
+
+  .rsp-3col-to-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .rsp-store-content {
+    padding-top: 16px !important;
+  }
 }
 
 @media (max-width: 520px) {
   .rsp-4col-to-2 { grid-template-columns: 1fr !important; }
   .rsp-5col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
   .rsp-stats-4col { grid-template-columns: repeat(2, 1fr) !important; }
-
-  .rsp-footer-grid {
-    grid-template-columns: 1fr !important;
-  }
+  .rsp-3col-to-2 { grid-template-columns: 1fr !important; }
+  .rsp-footer-grid { grid-template-columns: 1fr !important; }
 }

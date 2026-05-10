@@ -13,9 +13,10 @@ const PRICE_PRESETS = [
 
 interface FilterSidebarProps {
   brand: string;
+  compact?: boolean;
 }
 
-export function FilterSidebar({ brand }: FilterSidebarProps) {
+export function FilterSidebar({ brand, compact = false }: FilterSidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -48,7 +49,7 @@ export function FilterSidebar({ brand }: FilterSidebarProps) {
   const hasFilters = minPrice || maxPrice || onlyAvailable;
 
   return (
-    <aside style={{ width: 220, flexShrink: 0, position: "sticky", top: 80, alignSelf: "flex-start" }}>
+    <aside style={compact ? { width: "100%" } : { width: 220, flexShrink: 0, position: "sticky", top: 80, alignSelf: "flex-start" }}>
       <div
         style={{
           background: "#fff",

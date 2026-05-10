@@ -62,17 +62,19 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
   const isActive =
     typeof search.isActive === "string" ? search.isActive : undefined;
 
-  const products = await getProducts(brand, minPrice, maxPrice, isActive);
+  const decodedBrand = decodeURIComponent(brand);
+  const products = await getProducts(decodedBrand, minPrice, maxPrice, isActive);
 
   return (
     <div style={{ background: "#f7f6f1", minHeight: "100vh" }}>
-      <BrandHeader brand={brand} />
+      <BrandHeader brand={decodedBrand} />
 
       <div
+        className="rsp-section-pad rsp-store-content"
         style={{
           maxWidth: 1400,
           margin: "0 auto",
-          padding: "0 56px 80px",
+          padding: "24px 56px 80px",
           display: "flex",
           gap: 32,
         }}
@@ -80,7 +82,7 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
         {/* Filter sidebar */}
         <div className="hidden lg:block">
           <Suspense fallback={null}>
-            <FilterSidebar brand={brand} />
+            <FilterSidebar brand={decodedBrand} />
           </Suspense>
         </div>
 
@@ -88,7 +90,7 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
         <main style={{ flex: 1 }}>
           <div className="mb-4 lg:hidden">
             <Suspense fallback={null}>
-              <MobileFilterDrawer brand={brand} />
+              <MobileFilterDrawer brand={decodedBrand} />
             </Suspense>
           </div>
 
@@ -106,6 +108,7 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
 
           {products.length > 0 ? (
             <div
+              className="rsp-3col-to-2"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3,1fr)",

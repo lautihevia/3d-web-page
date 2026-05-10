@@ -7,7 +7,10 @@ interface BrandHeaderProps {
 const PRIMARY = "#3b82f6";
 
 export function BrandHeader({ brand }: BrandHeaderProps) {
-  const brandName = brand.charAt(0).toUpperCase() + brand.slice(1);
+  const brandName = decodeURIComponent(brand)
+    .split(" ")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 
   return (
     <div
@@ -39,6 +42,7 @@ export function BrandHeader({ brand }: BrandHeaderProps) {
       />
 
       <div
+        className="rsp-section-pad"
         style={{
           position: "relative",
           padding: "56px 56px 72px",

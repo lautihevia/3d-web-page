@@ -1,98 +1,301 @@
-import { ProductCard } from "@/components/products/ProductCard";
 import { Hero } from "@/components/home/Hero";
-import { CategoryCard } from "@/components/home/CategoryCard";
+import { ProductCard } from "@/components/products/ProductCard";
 import type { PaginatedProducts } from "@/types/product";
+import Link from "next/link";
+import Image from "next/image";
+import { Printer, Layers, Cpu } from "lucide-react";
 
-/**
- * URL base del API de backend.
- */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const PRIMARY = "#3b82f6";
 
-/**
- * Obtiene los productos del catálogo desde el backend.
- */
-async function getProducts(): Promise<PaginatedProducts> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/products`, {
-    cache: "no-store", // No cachear para desarrollo
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+const BRANDS = [
+  {
+    id: "bambu",
+    name: "Bambu Lab",
+    tag: "Impresoras Premium",
+    count: 12,
+    slug: "bambu lab",
+    imageUrl: "/categorias/bambulab-categoria.jpeg",
+  },
+  {
+    id: "creality",
+    name: "Creality",
+    tag: "Impresoras",
+    count: 18,
+    slug: "creality",
+    imageUrl: "/categorias/creality-categoria.jpeg",
+  },
+  {
+    id: "hellbot",
+    name: "Hellbot",
+    tag: "Industria nacional",
+    count: 9,
+    slug: "hellbot",
+    imageUrl: "/categorias/hellbot-categoria.jpeg",
+  },
+  {
+    id: "w3d",
+    name: "W3D",
+    tag: "Filamentos",
+    count: 24,
+    slug: "w3d",
+    imageUrl: "/categorias/w3d-categoria.jpeg",
+  },
+  {
+    id: "arduino",
+    name: "Arduino",
+    tag: "Electrónica",
+    count: 31,
+    slug: "arduino",
+    imageUrl: "/categorias/arduino-categoria.jpeg",
+  },
+];
 
-  if (!response.ok) {
-    throw new Error(`Error al obtener productos: ${response.status}`);
+const CATEGORIES = [
+  {
+    Icon: Printer,
+    title: "Impresoras 3D",
+    desc: "FDM, resina y modelos industriales",
+    href: "/#productos",
+  },
+  {
+    Icon: Layers,
+    title: "Filamentos & Insumos",
+    desc: "PLA, PETG, ABS, TPU y especiales",
+    href: "/#productos",
+  },
+  {
+    Icon: Cpu,
+    title: "Electrónica",
+    desc: "Arduino, sensores y módulos",
+    href: "/#productos",
+  },
+];
+
+async function getProducts(): Promise<PaginatedProducts | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/products`, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
   }
-
-  return response.json();
 }
 
-/**
- * Página principal del catálogo de productos.
- * Server Component con fetch SSR.
- */
 export default async function HomePage() {
-  let productsData: PaginatedProducts;
-
-  try {
-    productsData = await getProducts();
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return (
-      <>
-        <Hero />
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-8">Nuestros Productos</h2>
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
-              <p className="text-destructive font-medium">
-                Error al cargar los productos. Por favor, verifica que el backend esté corriendo.
-              </p>
-              <p className="text-muted-foreground text-sm mt-2">
-                Asegúrate de que el servidor esté disponible en {API_BASE_URL}
-              </p>
-            </div>
-          </div>
-        </section>
-      </>
-    );
-  }
-
-  const products = productsData.content;
+  const productsData = await getProducts();
 
   return (
     <>
-      {/* Hero Section */}
       <Hero />
 
-      {/* Categorías - 5 tarjetas fijas */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
+      {/* Brands Section */}
+      <section style={{ padding: "72px 48px", background: "#fff" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              marginBottom: 28,
+            }}
+          >
+            <h2
+              style={{
+                fontSize: 32,
+                fontWeight: 700,
+                margin: 0,
+                letterSpacing: "-.02em",
+                color: "#0b0d12",
+              }}
+            >
+              Por marca
+            </h2>
+            <div style={{ fontSize: 13, color: "rgba(0,0,0,.5)" }}>
+              Trabajamos con 5 fabricantes
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            <CategoryCard name="Bambu Lab" slug="bambu lab" imageUrl="/categorias/bambulab-categoria.jpeg" />
-            <CategoryCard name="Creality" slug="creality" imageUrl="/categorias/creality-categoria.jpeg" />
-            <CategoryCard name="Hellbot" slug="hellbot" imageUrl="/categorias/hellbot-categoria.jpeg" />
-            <CategoryCard name="W3D" slug="w3d" imageUrl="/categorias/w3d-categoria.jpeg" />
-            <CategoryCard name="Arduino" slug="arduino" imageUrl="/categorias/arduino-categoria.jpeg" />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(5,1fr)",
+              gap: 12,
+            }}
+          >
+            {BRANDS.map((b) => (
+              <Link
+                key={b.id}
+                href={`/store/${encodeURIComponent(b.slug)}`}
+                className="group block"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <div className="border border-[rgba(0,0,0,0.07)] rounded-2xl p-3.5 flex flex-col gap-3 bg-white transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-blue-500 cursor-pointer">
+                  <div
+                    style={{
+                      aspectRatio: "4/3",
+                      width: "100%",
+                      borderRadius: 10,
+                      overflow: "hidden",
+                      position: "relative",
+                      background: "#f5f6fa",
+                    }}
+                  >
+                    <Image
+                      src={b.imageUrl}
+                      alt={b.name}
+                      fill
+                      sizes="20vw"
+                      className="object-contain p-2"
+                    />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          fontSize: 15,
+                          color: "#0b0d12",
+                        }}
+                      >
+                        {b.name}
+                      </span>
+                      <span style={{ fontSize: 11, color: "rgba(0,0,0,.5)" }}>
+                        {b.count}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "rgba(0,0,0,.5)",
+                        marginTop: 2,
+                      }}
+                    >
+                      {b.tag}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Catálogo de Productos */}
-      <section id="productos" className="py-16">
-        <div className="container mx-auto px-4">
-          {/* Header de la página */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-2">Nuestros Productos</h2>
-            <p className="text-muted-foreground">
-              {productsData.totalElements} producto{productsData.totalElements !== 1 ? "s" : ""} encontrado{productsData.totalElements !== 1 ? "s" : ""}
-            </p>
+      {/* Categories Section */}
+      <section style={{ padding: "0 48px 80px", background: "#fff" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}
+          >
+            {CATEGORIES.map(({ Icon, title, desc, href }) => (
+              <Link
+                key={title}
+                href={href}
+                className="group block"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <div
+                  style={{
+                    background: "#f5f6fa",
+                    padding: 28,
+                    borderRadius: 16,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 14,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 10,
+                      background: "#fff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: PRIMARY,
+                    }}
+                  >
+                    <Icon size={22} />
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 20, color: "#0b0d12" }}>
+                    {title}
+                  </div>
+                  <div style={{ fontSize: 14, color: "rgba(0,0,0,.6)" }}>{desc}</div>
+                  <div
+                    style={{
+                      marginTop: "auto",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: PRIMARY,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    Explorar →
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Products Grid */}
+      <section id="productos" style={{ padding: "80px 48px", background: "#f7f6f1" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+          <div style={{ marginBottom: 32 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-geist-mono), monospace",
+                fontSize: 11,
+                letterSpacing: ".18em",
+                color: PRIMARY,
+                marginBottom: 8,
+                textTransform: "uppercase",
+              }}
+            >
+              // Catálogo
+            </div>
+            <h2
+              style={{
+                fontSize: 36,
+                fontWeight: 700,
+                margin: 0,
+                letterSpacing: "-.025em",
+                color: "#0b0d12",
+              }}
+            >
+              Nuestros Productos
+            </h2>
+            {productsData && (
+              <p style={{ fontSize: 14, color: "rgba(0,0,0,.55)", marginTop: 8 }}>
+                {productsData.totalElements} producto
+                {productsData.totalElements !== 1 ? "s" : ""} encontrado
+                {productsData.totalElements !== 1 ? "s" : ""}
+              </p>
+            )}
           </div>
 
-          {/* Grilla de productos */}
-          {products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => (
+          {productsData && productsData.content.length > 0 ? (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4,1fr)",
+                gap: 16,
+              }}
+            >
+              {productsData.content.map((product) => (
                 <ProductCard
                   key={product.id}
                   id={product.id}
@@ -100,20 +303,46 @@ export default async function HomePage() {
                   description={product.description ?? undefined}
                   imageUrl={product.mainImageUrl ?? undefined}
                   price={product.variants[0]?.price}
+                  brand={product.brand}
                 />
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">
-                No hay productos disponibles en este momento.
+          ) : productsData === null ? (
+            <div
+              style={{
+                background: "rgba(239,68,68,.08)",
+                border: "1px solid rgba(239,68,68,.15)",
+                borderRadius: 12,
+                padding: "24px",
+                textAlign: "center",
+              }}
+            >
+              <p style={{ color: "#dc2626", fontWeight: 500, margin: 0 }}>
+                Error al cargar los productos. Verificá que el backend esté activo.
               </p>
+            </div>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "48px 0",
+                color: "rgba(0,0,0,.5)",
+                fontSize: 18,
+              }}
+            >
+              No hay productos disponibles en este momento.
             </div>
           )}
 
-          {/* Info de paginación */}
-          {productsData.totalPages > 1 && (
-            <div className="mt-8 text-center text-sm text-muted-foreground">
+          {productsData && productsData.totalPages > 1 && (
+            <div
+              style={{
+                marginTop: 32,
+                textAlign: "center",
+                fontSize: 13,
+                color: "rgba(0,0,0,.5)",
+              }}
+            >
               Página {productsData.number + 1} de {productsData.totalPages}
             </div>
           )}
@@ -122,4 +351,3 @@ export default async function HomePage() {
     </>
   );
 }
-

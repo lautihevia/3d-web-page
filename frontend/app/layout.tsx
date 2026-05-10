@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Manrope, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { WhatsAppFAB } from "@/components/layout/WhatsAppFAB";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -15,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "3dencasa - Impresión 3D Profesional",
-  description: "Materializa tus ideas con tecnología de impresión 3D profesional. Impresoras, filamentos y repuestos de alta calidad.",
+  title: "3dENCASA · Impresión 3D Profesional",
+  description:
+    "Las mejores impresoras 3D, filamentos y electrónica curada. Precios visibles, asesoramiento técnico real.",
 };
 
 export default function RootLayout({
@@ -27,11 +29,18 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-100`}
+        className={`${manrope.variable} ${geistMono.variable} antialiased`}
+        style={{
+          fontFamily: "var(--font-manrope), system-ui, sans-serif",
+          margin: 0,
+          padding: 0,
+          background: "#fff",
+        }}
       >
         <Navbar />
         {children}
         <Footer />
+        <WhatsAppFAB />
       </body>
     </html>
   );

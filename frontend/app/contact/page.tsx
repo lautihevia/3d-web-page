@@ -1,243 +1,438 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 
-const contactSchema = z.object({
-    name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-    email: z.string().email("Ingresa un email válido"),
-    subject: z.string().min(1, "Selecciona un asunto"),
-    message: z.string().min(10, "El mensaje debe tener al menos 10 caracteres"),
-});
+const PRIMARY = "#3b82f6";
 
-type ContactFormData = z.infer<typeof contactSchema>;
+const CONTACT_INFO = [
+  {
+    icon: <Mail size={18} />,
+    label: "Email",
+    value: "contacto@3dencasa.com",
+  },
+  {
+    icon: <Phone size={18} />,
+    label: "Teléfono",
+    value: "+54 11 1234-5678",
+  },
+  {
+    icon: <MapPin size={18} />,
+    label: "Showroom",
+    value: "Buenos Aires, Argentina",
+  },
+  {
+    icon: <span style={{ fontSize: 18 }}>◷</span>,
+    label: "Horarios",
+    value: "Lun-Vie 9-18 · Sáb 10-14",
+  },
+];
 
-/**
- * Página de contacto con formulario y datos de la empresa.
- */
 export default function ContactPage() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
+  const [form, setForm] = useState({
+    nombre: "",
+    email: "",
+    asunto: "consulta",
+    mensaje: "",
+  });
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        reset,
-        formState: { errors },
-    } = useForm<ContactFormData>({
-        resolver: zodResolver(contactSchema),
-    });
+  const valid =
+    form.nombre.length >= 2 &&
+    form.email.includes("@") &&
+    form.mensaje.length > 4;
 
-    const onSubmit = async (data: ContactFormData) => {
-        setIsSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!valid) return;
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 1000));
+    setLoading(false);
+    setSent(true);
+  };
 
-        // Simular envío
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        console.log("Form data:", data);
-
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        reset();
-
-        // Ocultar mensaje de éxito después de 5 segundos
-        setTimeout(() => setIsSuccess(false), 5000);
-    };
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-            {/* Hero Section */}
-            <div className="bg-blue-600 text-white py-16">
-                <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Contactanos</h1>
-                    <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                        ¿Tenés una idea? La imprimimos. Estamos acá para ayudarte con tu proyecto.
-                    </p>
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                    {/* Columna Info */}
-                    <div className="space-y-8">
-                        <div>
-                            <h2 className="text-2xl font-bold text-slate-900 mb-6">
-                                Información de Contacto
-                            </h2>
-                            <p className="text-slate-600 mb-8">
-                                Somos expertos en impresión 3D con años de experiencia.
-                                No dudes en contactarnos para consultas, presupuestos o soporte técnico.
-                            </p>
-                        </div>
-
-                        <div className="space-y-6">
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <Mail className="h-6 w-6 text-blue-600" />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-slate-900">Email</h3>
-                                    <p className="text-slate-600">contacto@3dencasa.com</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <Phone className="h-6 w-6 text-blue-600" />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-slate-900">Teléfono</h3>
-                                    <p className="text-slate-600">+54 11 1234-5678</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <MapPin className="h-6 w-6 text-blue-600" />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-slate-900">Ubicación</h3>
-                                    <p className="text-slate-600">Buenos Aires, Argentina</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Horarios */}
-                        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                            <h3 className="font-semibold text-slate-900 mb-4">Horarios de Atención</h3>
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-slate-600">Lunes a Viernes</span>
-                                    <span className="font-medium">9:00 - 18:00</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-600">Sábados</span>
-                                    <span className="font-medium">10:00 - 14:00</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-600">Domingos</span>
-                                    <span className="text-slate-400">Cerrado</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Columna Formulario */}
-                    <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
-                        <h2 className="text-2xl font-bold text-slate-900 mb-6">
-                            Envianos un mensaje
-                        </h2>
-
-                        {isSuccess && (
-                            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-                                <CheckCircle className="h-5 w-5 text-green-600" />
-                                <p className="text-green-800 font-medium">
-                                    ¡Mensaje enviado con éxito! Te responderemos pronto.
-                                </p>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                            {/* Nombre */}
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Nombre *</Label>
-                                <Input
-                                    id="name"
-                                    placeholder="Tu nombre completo"
-                                    {...register("name")}
-                                    className={errors.name ? "border-red-500" : ""}
-                                />
-                                {errors.name && (
-                                    <p className="text-sm text-red-500">{errors.name.message}</p>
-                                )}
-                            </div>
-
-                            {/* Email */}
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email *</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="tu@email.com"
-                                    {...register("email")}
-                                    className={errors.email ? "border-red-500" : ""}
-                                />
-                                {errors.email && (
-                                    <p className="text-sm text-red-500">{errors.email.message}</p>
-                                )}
-                            </div>
-
-                            {/* Asunto */}
-                            <div className="space-y-2">
-                                <Label htmlFor="subject">Asunto *</Label>
-                                <Select onValueChange={(value) => setValue("subject", value)}>
-                                    <SelectTrigger className={errors.subject ? "border-red-500" : ""}>
-                                        <SelectValue placeholder="Selecciona un asunto" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="consulta">Consulta General</SelectItem>
-                                        <SelectItem value="presupuesto">Solicitar Presupuesto</SelectItem>
-                                        <SelectItem value="soporte">Soporte Técnico</SelectItem>
-                                        <SelectItem value="otro">Otro</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.subject && (
-                                    <p className="text-sm text-red-500">{errors.subject.message}</p>
-                                )}
-                            </div>
-
-                            {/* Mensaje */}
-                            <div className="space-y-2">
-                                <Label htmlFor="message">Mensaje *</Label>
-                                <textarea
-                                    id="message"
-                                    rows={5}
-                                    placeholder="Contanos cómo podemos ayudarte..."
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${errors.message ? "border-red-500" : "border-slate-300"
-                                        }`}
-                                    {...register("message")}
-                                />
-                                {errors.message && (
-                                    <p className="text-sm text-red-500">{errors.message.message}</p>
-                                )}
-                            </div>
-
-                            {/* Submit */}
-                            <Button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full bg-blue-600 hover:bg-blue-700"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Enviando...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Send className="mr-2 h-4 w-4" />
-                                        Enviar Mensaje
-                                    </>
-                                )}
-                            </Button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div
+      style={{
+        background: "#f7f6f1",
+        minHeight: "100vh",
+        fontFamily: "inherit",
+        color: "#0b0d12",
+      }}
+    >
+      {/* Dark page hero */}
+      <div
+        style={{
+          background: "#0a0d18",
+          color: "#fff",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `radial-gradient(circle at 15% 100%, ${PRIMARY}55, transparent 55%), radial-gradient(circle at 90% 0%, ${PRIMARY}33, transparent 45%)`,
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px)`,
+            backgroundSize: "60px 60px",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "relative",
+            padding: "32px 56px 48px",
+            maxWidth: 1400,
+            margin: "0 auto",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              fontSize: 13,
+              color: "rgba(255,255,255,.55)",
+            }}
+          >
+            <span>Inicio</span>
+            <span>›</span>
+            <span style={{ color: "#fff" }}>Contacto</span>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Content */}
+      <section
+        style={{
+          padding: "48px 56px 80px",
+          display: "grid",
+          gridTemplateColumns: "1.2fr 1fr",
+          gap: 64,
+          maxWidth: 1400,
+          margin: "0 auto",
+        }}
+      >
+        {/* Left: Info */}
+        <div>
+          <div
+            style={{
+              fontFamily: "var(--font-geist-mono), monospace",
+              fontSize: 11,
+              letterSpacing: ".18em",
+              textTransform: "uppercase",
+              color: "rgba(0,0,0,.5)",
+              marginBottom: 18,
+            }}
+          >
+            ── Contacto · respondemos en menos de 24h
+          </div>
+          <h1
+            style={{
+              fontSize: "clamp(48px, 5vw, 72px)",
+              fontWeight: 700,
+              letterSpacing: "-.03em",
+              lineHeight: 1,
+              margin: 0,
+            }}
+          >
+            ¿Tenés una idea?
+            <br />
+            <span style={{ color: PRIMARY }}>La imprimimos.</span>
+          </h1>
+          <p
+            style={{
+              fontSize: 17,
+              lineHeight: 1.55,
+              color: "rgba(0,0,0,.65)",
+              maxWidth: 540,
+              marginTop: 24,
+            }}
+          >
+            Mandanos tu consulta — pedido a medida, asesoramiento técnico,
+            presupuestos o lo que necesites. Hablamos como personas, no como
+            bots.
+          </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2,1fr)",
+              gap: 16,
+              marginTop: 40,
+            }}
+          >
+            {CONTACT_INFO.map((c) => (
+              <div
+                key={c.label}
+                style={{
+                  background: "#fff",
+                  padding: 20,
+                  borderRadius: 14,
+                  border: "1px solid rgba(0,0,0,.05)",
+                  display: "flex",
+                  gap: 14,
+                }}
+              >
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: `${PRIMARY}15`,
+                    color: PRIMARY,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  {c.icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, color: "rgba(0,0,0,.55)" }}>
+                    {c.label}
+                  </div>
+                  <div style={{ fontWeight: 600, marginTop: 2 }}>{c.value}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Form */}
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 20,
+            padding: 32,
+            border: "1px solid rgba(0,0,0,.05)",
+            boxShadow: "0 12px 40px rgba(0,0,0,.04)",
+            alignSelf: "flex-start",
+            position: "sticky",
+            top: 16,
+          }}
+        >
+          {sent ? (
+            <div style={{ padding: "40px 0", textAlign: "center" }}>
+              <div
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  background: `${PRIMARY}15`,
+                  color: PRIMARY,
+                  fontSize: 28,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                }}
+              >
+                ✓
+              </div>
+              <h3 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>
+                ¡Mensaje enviado!
+              </h3>
+              <p style={{ color: "rgba(0,0,0,.6)", marginTop: 8 }}>
+                Te respondemos en menos de 24hs.
+              </p>
+              <button
+                onClick={() => {
+                  setSent(false);
+                  setForm({
+                    nombre: "",
+                    email: "",
+                    asunto: "consulta",
+                    mensaje: "",
+                  });
+                }}
+                style={{
+                  background: PRIMARY,
+                  color: "#fff",
+                  border: "none",
+                  padding: "10px 18px",
+                  borderRadius: 10,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  marginTop: 12,
+                  fontFamily: "inherit",
+                }}
+              >
+                Enviar otro
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <h3 style={{ margin: "0 0 4px", fontSize: 22, fontWeight: 700 }}>
+                Mandanos un mensaje
+              </h3>
+              <p
+                style={{
+                  margin: "0 0 24px",
+                  fontSize: 14,
+                  color: "rgba(0,0,0,.55)",
+                }}
+              >
+                * Campos requeridos
+              </p>
+
+              {(
+                [
+                  {
+                    label: "Nombre *",
+                    key: "nombre" as const,
+                    placeholder: "Tu nombre completo",
+                    type: "text",
+                  },
+                  {
+                    label: "Email *",
+                    key: "email" as const,
+                    placeholder: "tu@email.com",
+                    type: "email",
+                  },
+                ] as const
+              ).map(({ label, key, placeholder, type }) => (
+                <div key={key} style={{ marginBottom: 16 }}>
+                  <label
+                    style={{
+                      display: "block",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      marginBottom: 6,
+                    }}
+                  >
+                    {label}
+                  </label>
+                  <input
+                    type={type}
+                    value={form[key]}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, [key]: e.target.value }))
+                    }
+                    placeholder={placeholder}
+                    style={{
+                      width: "100%",
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      border: "1px solid rgba(0,0,0,.1)",
+                      fontSize: 14,
+                      fontFamily: "inherit",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+              ))}
+
+              <div style={{ marginBottom: 16 }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    marginBottom: 6,
+                  }}
+                >
+                  Asunto
+                </label>
+                <select
+                  value={form.asunto}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, asunto: e.target.value }))
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: "1px solid rgba(0,0,0,.1)",
+                    background: "#fff",
+                    fontSize: 14,
+                    fontFamily: "inherit",
+                    outline: "none",
+                  }}
+                >
+                  <option value="consulta">Consulta general</option>
+                  <option value="presupuesto">Pedido de presupuesto</option>
+                  <option value="impresion">Impresión a medida</option>
+                  <option value="soporte">Soporte técnico</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    marginBottom: 6,
+                  }}
+                >
+                  Mensaje *
+                </label>
+                <textarea
+                  value={form.mensaje}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, mensaje: e.target.value }))
+                  }
+                  rows={5}
+                  placeholder="Contanos en qué te podemos ayudar…"
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: 10,
+                    border: "1px solid rgba(0,0,0,.1)",
+                    fontSize: 14,
+                    fontFamily: "inherit",
+                    resize: "vertical",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!valid || loading}
+                style={{
+                  width: "100%",
+                  background: valid && !loading ? PRIMARY : "rgba(0,0,0,.1)",
+                  color: valid && !loading ? "#fff" : "rgba(0,0,0,.4)",
+                  border: "none",
+                  padding: "14px",
+                  borderRadius: 12,
+                  fontWeight: 600,
+                  fontSize: 15,
+                  cursor: valid && !loading ? "pointer" : "not-allowed",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  transition: ".2s",
+                  fontFamily: "inherit",
+                }}
+              >
+                {loading ? (
+                  "Enviando..."
+                ) : (
+                  <>
+                    Enviar mensaje <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+    </div>
+  );
 }

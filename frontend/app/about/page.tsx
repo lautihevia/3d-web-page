@@ -1,148 +1,451 @@
-import Link from "next/link";
-import { Cpu, Truck, HeartHandshake, ArrowRight, Printer } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Fragment } from "react";
 
-const values = [
-    {
-        icon: Cpu,
-        title: "Tecnología de Punta",
-        description:
-            "Trabajamos con las mejores marcas del mercado: Creality, Bambu Lab, Prusa y más.",
-    },
-    {
-        icon: Truck,
-        title: "Envíos a Todo el País",
-        description:
-            "Logística rápida y segura. Tu pedido llega a cualquier punto de Argentina.",
-    },
-    {
-        icon: HeartHandshake,
-        title: "Asesoramiento Real",
-        description:
-            "No solo vendemos, imprimimos. Te ayudamos a elegir lo mejor para tu proyecto.",
-    },
+const PRIMARY = "#3b82f6";
+
+const STATS = [
+  ["+5000", "clientes felices"],
+  ["+12K", "piezas impresas"],
+  ["5", "marcas curadas"],
+  ["100%", "soporte humano"],
 ];
 
-/**
- * Página Sobre Nosotros - Diseño profesional tipo landing de startup.
- */
+const TIMELINE = [
+  {
+    year: "2020",
+    title: "Empezamos en un garage",
+    desc: "Una Ender 3 prestada, mucha curiosidad y cero plan de negocios. Imprimíamos piezas para amigos.",
+  },
+  {
+    year: "2022",
+    title: "Abrimos el primer showroom",
+    desc: "Buenos Aires. Probamos cada equipo antes de incorporarlo al catálogo. La filosofía no cambió.",
+  },
+  {
+    year: "2024",
+    title: "Sumamos electrónica y filamentos",
+    desc: "Porque imprimir es solo el principio. Los makers necesitan stack completo: material, sensores, soporte.",
+  },
+  {
+    year: "2026",
+    title: "Hoy somos referentes",
+    desc: "Pero seguimos pensando como en 2020. Recomendamos lo que probamos, hablamos como personas.",
+  },
+];
+
+const PRINCIPLES = [
+  {
+    n: "01",
+    t: "Curamos",
+    d: "Probamos cada equipo antes de incorporarlo. Si no lo recomendaríamos a un amigo, no entra al catálogo.",
+  },
+  {
+    n: "02",
+    t: "Acompañamos",
+    d: "Desde la primera consulta hasta la décima impresión, te ayudamos a sacarle todo el jugo a tu equipo.",
+  },
+  {
+    n: "03",
+    t: "Resolvemos",
+    d: "Soporte técnico real con humanos. Sin tickets, sin chatbots. Hablamos como makers porque lo somos.",
+  },
+];
+
 export default function AboutPage() {
-    return (
-        <div className="min-h-screen bg-white">
-            {/* Hero Section */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-violet-50">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.08),transparent_50%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.08),transparent_50%)]" />
-
-                <div className="container mx-auto px-4 py-20 md:py-32 relative">
-                    <div className="max-w-3xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-sm font-medium mb-6">
-                            <Printer className="h-4 w-4" />
-                            Desde 2020 en Argentina
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
-                            Expertos en{" "}
-                            <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                                Materializar Ideas
-                            </span>
-                        </h1>
-                        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                            Somos tu aliado en impresión 3D. Vendemos equipos, insumos y
-                            brindamos el soporte técnico que necesitás para hacer realidad
-                            cualquier proyecto.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Historia Section */}
-            <section className="py-20 md:py-28">
-                <div className="container mx-auto px-4">
-                    <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
-                        {/* Imagen */}
-                        <div className="relative">
-                            <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl shadow-lg overflow-hidden border border-slate-200">
-                                {/* Placeholder visual */}
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <Printer className="h-20 w-20 text-slate-300 mx-auto mb-4" />
-                                        <p className="text-sm text-slate-400">Imagen del taller</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Badge flotante */}
-                            <div className="absolute -bottom-4 -right-4 md:-right-6 bg-blue-600 text-white px-5 py-3 rounded-xl shadow-lg">
-                                <span className="text-2xl font-bold">+5000</span>
-                                <span className="text-sm block text-blue-100">Clientes felices</span>
-                            </div>
-                        </div>
-
-                        {/* Texto */}
-                        <div className="space-y-6">
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-                                Nuestra Historia
-                            </h2>
-                            <Separator className="w-16 bg-blue-600 h-1" />
-                            <div className="space-y-4 text-muted-foreground text-lg">
-                                <p>
-                                    Nacimos de la pasión por la tecnología y la fabricación digital.
-                                    Lo que empezó como un hobby se convirtió en una misión:
-                                    <strong className="text-slate-700"> hacer accesible la impresión 3D para todos.</strong>
-                                </p>
-                                <p>
-                                    Hoy somos referentes en Argentina, ofreciendo impresoras,
-                                    filamentos y repuestos de las mejores marcas, siempre con
-                                    asesoramiento personalizado.
-                                </p>
-                                <p>
-                                    Creemos que cada persona tiene una idea que merece ser
-                                    materializada. Nosotros te damos las herramientas.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Por qué elegirnos */}
-            <section className="py-20 bg-slate-50">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-14">
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                            ¿Por qué elegirnos?
-                        </h2>
-                        <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                            Más que una tienda, somos tu partner en impresión 3D.
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                        {values.map((value, index) => {
-                            const Icon = value.icon;
-                            return (
-                                <Card
-                                    key={index}
-                                    className="border-0 shadow-md hover:shadow-lg transition-shadow bg-white"
-                                >
-                                    <CardContent className="p-8 text-center">
-                                        <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-violet-500 rounded-xl flex items-center justify-center mx-auto mb-5">
-                                            <Icon className="h-7 w-7 text-white" />
-                                        </div>
-                                        <h3 className="text-xl font-semibold text-slate-900 mb-3">
-                                            {value.title}
-                                        </h3>
-                                        <p className="text-muted-foreground">
-                                            {value.description}
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
+  return (
+    <div
+      style={{
+        background: "#0a0d18",
+        color: "#fff",
+        minHeight: "100vh",
+        fontFamily: "inherit",
+      }}
+    >
+      {/* Manifesto hero */}
+      <section
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          padding: "88px 56px 100px",
+          maxWidth: 1400,
+          margin: "0 auto",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `radial-gradient(ellipse 800px 500px at 80% 0%, ${PRIMARY}40, transparent 60%)`,
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 64,
+            alignItems: "flex-end",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontFamily: "var(--font-geist-mono), monospace",
+                fontSize: 11,
+                letterSpacing: ".18em",
+                color: PRIMARY,
+                marginBottom: 24,
+                textTransform: "uppercase",
+              }}
+            >
+              // Manifesto · Desde 2020
+            </div>
+            <h1
+              style={{
+                fontSize: "clamp(64px, 7vw, 96px)",
+                lineHeight: 0.92,
+                fontWeight: 700,
+                letterSpacing: "-.04em",
+                margin: 0,
+              }}
+            >
+              Pensamos
+              <br />
+              como{" "}
+              <em
+                style={{
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  color: PRIMARY,
+                }}
+              >
+                makers,
+              </em>
+              <br />
+              vendemos
+              <br />
+              como tales.
+            </h1>
+          </div>
+          <div>
+            <p
+              style={{
+                fontSize: 19,
+                lineHeight: 1.6,
+                color: "rgba(255,255,255,.75)",
+                margin: 0,
+              }}
+            >
+              No somos una tienda más. Somos un equipo de gente que imprime,
+              repara, modifica y rompe cosas todos los días — y comparte lo que
+              aprendió.
+            </p>
+            <p
+              style={{
+                fontSize: 19,
+                lineHeight: 1.6,
+                color: "rgba(255,255,255,.75)",
+                marginTop: 20,
+              }}
+            >
+              Recomendamos solo lo que nos llevaríamos a casa. Cobramos lo justo.
+              Respondemos como personas. Es así de simple.
+            </p>
+          </div>
         </div>
-    );
+      </section>
+
+      {/* Stats strip */}
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4,1fr)",
+          borderTop: "1px solid rgba(255,255,255,.08)",
+          borderBottom: "1px solid rgba(255,255,255,.08)",
+        }}
+      >
+        {STATS.map(([n, l], i) => (
+          <div
+            key={l}
+            style={{
+              padding: "36px 32px",
+              borderRight: i < 3 ? "1px solid rgba(255,255,255,.08)" : "none",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 56,
+                fontWeight: 700,
+                color: PRIMARY,
+                letterSpacing: "-.03em",
+                lineHeight: 1,
+              }}
+            >
+              {n}
+            </div>
+            <div
+              style={{ fontSize: 14, color: "rgba(255,255,255,.6)", marginTop: 8 }}
+            >
+              {l}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Timeline */}
+      <section
+        style={{ padding: "100px 56px 80px", maxWidth: 1400, margin: "0 auto" }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 2fr",
+            gap: 56,
+            marginBottom: 60,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontFamily: "var(--font-geist-mono), monospace",
+                fontSize: 11,
+                letterSpacing: ".18em",
+                color: PRIMARY,
+                marginBottom: 16,
+                textTransform: "uppercase",
+              }}
+            >
+              // Línea de tiempo
+            </div>
+            <h2
+              style={{
+                fontSize: 52,
+                fontWeight: 700,
+                letterSpacing: "-.03em",
+                margin: 0,
+                lineHeight: 1,
+              }}
+            >
+              De un garage
+              <br />a un showroom.
+            </h2>
+          </div>
+          <div style={{ alignSelf: "flex-end" }}>
+            <p
+              style={{
+                fontSize: 17,
+                color: "rgba(255,255,255,.65)",
+                margin: 0,
+                lineHeight: 1.6,
+                maxWidth: 500,
+              }}
+            >
+              Cuatro momentos que nos definen. Sin atajos, sin marketing — solo
+              cosas que pasaron.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 32 }}>
+          {TIMELINE.map((step, i) => (
+            <Fragment key={step.year}>
+              <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    fontFamily: "var(--font-geist-mono), monospace",
+                    fontSize: 32,
+                    fontWeight: 700,
+                    color: PRIMARY,
+                    letterSpacing: "-.02em",
+                  }}
+                >
+                  {step.year}
+                </div>
+                {i < TIMELINE.length - 1 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 48,
+                      bottom: -32,
+                      left: 12,
+                      width: 1,
+                      background: "rgba(255,255,255,.15)",
+                    }}
+                  />
+                )}
+              </div>
+              <div
+                style={{
+                  paddingBottom: 32,
+                  borderBottom:
+                    i < TIMELINE.length - 1
+                      ? "1px solid rgba(255,255,255,.08)"
+                      : "none",
+                  marginBottom: i < TIMELINE.length - 1 ? 32 : 0,
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 700,
+                    letterSpacing: "-.02em",
+                    margin: "0 0 12px",
+                  }}
+                >
+                  {step.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: "rgba(255,255,255,.65)",
+                    lineHeight: 1.6,
+                    margin: 0,
+                    maxWidth: 600,
+                  }}
+                >
+                  {step.desc}
+                </p>
+              </div>
+            </Fragment>
+          ))}
+        </div>
+      </section>
+
+      {/* Principles */}
+      <section
+        style={{ padding: "40px 56px 100px", maxWidth: 1400, margin: "0 auto" }}
+      >
+        <div
+          style={{
+            fontFamily: "var(--font-geist-mono), monospace",
+            fontSize: 11,
+            letterSpacing: ".18em",
+            color: PRIMARY,
+            marginBottom: 16,
+            textTransform: "uppercase",
+          }}
+        >
+          // Cómo trabajamos
+        </div>
+        <h2
+          style={{
+            fontSize: 52,
+            fontWeight: 700,
+            letterSpacing: "-.03em",
+            margin: "0 0 48px",
+            maxWidth: 700,
+            lineHeight: 1,
+          }}
+        >
+          Tres reglas. Sin asteriscos.
+        </h2>
+        <div
+          style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}
+        >
+          {PRINCIPLES.map((s) => (
+            <div
+              key={s.n}
+              style={{
+                background: "rgba(255,255,255,.03)",
+                border: "1px solid rgba(255,255,255,.08)",
+                borderRadius: 18,
+                padding: 28,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--font-geist-mono), monospace",
+                  fontSize: 13,
+                  color: PRIMARY,
+                  marginBottom: 18,
+                }}
+              >
+                {s.n} ──
+              </div>
+              <h3
+                style={{
+                  fontSize: 26,
+                  fontWeight: 700,
+                  letterSpacing: "-.02em",
+                  margin: "0 0 12px",
+                }}
+              >
+                {s.t}
+              </h3>
+              <p
+                style={{
+                  fontSize: 15,
+                  lineHeight: 1.6,
+                  color: "rgba(255,255,255,.65)",
+                  margin: 0,
+                }}
+              >
+                {s.d}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA strip */}
+      <section
+        style={{ padding: "0 56px 100px", maxWidth: 1400, margin: "0 auto" }}
+      >
+        <div
+          style={{
+            background: PRIMARY,
+            color: "#fff",
+            borderRadius: 24,
+            padding: "56px 48px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 32,
+          }}
+        >
+          <div>
+            <h3
+              style={{
+                fontSize: 44,
+                fontWeight: 700,
+                letterSpacing: "-.03em",
+                margin: 0,
+                lineHeight: 1,
+              }}
+            >
+              ¿Querés conocer
+              <br />
+              el showroom?
+            </h3>
+            <p
+              style={{ fontSize: 16, marginTop: 16, opacity: 0.85, maxWidth: 500 }}
+            >
+              Visitanos en Buenos Aires y probá los equipos en vivo. Atención
+              personalizada con turno previo.
+            </p>
+          </div>
+          <a
+            href="/contact"
+            style={{
+              background: "#fff",
+              color: PRIMARY,
+              border: "none",
+              padding: "16px 28px",
+              borderRadius: 12,
+              fontWeight: 700,
+              fontSize: 15,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              flexShrink: 0,
+              textDecoration: "none",
+            }}
+          >
+            Pedir un turno →
+          </a>
+        </div>
+      </section>
+    </div>
+  );
 }

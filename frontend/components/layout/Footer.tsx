@@ -1,102 +1,117 @@
 import Link from "next/link";
-import { Github, Instagram, Linkedin, Mail } from "lucide-react";
 
-/**
- * Footer global de la aplicación.
- * Visible en todas las páginas con 3 columnas: Marca, Navegación y Redes Sociales.
- */
+const SECTIONS = [
+  {
+    title: "Catálogo",
+    items: [
+      { label: "Impresoras", href: "/#productos" },
+      { label: "Filamentos", href: "/#productos" },
+      { label: "Electrónica", href: "/#productos" },
+      { label: "Repuestos", href: "/#productos" },
+    ],
+  },
+  {
+    title: "Empresa",
+    items: [
+      { label: "Sobre nosotros", href: "/about" },
+      { label: "Contacto", href: "/contact" },
+      { label: "Showroom", href: "/contact" },
+    ],
+  },
+  {
+    title: "Contacto",
+    items: [
+      { label: "contacto@3dencasa.com", href: null },
+      { label: "+54 11 1234-5678", href: null },
+      { label: "Buenos Aires, Argentina", href: null },
+    ],
+  },
+];
+
 export function Footer() {
-    return (
-        <footer className="border-t bg-slate-950 text-slate-200">
-            <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Columna 1: Marca */}
-                    <div className="space-y-4">
-                        <h3 className="text-2xl font-bold text-white">3dencasa</h3>
-                        <p className="text-sm text-slate-400 max-w-xs">
-                            Materializa tus ideas con tecnología de impresión 3D profesional.
-                            Calidad, innovación y servicio personalizado.
-                        </p>
-                    </div>
+  return (
+    <footer style={{ background: "#0a0d18", color: "#fff", padding: "56px 48px 28px" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.5fr 1fr 1fr 1fr",
+          gap: 48,
+          maxWidth: 1400,
+          margin: "0 auto",
+        }}
+      >
+        <div>
+          <div style={{ fontWeight: 800, fontSize: 18 }}>
+            3d<span style={{ color: "#3b82f6" }}>EN</span>CASA
+          </div>
+          <p
+            style={{
+              fontSize: 13,
+              color: "rgba(255,255,255,.6)",
+              marginTop: 12,
+              maxWidth: 280,
+              lineHeight: 1.6,
+            }}
+          >
+            Tu aliado en impresión 3D. Productos curados, precios claros y soporte real.
+          </p>
+        </div>
 
-                    {/* Columna 2: Navegación */}
-                    <div className="space-y-4">
-                        <h4 className="text-sm font-semibold text-white uppercase tracking-wider">
-                            Navegación
-                        </h4>
-                        <nav className="flex flex-col space-y-2">
-                            <Link
-                                href="/"
-                                className="text-sm text-slate-400 hover:text-white transition-colors"
-                            >
-                                Inicio
-                            </Link>
-                            <Link
-                                href="/store"
-                                className="text-sm text-slate-400 hover:text-white transition-colors"
-                            >
-                                Tienda
-                            </Link>
-                            <Link
-                                href="/login"
-                                className="text-sm text-slate-400 hover:text-white transition-colors"
-                            >
-                                Login
-                            </Link>
-                        </nav>
-                    </div>
-
-                    {/* Columna 3: Redes Sociales */}
-                    <div className="space-y-4">
-                        <h4 className="text-sm font-semibold text-white uppercase tracking-wider">
-                            Síguenos
-                        </h4>
-                        <div className="flex space-x-4">
-                            <a
-                                href="https://github.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-slate-400 hover:text-white transition-colors"
-                                aria-label="GitHub"
-                            >
-                                <Github className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="https://instagram.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-slate-400 hover:text-white transition-colors"
-                                aria-label="Instagram"
-                            >
-                                <Instagram className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="https://linkedin.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-slate-400 hover:text-white transition-colors"
-                                aria-label="LinkedIn"
-                            >
-                                <Linkedin className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="mailto:contacto@3dencasa.com"
-                                className="text-slate-400 hover:text-white transition-colors"
-                                aria-label="Email"
-                            >
-                                <Mail className="h-5 w-5" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Copyright */}
-                <div className="mt-8 pt-8 border-t border-slate-800 text-center">
-                    <p className="text-sm text-slate-500">
-                        © {new Date().getFullYear()} 3dencasa. Todos los derechos reservados.
-                    </p>
-                </div>
+        {SECTIONS.map((section) => (
+          <div key={section.title}>
+            <div
+              style={{
+                fontSize: 11,
+                letterSpacing: ".12em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,.5)",
+                marginBottom: 16,
+                fontFamily: "var(--font-geist-mono), monospace",
+              }}
+            >
+              {section.title}
             </div>
-        </footer>
-    );
+            {section.items.map((item) =>
+              item.href ? (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  style={{
+                    display: "block",
+                    fontSize: 14,
+                    color: "rgba(255,255,255,.85)",
+                    marginBottom: 8,
+                    textDecoration: "none",
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <div
+                  key={item.label}
+                  style={{ fontSize: 14, color: "rgba(255,255,255,.85)", marginBottom: 8 }}
+                >
+                  {item.label}
+                </div>
+              )
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          borderTop: "1px solid rgba(255,255,255,.08)",
+          marginTop: 40,
+          paddingTop: 20,
+          fontSize: 12,
+          color: "rgba(255,255,255,.4)",
+          maxWidth: 1400,
+          marginInline: "auto",
+        }}
+      >
+        © {new Date().getFullYear()} 3dENCASA. Todos los derechos reservados.
+      </div>
+    </footer>
+  );
 }

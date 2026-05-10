@@ -1,96 +1,382 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-/**
- * Hero Carousel para la página principal.
- * Carrusel de 4 imágenes con auto-avance y controles manuales.
- */
+const PRIMARY = "#3b82f6";
+
+const SLIDES = [
+  {
+    id: 1,
+    brand: "Bambu Lab",
+    name: "P1S Combo",
+    price: "$1.290.000",
+    specs: "500 mm/s · 256×256×256",
+    src: "/banners/banner-1.jpeg",
+  },
+  {
+    id: 2,
+    brand: "Creality",
+    name: "K1 Max",
+    price: "$1.480.000",
+    specs: "600 mm/s · 300×300×300",
+    src: "/banners/banner-2.jpeg",
+  },
+  {
+    id: 3,
+    brand: "Hellbot",
+    name: "Magna 2",
+    price: "$689.000",
+    specs: "Made in Argentina",
+    src: "/banners/banner-3.jpeg",
+  },
+];
+
 export function Hero() {
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const totalSlides = 3;
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-    // Imágenes locales hardcodeadas
-    const slides = [
-        { id: 1, src: "/banners/banner-1.jpeg", alt: "Banner Promocional 1" },
-        { id: 2, src: "/banners/banner-2.jpeg", alt: "Banner Promocional 2" },
-        { id: 3, src: "/banners/banner-3.jpeg", alt: "Banner Promocional 3" },
-    ];
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % SLIDES.length), 4500);
+    return () => clearInterval(id);
+  }, [paused]);
 
-    // Auto-avance cada 3 segundos
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % totalSlides);
-        }, 3000);
+  const slide = SLIDES[idx];
 
-        return () => clearInterval(interval);
-    }, []);
+  return (
+    <section
+      style={{
+        background: "#0a0d18",
+        color: "#fff",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Radial glow background */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(circle at 20% 100%, ${PRIMARY}55, transparent 50%), radial-gradient(circle at 90% 0%, ${PRIMARY}33, transparent 40%)`,
+          pointerEvents: "none",
+        }}
+      />
+      {/* Grid pattern */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+          pointerEvents: "none",
+        }}
+      />
 
-    const goToSlide = (index: number) => {
-        setCurrentSlide(index);
-    };
+      <div
+        style={{
+          position: "relative",
+          padding: "110px 48px 130px",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 64,
+          alignItems: "center",
+          maxWidth: 1400,
+          margin: "0 auto",
+        }}
+      >
+        {/* Left: Text content */}
+        <div>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "6px 12px",
+              borderRadius: 999,
+              border: "1px solid rgba(255,255,255,.15)",
+              fontSize: 12,
+              color: "rgba(255,255,255,.7)",
+              marginBottom: 28,
+            }}
+          >
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: PRIMARY,
+                boxShadow: `0 0 12px ${PRIMARY}`,
+                flexShrink: 0,
+              }}
+            />
+            Showroom abierto · Lun a Vie
+          </div>
 
-    const goToPrevious = () => {
-        setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-    };
+          <h1
+            style={{
+              fontSize: "clamp(52px, 5.5vw, 84px)",
+              lineHeight: 0.96,
+              margin: 0,
+              fontWeight: 700,
+              letterSpacing: "-.03em",
+            }}
+          >
+            Hardware{" "}
+            <span style={{ color: PRIMARY }}>para hacer</span>
+            <br />
+            cosas reales.
+          </h1>
 
-    const goToNext = () => {
-        setCurrentSlide((prev) => (prev + 1) % totalSlides);
-    };
+          <p
+            style={{
+              fontSize: 18,
+              color: "rgba(255,255,255,.65)",
+              maxWidth: 460,
+              marginTop: 28,
+              lineHeight: 1.55,
+            }}
+          >
+            Curamos las mejores marcas de impresión 3D y electrónica. Mirá los
+            productos, consultá precios y recibí asesoramiento técnico real.
+          </p>
 
-    return (
-        <section className="relative w-full h-[400px] md:h-[600px] lg:h-[700px] overflow-hidden bg-slate-900">
-            {/* Slides */}
-            <div className="relative w-full h-full">
-                {slides.map((slide, index) => (
-                    <div
-                        key={slide.id}
-                        className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${index === currentSlide ? "opacity-100" : "opacity-0"
-                            }`}
-                    >
-                        <Image
-                            src={slide.src}
-                            alt={slide.alt}
-                            fill
-                            className="object-cover"
-                            priority={index === 0}
-                        />
-                    </div>
-                ))}
+          <div style={{ display: "flex", gap: 12, marginTop: 36 }}>
+            <Link
+              href="/#productos"
+              style={{
+                background: PRIMARY,
+                color: "#fff",
+                padding: "14px 22px",
+                borderRadius: 10,
+                fontWeight: 600,
+                fontSize: 14,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                textDecoration: "none",
+              }}
+            >
+              Ver productos <ArrowRight size={16} />
+            </Link>
+            <Link
+              href="/contact"
+              style={{
+                background: "transparent",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,.2)",
+                padding: "14px 22px",
+                borderRadius: 10,
+                fontWeight: 600,
+                fontSize: 14,
+                textDecoration: "none",
+              }}
+            >
+              Contactanos
+            </Link>
+          </div>
+        </div>
+
+        {/* Right: Featured Carousel */}
+        <div
+          style={{ position: "relative" }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          {/* Glow behind carousel */}
+          <div
+            style={{
+              position: "absolute",
+              inset: -20,
+              background: `radial-gradient(circle, ${PRIMARY}33, transparent 70%)`,
+              filter: "blur(40px)",
+              pointerEvents: "none",
+            }}
+          />
+
+          <div
+            style={{
+              position: "relative",
+              background: "rgba(255,255,255,.04)",
+              border: "1px solid rgba(255,255,255,.1)",
+              borderRadius: 18,
+              padding: 12,
+              overflow: "hidden",
+            }}
+          >
+            {/* Slides container */}
+            <div style={{ position: "relative", aspectRatio: "4/3" }}>
+              {SLIDES.map((s, i) => (
+                <div
+                  key={s.id}
+                  style={{
+                    position: i === 0 ? "relative" : "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: i === idx ? 1 : 0,
+                    transition: "opacity .6s ease",
+                    pointerEvents: i === idx ? "auto" : "none",
+                    borderRadius: 10,
+                    overflow: "hidden",
+                  }}
+                >
+                  <Image
+                    src={s.src}
+                    alt={s.name}
+                    fill
+                    className="object-cover"
+                    priority={i === 0}
+                  />
+                </div>
+              ))}
+
+              {/* Slide counter */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 12,
+                  left: 12,
+                  fontFamily: "var(--font-geist-mono), monospace",
+                  fontSize: 10,
+                  letterSpacing: ".12em",
+                  color: "rgba(255,255,255,.8)",
+                  background: "rgba(0,0,0,.5)",
+                  padding: "4px 8px",
+                  borderRadius: 6,
+                  backdropFilter: "blur(4px)",
+                  zIndex: 10,
+                }}
+              >
+                {String(idx + 1).padStart(2, "0")} /{" "}
+                {String(SLIDES.length).padStart(2, "0")}
+              </div>
+
+              {/* Prev arrow */}
+              <button
+                onClick={() =>
+                  setIdx((i) => (i - 1 + SLIDES.length) % SLIDES.length)
+                }
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: 12,
+                  transform: "translateY(-50%)",
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  border: "none",
+                  cursor: "pointer",
+                  background: "rgba(0,0,0,.55)",
+                  color: "#fff",
+                  fontSize: 22,
+                  lineHeight: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backdropFilter: "blur(8px)",
+                  zIndex: 10,
+                }}
+              >
+                ‹
+              </button>
+
+              {/* Next arrow */}
+              <button
+                onClick={() => setIdx((i) => (i + 1) % SLIDES.length)}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: 12,
+                  transform: "translateY(-50%)",
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  border: "none",
+                  cursor: "pointer",
+                  background: "rgba(0,0,0,.55)",
+                  color: "#fff",
+                  fontSize: 22,
+                  lineHeight: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backdropFilter: "blur(8px)",
+                  zIndex: 10,
+                }}
+              >
+                ›
+              </button>
             </div>
 
-            {/* Controles: Flechas */}
-            <button
-                onClick={goToPrevious}
-                aria-label="Slide anterior"
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-colors backdrop-blur-sm z-10"
+            {/* Caption */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "18px 8px 6px",
+                alignItems: "flex-end",
+              }}
             >
-                <ChevronLeft className="h-6 w-6" />
-            </button>
-            <button
-                onClick={goToNext}
-                aria-label="Slide siguiente"
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-colors backdrop-blur-sm z-10"
-            >
-                <ChevronRight className="h-6 w-6" />
-            </button>
-
-            {/* Indicadores (Dots) */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
-                {slides.map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => goToSlide(index)}
-                        aria-label={`Ir a slide ${index + 1}`}
-                        className={`h-2 rounded-full transition-all shadow-sm ${index === currentSlide
-                            ? "bg-white w-8"
-                            : "bg-white/50 hover:bg-white/80 w-2"
-                            }`}
-                    />
-                ))}
+              <div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "rgba(255,255,255,.5)",
+                    fontFamily: "var(--font-geist-mono), monospace",
+                    letterSpacing: ".1em",
+                  }}
+                >
+                  {slide.brand.toUpperCase()} · DESTACADO
+                </div>
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: 22,
+                    marginTop: 6,
+                    letterSpacing: "-.02em",
+                  }}
+                >
+                  {slide.name}
+                </div>
+                <div
+                  style={{ fontSize: 13, color: "rgba(255,255,255,.55)", marginTop: 4 }}
+                >
+                  {slide.specs}
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,.5)" }}>desde</div>
+                <div style={{ fontWeight: 700, fontSize: 22, color: PRIMARY }}>
+                  {slide.price}
+                </div>
+              </div>
             </div>
-        </section>
-    );
+
+            {/* Dot indicators */}
+            <div style={{ display: "flex", gap: 6, padding: "8px 8px 4px" }}>
+              {SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setIdx(i)}
+                  style={{
+                    flex: i === idx ? "0 0 28px" : "0 0 14px",
+                    height: 4,
+                    borderRadius: 999,
+                    border: "none",
+                    cursor: "pointer",
+                    background: i === idx ? PRIMARY : "rgba(255,255,255,.2)",
+                    transition: ".3s",
+                    padding: 0,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

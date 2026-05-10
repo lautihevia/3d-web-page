@@ -88,7 +88,7 @@ export default async function HomePage() {
       <Hero />
 
       {/* Brands Section */}
-      <section style={{ padding: "72px 48px", background: "#fff" }}>
+      <section className="rsp-section-pad" style={{ padding: "72px 48px", background: "#fff" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <div
             style={{
@@ -115,6 +115,7 @@ export default async function HomePage() {
           </div>
 
           <div
+            className="rsp-5col-to-2"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(5,1fr)",
@@ -183,9 +184,10 @@ export default async function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section style={{ padding: "0 48px 80px", background: "#fff" }}>
+      <section className="rsp-section-pad" style={{ padding: "0 48px 80px", background: "#fff" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <div
+            className="rsp-3col-to-1"
             style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}
           >
             {CATEGORIES.map(({ Icon, title, desc, href }) => (
@@ -244,7 +246,7 @@ export default async function HomePage() {
       </section>
 
       {/* Products Grid */}
-      <section id="productos" style={{ padding: "80px 48px", background: "#f7f6f1" }}>
+      <section id="productos" className="rsp-section-pad" style={{ padding: "80px 48px", background: "#f7f6f1" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <div style={{ marginBottom: 32 }}>
             <div
@@ -281,6 +283,7 @@ export default async function HomePage() {
 
           {productsData && productsData.content.length > 0 ? (
             <div
+              className="rsp-4col-to-2"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(4,1fr)",

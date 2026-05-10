@@ -107,6 +107,7 @@ export default function ContactPage() {
 
         {/* Two-column layout */}
         <div
+          className="rsp-2col"
           style={{
             display: "grid",
             gridTemplateColumns: "1.2fr 1fr",

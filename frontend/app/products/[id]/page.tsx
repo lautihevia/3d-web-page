@@ -123,6 +123,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
       {/* Main content */}
       <section
+        className="rsp-2col rsp-section-pad"
         style={{
           display: "grid",
           gridTemplateColumns: "1.1fr 1fr",

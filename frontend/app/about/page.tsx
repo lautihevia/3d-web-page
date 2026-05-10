@@ -78,6 +78,7 @@ export default function AboutPage() {
           }}
         />
         <div
+          className="rsp-2col"
           style={{
             position: "relative",
             display: "grid",
@@ -156,6 +157,7 @@ export default function AboutPage() {
 
       {/* Stats strip */}
       <section
+        className="rsp-stats-4col"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4,1fr)",
@@ -339,6 +341,7 @@ export default function AboutPage() {
           Tres reglas. Sin asteriscos.
         </h2>
         <div
+          className="rsp-3col-to-1"
           style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}
         >
           {PRINCIPLES.map((s) => (

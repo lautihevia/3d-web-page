@@ -70,6 +70,7 @@ export function Hero() {
       />
 
       <div
+        className="rsp-hero-grid"
         style={{
           position: "relative",
           padding: "110px 48px 130px",
@@ -149,6 +150,7 @@ export function Hero() {
 
         {/* Right: Featured Carousel */}
         <div
+          className="rsp-hero-right"
           style={{ position: "relative" }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}

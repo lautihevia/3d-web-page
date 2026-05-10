@@ -123,3 +123,53 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ---- Responsive overrides ---- */
+
+.nav-hamburger { display: none; }
+.nav-links-desktop { display: flex; }
+.nav-search-btn { display: flex; }
+
+@media (max-width: 900px) {
+  .nav-hamburger { display: flex !important; }
+  .nav-links-desktop { display: none !important; }
+  .nav-search-btn { display: none !important; }
+
+  .rsp-hero-grid {
+    grid-template-columns: 1fr !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 56px !important;
+    padding-bottom: 64px !important;
+    gap: 32px !important;
+  }
+
+  .rsp-hero-right { display: none !important; }
+
+  .rsp-section-pad {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .rsp-2col { grid-template-columns: 1fr !important; }
+
+  .rsp-3col-to-1 { grid-template-columns: 1fr !important; }
+
+  .rsp-4col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
+
+  .rsp-5col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
+
+  .rsp-stats-4col { grid-template-columns: repeat(2, 1fr) !important; }
+
+  .rsp-hide { display: none !important; }
+
+  .rsp-catalog-layout { flex-direction: column !important; }
+
+  .rsp-filter-sidebar { display: none !important; }
+}
+
+@media (max-width: 520px) {
+  .rsp-4col-to-2 { grid-template-columns: 1fr !important; }
+  .rsp-5col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
+  .rsp-stats-4col { grid-template-columns: repeat(2, 1fr) !important; }
+}

@@ -130,6 +130,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
       {/* Content */}
       <div
+        className="rsp-catalog-layout rsp-section-pad"
         style={{
           maxWidth: 1400,
           margin: "0 auto",
@@ -139,9 +140,11 @@ export default async function CatalogPage({ searchParams }: PageProps) {
           alignItems: "flex-start",
         }}
       >
-        <Suspense fallback={null}>
-          <CatalogFilters />
-        </Suspense>
+        <div className="rsp-filter-sidebar">
+          <Suspense fallback={null}>
+            <CatalogFilters />
+          </Suspense>
+        </div>
 
         <main style={{ flex: 1 }}>
           <div
@@ -157,6 +160,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
           {data.content.length > 0 ? (
             <div
+              className="rsp-3col-to-1"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",

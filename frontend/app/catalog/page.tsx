@@ -74,6 +74,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
           }}
         />
         <div
+          className="rsp-section-pad"
           style={{
             position: "relative",
             padding: "48px 56px 60px",

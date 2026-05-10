@@ -130,7 +130,10 @@ export function Navbar() {
       {mobileOpen && (
         <div
           style={{
-            position: "fixed", inset: 0, zIndex: 200,
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            width: "100%", height: "100%",
+            zIndex: 200,
             background: "#0a0d18",
             display: "flex", flexDirection: "column",
             overflowY: "auto", overflowX: "hidden",

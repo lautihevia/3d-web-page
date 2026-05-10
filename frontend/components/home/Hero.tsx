@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -28,15 +28,32 @@ const SLIDES = [
   },
 ];
 
+function isVideo(src: string) {
+  return /\.(mp4|webm|ogg)$/i.test(src);
+}
+
 export function Hero() {
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
     if (paused) return;
     const id = setInterval(() => setIdx((i) => (i + 1) % SLIDES.length), 4500);
     return () => clearInterval(id);
   }, [paused]);
+
+  // Control video play/pause when slide changes or paused state changes
+  useEffect(() => {
+    videoRefs.current.forEach((video, i) => {
+      if (!video) return;
+      if (i === idx && !paused) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, [idx, paused]);
 
   const slide = SLIDES[idx];
 
@@ -86,7 +103,7 @@ export function Hero() {
         <div>
           <h1
             style={{
-              fontSize: "clamp(52px, 5.5vw, 84px)",
+              fontSize: "clamp(40px, 5.5vw, 84px)",
               lineHeight: 0.96,
               margin: 0,
               fontWeight: 700,
@@ -112,7 +129,7 @@ export function Hero() {
             productos, consultá precios y recibí asesoramiento técnico real.
           </p>
 
-          <div style={{ display: "flex", gap: 12, marginTop: 36 }}>
+          <div style={{ display: "flex", gap: 12, marginTop: 36, flexWrap: "wrap" }}>
             <Link
               href="/#productos"
               style={{
@@ -150,7 +167,6 @@ export function Hero() {
 
         {/* Right: Featured Carousel */}
         <div
-          className="rsp-hero-right"
           style={{ position: "relative" }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
@@ -193,13 +209,30 @@ export function Hero() {
                     overflow: "hidden",
                   }}
                 >
-                  <Image
-                    src={s.src}
-                    alt={s.title}
-                    fill
-                    className="object-cover"
-                    priority={i === 0}
-                  />
+                  {isVideo(s.src) ? (
+                    <video
+                      ref={(el) => { videoRefs.current[i] = el; }}
+                      src={s.src}
+                      autoPlay={i === 0}
+                      loop
+                      muted
+                      playsInline
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src={s.src}
+                      alt={s.title}
+                      fill
+                      className="object-cover"
+                      priority={i === 0}
+                    />
+                  )}
                 </div>
               ))}
 
@@ -226,28 +259,16 @@ export function Hero() {
 
               {/* Prev arrow */}
               <button
-                onClick={() =>
-                  setIdx((i) => (i - 1 + SLIDES.length) % SLIDES.length)
-                }
+                onClick={() => setIdx((i) => (i - 1 + SLIDES.length) % SLIDES.length)}
                 style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: 12,
+                  position: "absolute", top: "50%", left: 12,
                   transform: "translateY(-50%)",
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  border: "none",
-                  cursor: "pointer",
-                  background: "rgba(0,0,0,.55)",
-                  color: "#fff",
-                  fontSize: 22,
-                  lineHeight: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backdropFilter: "blur(8px)",
-                  zIndex: 10,
+                  width: 36, height: 36, borderRadius: "50%",
+                  border: "none", cursor: "pointer",
+                  background: "rgba(0,0,0,.55)", color: "#fff",
+                  fontSize: 22, lineHeight: 1,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  backdropFilter: "blur(8px)", zIndex: 10,
                 }}
               >
                 ‹
@@ -257,24 +278,14 @@ export function Hero() {
               <button
                 onClick={() => setIdx((i) => (i + 1) % SLIDES.length)}
                 style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: 12,
+                  position: "absolute", top: "50%", right: 12,
                   transform: "translateY(-50%)",
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  border: "none",
-                  cursor: "pointer",
-                  background: "rgba(0,0,0,.55)",
-                  color: "#fff",
-                  fontSize: 22,
-                  lineHeight: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backdropFilter: "blur(8px)",
-                  zIndex: 10,
+                  width: 36, height: 36, borderRadius: "50%",
+                  border: "none", cursor: "pointer",
+                  background: "rgba(0,0,0,.55)", color: "#fff",
+                  fontSize: 22, lineHeight: 1,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  backdropFilter: "blur(8px)", zIndex: 10,
                 }}
               >
                 ›
@@ -283,18 +294,10 @@ export function Hero() {
 
             {/* Caption */}
             <div style={{ padding: "18px 8px 6px" }}>
-              <div
-                style={{
-                  fontWeight: 700,
-                  fontSize: 20,
-                  letterSpacing: "-.02em",
-                }}
-              >
+              <div style={{ fontWeight: 700, fontSize: 20, letterSpacing: "-.02em" }}>
                 {slide.title}
               </div>
-              <div
-                style={{ fontSize: 13, color: "rgba(255,255,255,.55)", marginTop: 4 }}
-              >
+              <div style={{ fontSize: 13, color: "rgba(255,255,255,.55)", marginTop: 4 }}>
                 {slide.desc}
               </div>
             </div>
@@ -307,13 +310,10 @@ export function Hero() {
                   onClick={() => setIdx(i)}
                   style={{
                     flex: i === idx ? "0 0 28px" : "0 0 14px",
-                    height: 4,
-                    borderRadius: 999,
-                    border: "none",
-                    cursor: "pointer",
+                    height: 4, borderRadius: 999,
+                    border: "none", cursor: "pointer",
                     background: i === idx ? PRIMARY : "rgba(255,255,255,.2)",
-                    transition: ".3s",
-                    padding: 0,
+                    transition: ".3s", padding: 0,
                   }}
                 />
               ))}

@@ -94,6 +94,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
           }}
         />
         <div
+          className="rsp-section-pad"
           style={{
             position: "relative",
             padding: "32px 56px 48px",
@@ -213,7 +214,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
             </div>
 
             {/* CTA buttons */}
-            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+            <div className="rsp-cta-stack" style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <a
                 href="mailto:contacto@3dencasa.com"
                 style={{

@@ -62,6 +62,7 @@ export default function AboutPage() {
     >
       {/* Manifesto hero */}
       <section
+        className="rsp-section-pad"
         style={{
           position: "relative",
           padding: "88px 56px 100px",
@@ -195,6 +196,7 @@ export default function AboutPage() {
 
       {/* Timeline */}
       <section
+        className="rsp-section-pad"
         style={{ padding: "100px 56px 80px", maxWidth: 1400, margin: "0 auto" }}
       >
         <div
@@ -314,6 +316,7 @@ export default function AboutPage() {
 
       {/* Principles */}
       <section
+        className="rsp-section-pad"
         style={{ padding: "40px 56px 100px", maxWidth: 1400, margin: "0 auto" }}
       >
         <div
@@ -391,6 +394,7 @@ export default function AboutPage() {
 
       {/* CTA strip */}
       <section
+        className="rsp-section-pad"
         style={{ padding: "0 56px 100px", maxWidth: 1400, margin: "0 auto" }}
       >
         <div

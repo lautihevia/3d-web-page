@@ -126,11 +126,9 @@
 
 /* ---- Responsive overrides ---- */
 
-html {
-  overflow-x: hidden;
-}
+html,
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
 }
 
@@ -181,6 +179,16 @@ body {
   .rsp-footer {
     padding-left: 20px !important;
     padding-right: 20px !important;
+  }
+
+  .rsp-cta-stack {
+    flex-direction: column !important;
+  }
+
+  .rsp-cta-stack > * {
+    flex: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 }
 

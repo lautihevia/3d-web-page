@@ -80,6 +80,7 @@ export default function ContactPage() {
       />
 
       <div
+        className="rsp-section-pad"
         style={{
           position: "relative",
           maxWidth: 1400,

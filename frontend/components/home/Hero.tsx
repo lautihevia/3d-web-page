@@ -12,25 +12,25 @@ const SLIDES = [
     id: 1,
     title: "Nuestro taller",
     desc: "Donde imprimimos, testeamos y aprendemos todos los días.",
-    src: "/banners/banner-1.mp4",
+    src: "/banners/NuestroTaller.mp4",
   },
   {
     id: 2,
     title: "Equipos en acción",
     desc: "Máquinas corriendo, piezas saliendo, makers trabajando.",
-    src: "/banners/banner-2.mp4",
+    src: "/banners/EquiposEnAccion.mp4",
   },
   {
     id: 3,
     title: "Hecho acá",
     desc: "Tecnología que probamos antes de recomendarla.",
-    src: "/banners/banner-3.mp4",
+    src: "/banners/HechoAca.mp4",
   },
   {
     id: 4,
     title: "Confiabilidad probada",
     desc: "Equipos que usamos nosotros antes de recomendarte.",
-    src: "/banners/confiabilidad.mp4",
+    src: "/banners/ConfiabilidadMOV.mp4",
   },
 ];
 

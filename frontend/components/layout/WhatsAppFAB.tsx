@@ -40,7 +40,7 @@ export function WhatsAppFAB() {
         Consultanos
       </div>
       <a
-        href="https://wa.me/5491100000000"
+        href="https://wa.me/5493492280435"
         target="_blank"
         rel="noopener noreferrer"
         style={{

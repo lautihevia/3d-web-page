@@ -216,7 +216,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
             {/* CTA buttons */}
             <div className="rsp-cta-stack" style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <a
-                href="mailto:contacto@3dencasa.com"
+                href="mailto:3dencasa@gmail.com"
                 style={{
                   flex: 1,
                   background: "#0b0d12",
@@ -237,7 +237,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 Consultar por email
               </a>
               <a
-                href="https://wa.me/5491100000000"
+                href="https://wa.me/5493492280435"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

@@ -38,7 +38,7 @@ class UserController(
                 User(
                         id = user.id,
                         email = user.email,
-                        passwordHash = passwordEncoder.encode(request.newPassword),
+                        passwordHash = passwordEncoder.encode(request.newPassword)!!,
                         fullName = user.fullName,
                         role = user.role
                 )

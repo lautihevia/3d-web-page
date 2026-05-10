@@ -4,7 +4,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Package, FileText, CheckCircle, Truck } from "lucide-react";
+import { Package, FileText, CheckCircle } from "lucide-react";
 
 interface InfoAccordionsProps {
     description?: string;
@@ -58,19 +58,6 @@ export function InfoAccordions({ description }: InfoAccordionsProps) {
                 </AccordionContent>
             </AccordionItem>
 
-            {/* Envíos */}
-            <AccordionItem value="envios">
-                <AccordionTrigger className="text-sm font-medium hover:no-underline">
-                    <div className="flex items-center gap-2">
-                        <Truck className="h-4 w-4" />
-                        Envíos y Pick Up
-                    </div>
-                </AccordionTrigger>
-                <AccordionContent className="text-sm text-slate-600">
-                    <p className="mb-2"><strong>Envío a domicilio:</strong> 3-5 días hábiles</p>
-                    <p><strong>Retiro en tienda:</strong> Disponible en CABA</p>
-                </AccordionContent>
-            </AccordionItem>
         </Accordion>
     );
 }

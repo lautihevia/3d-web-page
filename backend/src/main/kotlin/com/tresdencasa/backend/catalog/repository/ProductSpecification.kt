@@ -47,4 +47,12 @@ object ProductSpecification {
             if (onlyActive == true) cb.equal(root.get<Boolean>("isActive"), true) else null
         }
     }
+
+    /** Filtra productos por nombre (case-insensitive, búsqueda parcial). */
+    fun hasName(name: String?): Specification<Product> {
+        return Specification { root, _, cb ->
+            if (name.isNullOrBlank()) null
+            else cb.like(cb.lower(root.get("name")), "%${name.lowercase()}%")
+        }
+    }
 }

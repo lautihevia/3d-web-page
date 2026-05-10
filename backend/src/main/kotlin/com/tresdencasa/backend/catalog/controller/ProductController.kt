@@ -32,6 +32,7 @@ class ProductController(private val productRepository: ProductRepository) {
             @RequestParam(defaultValue = "0") page: Int,
             @RequestParam(defaultValue = "10") size: Int,
             @RequestParam(required = false) brand: String?,
+            @RequestParam(required = false) name: String?,
             @RequestParam(required = false) minPrice: Double?,
             @RequestParam(required = false) maxPrice: Double?,
             @RequestParam(required = false) isActive: Boolean?
@@ -41,6 +42,7 @@ class ProductController(private val productRepository: ProductRepository) {
         // Combinar especificaciones de filtrado
         val spec =
                 Specification.where(ProductSpecification.hasBrand(brand))
+                        .and(ProductSpecification.hasName(name))
                         .and(ProductSpecification.minPrice(minPrice))
                         .and(ProductSpecification.maxPrice(maxPrice))
                         .and(ProductSpecification.isActive(isActive))

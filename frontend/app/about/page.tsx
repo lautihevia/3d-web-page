@@ -64,7 +64,6 @@ export default function AboutPage() {
       <section
         style={{
           position: "relative",
-          overflow: "hidden",
           padding: "88px 56px 100px",
           maxWidth: 1400,
           margin: "0 auto",
@@ -74,7 +73,7 @@ export default function AboutPage() {
           style={{
             position: "absolute",
             inset: 0,
-            background: `radial-gradient(ellipse 800px 500px at 80% 0%, ${PRIMARY}40, transparent 60%)`,
+            background: `radial-gradient(ellipse 900px 650px at 100% 0%, ${PRIMARY}30, transparent 70%)`,
             pointerEvents: "none",
           }}
         />

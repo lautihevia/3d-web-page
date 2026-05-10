@@ -10,26 +10,20 @@ const PRIMARY = "#3b82f6";
 const SLIDES = [
   {
     id: 1,
-    brand: "Bambu Lab",
-    name: "P1S Combo",
-    price: "$1.290.000",
-    specs: "500 mm/s · 256×256×256",
+    title: "Nuestro taller",
+    desc: "Donde imprimimos, testeamos y aprendemos todos los días.",
     src: "/banners/banner-1.jpeg",
   },
   {
     id: 2,
-    brand: "Creality",
-    name: "K1 Max",
-    price: "$1.480.000",
-    specs: "600 mm/s · 300×300×300",
+    title: "Equipos en acción",
+    desc: "Máquinas corriendo, piezas saliendo, makers trabajando.",
     src: "/banners/banner-2.jpeg",
   },
   {
     id: 3,
-    brand: "Hellbot",
-    name: "Magna 2",
-    price: "$689.000",
-    specs: "Made in Argentina",
+    title: "Hecho acá",
+    desc: "Tecnología que probamos antes de recomendarla.",
     src: "/banners/banner-3.jpeg",
   },
 ];
@@ -89,32 +83,6 @@ export function Hero() {
       >
         {/* Left: Text content */}
         <div>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "6px 12px",
-              borderRadius: 999,
-              border: "1px solid rgba(255,255,255,.15)",
-              fontSize: 12,
-              color: "rgba(255,255,255,.7)",
-              marginBottom: 28,
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: PRIMARY,
-                boxShadow: `0 0 12px ${PRIMARY}`,
-                flexShrink: 0,
-              }}
-            />
-            Showroom abierto · Lun a Vie
-          </div>
-
           <h1
             style={{
               fontSize: "clamp(52px, 5.5vw, 84px)",
@@ -225,7 +193,7 @@ export function Hero() {
                 >
                   <Image
                     src={s.src}
-                    alt={s.name}
+                    alt={s.title}
                     fill
                     className="object-cover"
                     priority={i === 0}
@@ -312,46 +280,20 @@ export function Hero() {
             </div>
 
             {/* Caption */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "18px 8px 6px",
-                alignItems: "flex-end",
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "rgba(255,255,255,.5)",
-                    fontFamily: "var(--font-geist-mono), monospace",
-                    letterSpacing: ".1em",
-                  }}
-                >
-                  {slide.brand.toUpperCase()} · DESTACADO
-                </div>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 22,
-                    marginTop: 6,
-                    letterSpacing: "-.02em",
-                  }}
-                >
-                  {slide.name}
-                </div>
-                <div
-                  style={{ fontSize: 13, color: "rgba(255,255,255,.55)", marginTop: 4 }}
-                >
-                  {slide.specs}
-                </div>
+            <div style={{ padding: "18px 8px 6px" }}>
+              <div
+                style={{
+                  fontWeight: 700,
+                  fontSize: 20,
+                  letterSpacing: "-.02em",
+                }}
+              >
+                {slide.title}
               </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,.5)" }}>desde</div>
-                <div style={{ fontWeight: 700, fontSize: 22, color: PRIMARY }}>
-                  {slide.price}
-                </div>
+              <div
+                style={{ fontSize: 13, color: "rgba(255,255,255,.55)", marginTop: 4 }}
+              >
+                {slide.desc}
               </div>
             </div>
 

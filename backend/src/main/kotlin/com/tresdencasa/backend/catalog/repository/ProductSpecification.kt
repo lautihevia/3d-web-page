@@ -55,4 +55,12 @@ object ProductSpecification {
             else cb.like(cb.lower(root.get("name")), "%${name.lowercase()}%")
         }
     }
+
+    /** Filtra productos cuya marca esté en la lista (OR). Ignora si la lista es vacía. */
+    fun hasAnyBrand(brands: List<String>?): Specification<Product> {
+        return Specification { root, _, _ ->
+            if (brands.isNullOrEmpty()) null
+            else root.get<String>("brand").`in`(brands.map { it.lowercase() })
+        }
+    }
 }

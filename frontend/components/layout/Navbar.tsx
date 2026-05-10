@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Search, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { SearchModal } from "./SearchModal";
 
 const PRIMARY = "#3b82f6";
@@ -10,13 +10,11 @@ const PRIMARY = "#3b82f6";
 const IMPRESORAS = [
   { label: "Bambu Lab", href: "/store/bambu lab", tag: "Premium" },
   { label: "Creality", href: "/store/creality", tag: "Profesional" },
-  { label: "Hellbot", href: "/store/hellbot", tag: "Nacional" },
-  { label: "Prusa", href: "/store/prusa", tag: "Open Source" },
+  { label: "Anycubic", href: "/store/anycubic", tag: "Accesible" },
 ];
 
 const INSUMOS = [
   { label: "Filamentos", href: "/store/filamentos" },
-  { label: "Resinas", href: "/store/resinas" },
   { label: "Electrónica", href: "/store/electronica" },
   { label: "Herramientas", href: "/store/herramientas" },
 ];
@@ -28,13 +26,19 @@ interface DropdownProps {
 
 function NavDropdown({ label, items }: DropdownProps) {
   const [open, setOpen] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const enter = () => {
+    clearTimeout(timer.current);
+    setOpen(true);
+  };
+
+  const leave = () => {
+    timer.current = setTimeout(() => setOpen(false), 180);
+  };
 
   return (
-    <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
+    <div style={{ position: "relative" }} onMouseEnter={enter} onMouseLeave={leave}>
       <button
         style={{
           background: "transparent",
@@ -62,114 +66,110 @@ function NavDropdown({ label, items }: DropdownProps) {
         />
       </button>
 
+      {/* Invisible bridge between button and panel so hover doesn't break */}
       {open && (
         <div
           style={{
             position: "absolute",
-            top: "calc(100% + 14px)",
+            top: "100%",
             left: "50%",
             transform: "translateX(-50%)",
-            background: "#0c0f1e",
-            border: "1px solid rgba(255,255,255,.1)",
-            borderRadius: 14,
-            padding: 8,
-            minWidth: 220,
+            width: "max(100%, 220px)",
+            paddingTop: 10,
             zIndex: 100,
-            boxShadow: "0 20px 60px rgba(0,0,0,.6)",
           }}
+          onMouseEnter={enter}
+          onMouseLeave={leave}
         >
           {/* Arrow notch */}
           <div
             style={{
-              position: "absolute",
-              top: -6,
-              left: "50%",
-              transform: "translateX(-50%)",
               width: 12,
               height: 6,
+              margin: "0 auto",
               overflow: "hidden",
             }}
           >
             <div
               style={{
-                width: 12,
-                height: 12,
+                width: 10,
+                height: 10,
                 background: "#0c0f1e",
                 border: "1px solid rgba(255,255,255,.1)",
                 transform: "rotate(45deg)",
-                transformOrigin: "center",
-                marginTop: 3,
+                margin: "3px auto 0",
               }}
             />
           </div>
 
-          {items.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "10px 14px",
-                borderRadius: 8,
-                color: "rgba(255,255,255,.8)",
-                textDecoration: "none",
-                fontSize: 14,
-                fontWeight: 500,
-                transition: "background .12s, color .12s",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "rgba(255,255,255,.07)";
-                (e.currentTarget as HTMLElement).style.color = "#fff";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background =
-                  "transparent";
-                (e.currentTarget as HTMLElement).style.color =
-                  "rgba(255,255,255,.8)";
-              }}
-            >
-              {item.label}
-              {item.tag && (
-                <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: PRIMARY,
-                    background: `${PRIMARY}18`,
-                    padding: "2px 6px",
-                    borderRadius: 999,
-                    letterSpacing: ".04em",
-                  }}
-                >
-                  {item.tag}
-                </span>
-              )}
-            </Link>
-          ))}
-
           <div
             style={{
-              borderTop: "1px solid rgba(255,255,255,.06)",
-              margin: "6px 0 2px",
-            }}
-          />
-          <Link
-            href="/#productos"
-            style={{
-              display: "block",
-              padding: "9px 14px",
-              borderRadius: 8,
-              color: PRIMARY,
-              textDecoration: "none",
-              fontSize: 13,
-              fontWeight: 600,
+              background: "#0c0f1e",
+              border: "1px solid rgba(255,255,255,.1)",
+              borderRadius: 14,
+              padding: 8,
+              boxShadow: "0 20px 60px rgba(0,0,0,.6)",
             }}
           >
-            Ver todo →
-          </Link>
+            {items.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  color: "rgba(255,255,255,.8)",
+                  textDecoration: "none",
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.07)";
+                  (e.currentTarget as HTMLElement).style.color = "#fff";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "transparent";
+                  (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.8)";
+                }}
+              >
+                {item.label}
+                {item.tag && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: PRIMARY,
+                      background: `${PRIMARY}18`,
+                      padding: "2px 6px",
+                      borderRadius: 999,
+                      letterSpacing: ".04em",
+                    }}
+                  >
+                    {item.tag}
+                  </span>
+                )}
+              </Link>
+            ))}
+
+            <div style={{ borderTop: "1px solid rgba(255,255,255,.06)", margin: "6px 0 2px" }} />
+            <Link
+              href="/catalog"
+              style={{
+                display: "block",
+                padding: "9px 14px",
+                borderRadius: 8,
+                color: PRIMARY,
+                textDecoration: "none",
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            >
+              Ver todo →
+            </Link>
+          </div>
         </div>
       )}
     </div>
@@ -249,7 +249,6 @@ export function Navbar() {
             alignItems: "center",
             gap: 6,
             fontFamily: "inherit",
-            transition: "border-color .15s",
           }}
         >
           <Search size={14} />

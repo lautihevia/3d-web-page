@@ -32,6 +32,7 @@ class ProductController(private val productRepository: ProductRepository) {
             @RequestParam(defaultValue = "0") page: Int,
             @RequestParam(defaultValue = "10") size: Int,
             @RequestParam(required = false) brand: String?,
+            @RequestParam(required = false) brands: String?,
             @RequestParam(required = false) name: String?,
             @RequestParam(required = false) minPrice: Double?,
             @RequestParam(required = false) maxPrice: Double?,
@@ -39,9 +40,13 @@ class ProductController(private val productRepository: ProductRepository) {
     ): Page<Product> {
         val pageable = PageRequest.of(page, size)
 
+        // `brands` acepta lista separada por comas; si no viene, usa `brand` singular
+        val brandList = brands?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
+
         // Combinar especificaciones de filtrado
         val spec =
-                Specification.where(ProductSpecification.hasBrand(brand))
+                Specification.where(ProductSpecification.hasBrand(if (brandList.isNullOrEmpty()) brand else null))
+                        .and(ProductSpecification.hasAnyBrand(brandList))
                         .and(ProductSpecification.hasName(name))
                         .and(ProductSpecification.minPrice(minPrice))
                         .and(ProductSpecification.maxPrice(maxPrice))

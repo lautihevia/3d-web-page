@@ -15,7 +15,6 @@ const SECTIONS = [
     items: [
       { label: "Sobre nosotros", href: "/about" },
       { label: "Contacto", href: "/contact" },
-      { label: "Showroom", href: "/contact" },
     ],
   },
   {

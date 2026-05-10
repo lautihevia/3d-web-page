@@ -13,7 +13,6 @@ const BRANDS = [
     id: "bambu",
     name: "Bambu Lab",
     tag: "Impresoras Premium",
-    count: 12,
     slug: "bambu lab",
     imageUrl: "/categorias/bambulab-categoria.jpeg",
   },
@@ -21,31 +20,27 @@ const BRANDS = [
     id: "creality",
     name: "Creality",
     tag: "Impresoras",
-    count: 18,
     slug: "creality",
     imageUrl: "/categorias/creality-categoria.jpeg",
-  },
-  {
-    id: "hellbot",
-    name: "Hellbot",
-    tag: "Industria nacional",
-    count: 9,
-    slug: "hellbot",
-    imageUrl: "/categorias/hellbot-categoria.jpeg",
   },
   {
     id: "w3d",
     name: "W3D",
     tag: "Filamentos",
-    count: 24,
     slug: "w3d",
     imageUrl: "/categorias/w3d-categoria.jpeg",
+  },
+  {
+    id: "anycubic",
+    name: "Anycubic",
+    tag: "Impresoras",
+    slug: "anycubic",
+    imageUrl: "/categorias/anycubic-categoria.jpeg",
   },
   {
     id: "arduino",
     name: "Arduino",
     tag: "Electrónica",
-    count: 31,
     slug: "arduino",
     imageUrl: "/categorias/arduino-categoria.jpeg",
   },
@@ -56,25 +51,25 @@ const CATEGORIES = [
     Icon: Printer,
     title: "Impresoras 3D",
     desc: "FDM, resina y modelos industriales",
-    href: "/#productos",
+    href: "/catalog?brands=bambu+lab,creality,anycubic",
   },
   {
     Icon: Layers,
     title: "Filamentos & Insumos",
     desc: "PLA, PETG, ABS, TPU y especiales",
-    href: "/#productos",
+    href: "/catalog?brands=w3d,filamentos",
   },
   {
     Icon: Cpu,
     title: "Electrónica",
     desc: "Arduino, sensores y módulos",
-    href: "/#productos",
+    href: "/catalog?brands=arduino,electronica",
   },
 ];
 
 async function getProducts(): Promise<PaginatedProducts | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/products`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/products?size=12`, {
       cache: "no-store",
       headers: { "Content-Type": "application/json" },
     });
@@ -115,7 +110,7 @@ export default async function HomePage() {
               Por marca
             </h2>
             <div style={{ fontSize: 13, color: "rgba(0,0,0,.5)" }}>
-              Trabajamos con 5 fabricantes
+              Las mejores marcas del mercado
             </div>
           </div>
 
@@ -168,9 +163,6 @@ export default async function HomePage() {
                         }}
                       >
                         {b.name}
-                      </span>
-                      <span style={{ fontSize: 11, color: "rgba(0,0,0,.5)" }}>
-                        {b.count}
                       </span>
                     </div>
                     <div
@@ -276,7 +268,7 @@ export default async function HomePage() {
                 color: "#0b0d12",
               }}
             >
-              Nuestros Productos
+              Productos Destacados
             </h2>
             {productsData && (
               <p style={{ fontSize: 14, color: "rgba(0,0,0,.55)", marginTop: 8 }}>

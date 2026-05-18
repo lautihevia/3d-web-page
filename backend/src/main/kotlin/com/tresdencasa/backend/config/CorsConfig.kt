@@ -1,5 +1,6 @@
 package com.tresdencasa.backend.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.cors.CorsConfiguration
@@ -12,25 +13,23 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 class CorsConfig {
 
+    @Value("\${FRONTEND_URL:http://localhost:3000}")
+    private lateinit var frontendUrl: String
+
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            // Orígenes permitidos (frontend Next.js en desarrollo)
-            allowedOrigins = listOf(
+            allowedOriginPatterns = listOf(
                 "http://localhost:3000",
-                "http://127.0.0.1:3000"
+                "http://127.0.0.1:3000",
+                "https://*.vercel.app",
+                frontendUrl,
+                "https://www.3dencasastore.com",
+                "https://3dencasastore.com"
             )
-            
-            // Métodos HTTP permitidos
             allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-            
-            // Headers permitidos
             allowedHeaders = listOf("*")
-            
-            // Permitir envío de credenciales (cookies, Authorization headers)
             allowCredentials = true
-            
-            // Tiempo de cache para preflight requests (1 hora)
             maxAge = 3600L
         }
 

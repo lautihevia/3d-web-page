@@ -30,7 +30,8 @@ async function getProducts(
   brand: string,
   minPrice?: string,
   maxPrice?: string,
-  isActive?: string
+  isActive?: string,
+  subcategory?: string
 ): Promise<Product[]> {
   const params = new URLSearchParams();
   params.set("brand", brand);
@@ -38,6 +39,7 @@ async function getProducts(
   if (minPrice) params.set("minPrice", minPrice);
   if (maxPrice) params.set("maxPrice", maxPrice);
   if (isActive) params.set("isActive", isActive);
+  if (subcategory) params.set("subcategory", subcategory);
 
   try {
     const res = await fetch(`${API_URL}/api/v1/products?${params.toString()}`, {
@@ -61,9 +63,11 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
     typeof search.maxPrice === "string" ? search.maxPrice : undefined;
   const isActive =
     typeof search.isActive === "string" ? search.isActive : undefined;
+  const subcategory =
+    typeof search.subcategory === "string" ? search.subcategory : undefined;
 
   const decodedBrand = decodeURIComponent(brand);
-  const products = await getProducts(decodedBrand, minPrice, maxPrice, isActive);
+  const products = await getProducts(decodedBrand, minPrice, maxPrice, isActive, subcategory);
 
   return (
     <div style={{ background: "#f7f6f1", minHeight: "100vh" }}>

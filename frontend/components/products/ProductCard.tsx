@@ -13,6 +13,8 @@ interface ProductCardProps {
   price?: number;
   brand?: string | null;
   tag?: string;
+  onSale?: boolean;
+  salePrice?: number;
 }
 
 function formatPrice(price: number): string {
@@ -26,6 +28,8 @@ export function ProductCard({
   price,
   brand,
   tag,
+  onSale,
+  salePrice,
 }: ProductCardProps) {
   const [hover, setHover] = useState(false);
   const primary = "#3b82f6";
@@ -108,6 +112,24 @@ export function ProductCard({
               {brand}
             </div>
           )}
+          {onSale && salePrice && (
+            <div
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 10,
+                padding: "4px 10px",
+                borderRadius: 999,
+                background: "#ef4444",
+                color: "#fff",
+                fontSize: 11,
+                fontWeight: 700,
+                boxShadow: "0 2px 8px rgba(0,0,0,.12)",
+              }}
+            >
+              OFERTA
+            </div>
+          )}
         </div>
 
         {/* Info */}
@@ -149,10 +171,23 @@ export function ProductCard({
           }}
         >
           <div>
-            <div style={{ fontSize: 11, color: "rgba(0,0,0,.5)" }}>Precio</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: primary }}>
-              {price !== undefined ? formatPrice(price) : "Consultar"}
+            <div style={{ fontSize: 11, color: "rgba(0,0,0,.5)" }}>
+              {onSale && salePrice ? "Precio de oferta" : "Precio"}
             </div>
+            {onSale && salePrice ? (
+              <>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#ef4444" }}>
+                  {formatPrice(salePrice)}
+                </div>
+                <div style={{ fontSize: 13, color: "rgba(0,0,0,.4)", textDecoration: "line-through" }}>
+                  {price !== undefined ? formatPrice(price) : ""}
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: 18, fontWeight: 700, color: primary }}>
+                {price !== undefined ? formatPrice(price) : "Consultar"}
+              </div>
+            )}
           </div>
           <div
             style={{

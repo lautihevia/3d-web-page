@@ -56,6 +56,8 @@ class SecurityConfig(
                             .permitAll()
                             .requestMatchers("/ping")
                             .permitAll()
+                            .requestMatchers("/error")
+                            .permitAll()
                             .requestMatchers("/api/v1/admin/**")
                             .hasRole("ADMIN")
                             .anyRequest()

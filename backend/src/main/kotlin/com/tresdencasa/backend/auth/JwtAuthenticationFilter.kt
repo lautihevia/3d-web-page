@@ -24,7 +24,6 @@ class JwtAuthenticationFilter(
     ) {
         val authHeader = request.getHeader("Authorization")
 
-        // Si no hay header o no es Bearer, continuar sin autenticar
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response)
             return
@@ -33,17 +32,11 @@ class JwtAuthenticationFilter(
         val jwt = authHeader.substring(7)
         val email = jwtService.extractEmail(jwt)
 
-        // Si hay email y no hay autenticación previa en el contexto
         if (email != null && SecurityContextHolder.getContext().authentication == null) {
             val userDetails = userDetailsService.loadUserByUsername(email)
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                val authToken =
-                        UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.authorities
-                        )
+                val authToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
                 authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = authToken
             }

@@ -15,6 +15,13 @@ interface ProductVariant {
   attributes: Record<string, string>;
 }
 
+interface ColorImage {
+  id: number;
+  colorName: string;
+  imageUrl: string;
+  sortOrder: number;
+}
+
 interface Product {
   id: number;
   name: string;
@@ -26,7 +33,12 @@ interface Product {
   imageUrl3?: string;
   imageUrl4?: string;
   isActive: boolean;
+  onSale?: boolean;
+  salePrice?: number;
+  technicalSpecs?: string;
+  compatibilityNotes?: string;
   variants: ProductVariant[];
+  colorImages?: ColorImage[];
 }
 
 interface PageProps {
@@ -139,11 +151,59 @@ export default async function ProductDetailPage({ params }: PageProps) {
         }}
       >
         {/* Gallery */}
-        <ProductGallery
-          mainImageUrl={product.mainImageUrl}
-          productName={product.name}
-          extraImageUrls={[product.imageUrl2, product.imageUrl3, product.imageUrl4].filter(Boolean) as string[]}
-        />
+        <div>
+          <ProductGallery
+            mainImageUrl={product.mainImageUrl}
+            productName={product.name}
+            extraImageUrls={[product.imageUrl2, product.imageUrl3, product.imageUrl4].filter(Boolean) as string[]}
+          />
+
+          {/* Color swatches for filaments */}
+          {product.colorImages && product.colorImages.length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(0,0,0,.45)", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 12 }}>
+                Colores disponibles
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {product.colorImages.map((ci) => (
+                  <div
+                    key={ci.id}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 5,
+                      cursor: "default",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 10,
+                        overflow: "hidden",
+                        position: "relative",
+                        border: "1px solid rgba(0,0,0,.08)",
+                        background: "#f5f6fa",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={ci.imageUrl}
+                        alt={ci.colorName}
+                        style={{ width: "100%", height: "100%", objectFit: "contain", padding: 4 }}
+                      />
+                    </div>
+                    <span style={{ fontSize: 10, color: "rgba(0,0,0,.55)", textAlign: "center", maxWidth: 60, lineHeight: 1.2 }}>
+                      {ci.colorName}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Info + CTA */}
         <div style={{ position: "sticky", top: 20, alignSelf: "flex-start" }}>
@@ -194,19 +254,30 @@ export default async function ProductDetailPage({ params }: PageProps) {
             }}
           >
             <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)" }}>
-              Precio de referencia
+              {product.onSale && product.salePrice ? "Precio de oferta" : "Precio de referencia"}
             </div>
-            <div
-              style={{
-                fontSize: 44,
-                fontWeight: 700,
-                color: PRIMARY,
-                letterSpacing: "-.02em",
-                marginTop: 4,
-              }}
-            >
-              {price ? formatPrice(price) : "Consultar precio"}
-            </div>
+            {product.onSale && product.salePrice ? (
+              <>
+                <div style={{ fontSize: 44, fontWeight: 700, color: "#ef4444", letterSpacing: "-.02em", marginTop: 4 }}>
+                  {formatPrice(product.salePrice)}
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 500, color: "rgba(0,0,0,.35)", textDecoration: "line-through", marginTop: 2 }}>
+                  {price ? formatPrice(price) : ""}
+                </div>
+              </>
+            ) : (
+              <div
+                style={{
+                  fontSize: 44,
+                  fontWeight: 700,
+                  color: PRIMARY,
+                  letterSpacing: "-.02em",
+                  marginTop: 4,
+                }}
+              >
+                {price ? formatPrice(price) : "Consultar precio"}
+              </div>
+            )}
             <div
               style={{ fontSize: 13, color: "rgba(0,0,0,.5)", marginTop: 8 }}
             >
@@ -263,7 +334,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           {/* Info accordions */}
           <div style={{ marginTop: 32 }}>
-            <InfoAccordions description={product.description} />
+            <InfoAccordions
+              description={product.description}
+              technicalSpecs={product.technicalSpecs}
+              compatibilityNotes={product.compatibilityNotes}
+            />
           </div>
         </div>
       </section>

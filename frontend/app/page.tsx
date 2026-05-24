@@ -67,21 +67,26 @@ const CATEGORIES = [
   },
 ];
 
-async function getProducts(): Promise<PaginatedProducts | null> {
+async function getFeaturedProducts(): Promise<PaginatedProducts | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/products?size=12`, {
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!response.ok) return null;
-    return response.json();
-  } catch {
-    return null;
-  }
+    const res = await fetch(`${API_BASE_URL}/api/v1/products?featured=true&size=12`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data: PaginatedProducts = await res.json();
+    return data.content.length > 0 ? data : null;
+  } catch { return null; }
+}
+
+async function getOnSaleProducts(): Promise<PaginatedProducts | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/v1/products?onSale=true&size=8`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data: PaginatedProducts = await res.json();
+    return data.content.length > 0 ? data : null;
+  } catch { return null; }
 }
 
 export default async function HomePage() {
-  const productsData = await getProducts();
+  const [featuredData, onSaleData] = await Promise.all([getFeaturedProducts(), getOnSaleProducts()]);
 
   return (
     <>
@@ -246,43 +251,35 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Products Grid */}
-      <section id="productos" className="rsp-section-pad" style={{ padding: "80px 48px", background: "#f7f6f1" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-          <div style={{ marginBottom: 32 }}>
-            <div
-              style={{
-                fontFamily: "var(--font-geist-mono), monospace",
-                fontSize: 11,
-                letterSpacing: ".18em",
-                color: PRIMARY,
-                marginBottom: 8,
-                textTransform: "uppercase",
-              }}
-            >
-              // Catálogo
+      {/* Featured Products Grid */}
+      {featuredData && (
+        <section id="productos" className="rsp-section-pad" style={{ padding: "80px 48px", background: "#f7f6f1" }}>
+          <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+            <div style={{ marginBottom: 32 }}>
+              <div
+                style={{
+                  fontFamily: "var(--font-geist-mono), monospace",
+                  fontSize: 11,
+                  letterSpacing: ".18em",
+                  color: PRIMARY,
+                  marginBottom: 8,
+                  textTransform: "uppercase",
+                }}
+              >
+                // Catálogo
+              </div>
+              <h2
+                style={{
+                  fontSize: 36,
+                  fontWeight: 700,
+                  margin: 0,
+                  letterSpacing: "-.025em",
+                  color: "#0b0d12",
+                }}
+              >
+                Productos Destacados
+              </h2>
             </div>
-            <h2
-              style={{
-                fontSize: 36,
-                fontWeight: 700,
-                margin: 0,
-                letterSpacing: "-.025em",
-                color: "#0b0d12",
-              }}
-            >
-              Productos Destacados
-            </h2>
-            {productsData && (
-              <p style={{ fontSize: 14, color: "rgba(0,0,0,.55)", marginTop: 8 }}>
-                {productsData.totalElements} producto
-                {productsData.totalElements !== 1 ? "s" : ""} encontrado
-                {productsData.totalElements !== 1 ? "s" : ""}
-              </p>
-            )}
-          </div>
-
-          {productsData && productsData.content.length > 0 ? (
             <div
               className="rsp-4col-to-2"
               style={{
@@ -291,7 +288,7 @@ export default async function HomePage() {
                 gap: 16,
               }}
             >
-              {productsData.content.map((product) => (
+              {featuredData.content.map((product) => (
                 <ProductCard
                   key={product.id}
                   id={product.id}
@@ -300,50 +297,69 @@ export default async function HomePage() {
                   imageUrl={product.mainImageUrl ?? undefined}
                   price={product.variants[0]?.price}
                   brand={product.brand}
+                  onSale={product.onSale}
+                  salePrice={product.salePrice ?? undefined}
                 />
               ))}
             </div>
-          ) : productsData === null ? (
-            <div
-              style={{
-                background: "rgba(239,68,68,.08)",
-                border: "1px solid rgba(239,68,68,.15)",
-                borderRadius: 12,
-                padding: "24px",
-                textAlign: "center",
-              }}
-            >
-              <p style={{ color: "#dc2626", fontWeight: 500, margin: 0 }}>
-                Error al cargar los productos. Verificá que el backend esté activo.
-              </p>
-            </div>
-          ) : (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "48px 0",
-                color: "rgba(0,0,0,.5)",
-                fontSize: 18,
-              }}
-            >
-              No hay productos disponibles en este momento.
-            </div>
-          )}
+          </div>
+        </section>
+      )}
 
-          {productsData && productsData.totalPages > 1 && (
+      {/* On Sale Section */}
+      {onSaleData && (
+        <section className="rsp-section-pad" style={{ padding: "80px 48px", background: "#fff" }}>
+          <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+            <div style={{ marginBottom: 32 }}>
+              <div
+                style={{
+                  fontFamily: "var(--font-geist-mono), monospace",
+                  fontSize: 11,
+                  letterSpacing: ".18em",
+                  color: "#ef4444",
+                  marginBottom: 8,
+                  textTransform: "uppercase",
+                }}
+              >
+                // Ofertas
+              </div>
+              <h2
+                style={{
+                  fontSize: 36,
+                  fontWeight: 700,
+                  margin: 0,
+                  letterSpacing: "-.025em",
+                  color: "#0b0d12",
+                }}
+              >
+                Ofertas Especiales
+              </h2>
+            </div>
             <div
+              className="rsp-4col-to-2"
               style={{
-                marginTop: 32,
-                textAlign: "center",
-                fontSize: 13,
-                color: "rgba(0,0,0,.5)",
+                display: "grid",
+                gridTemplateColumns: "repeat(4,1fr)",
+                gap: 16,
               }}
             >
-              Página {productsData.number + 1} de {productsData.totalPages}
+              {onSaleData.content.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  description={product.description ?? undefined}
+                  imageUrl={product.mainImageUrl ?? undefined}
+                  price={product.variants[0]?.price}
+                  brand={product.brand}
+                  onSale={product.onSale}
+                  salePrice={product.salePrice ?? undefined}
+                />
+              ))}
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
     </>
   );
 }

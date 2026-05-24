@@ -36,14 +36,16 @@ class ProductController(private val productRepository: ProductRepository) {
             @RequestParam(required = false) name: String?,
             @RequestParam(required = false) minPrice: Double?,
             @RequestParam(required = false) maxPrice: Double?,
-            @RequestParam(required = false) isActive: Boolean?
+            @RequestParam(required = false) isActive: Boolean?,
+            @RequestParam(required = false) featured: Boolean?,
+            @RequestParam(required = false) subcategory: String?,
+            @RequestParam(required = false) onSale: Boolean?
     ): Page<Product> {
         val pageable = PageRequest.of(page, size)
 
-        // `brands` acepta lista separada por comas; si no viene, usa `brand` singular
         val brandList = brands?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
+        val subcategoryList = subcategory?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
 
-        // Combinar especificaciones de filtrado
         val spec =
                 Specification.where(ProductSpecification.hasBrand(if (brandList.isNullOrEmpty()) brand else null))
                         .and(ProductSpecification.hasAnyBrand(brandList))
@@ -51,6 +53,9 @@ class ProductController(private val productRepository: ProductRepository) {
                         .and(ProductSpecification.minPrice(minPrice))
                         .and(ProductSpecification.maxPrice(maxPrice))
                         .and(ProductSpecification.isActive(isActive))
+                        .and(ProductSpecification.isFeatured(featured))
+                        .and(ProductSpecification.hasAnySubcategory(subcategoryList))
+                        .and(ProductSpecification.isOnSale(onSale))
 
         return productRepository.findAll(spec, pageable)
     }

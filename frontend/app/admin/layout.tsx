@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Package, LogOut, Plus } from "lucide-react";
 import { clearAdminToken } from "@/lib/adminAuth";
+import { AdminSessionGuard } from "@/components/admin/AdminSessionGuard";
 
 const PRIMARY = "#3b82f6";
 
@@ -24,6 +25,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "inherit" }}>
+      <AdminSessionGuard />
       {/* Sidebar */}
       <aside
         style={{

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Trash2, Pencil, AlertCircle } from "lucide-react";
-import { adminHeaders, getAdminToken } from "@/lib/adminAuth";
+import { adminFetch, AdminSessionExpiredError, getAdminToken } from "@/lib/adminAuth";
 import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -37,16 +37,11 @@ export default function AdminProductsPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/v1/admin/products`, {
-        headers: adminHeaders(),
-      });
-      if (res.status === 401 || res.status === 403) {
-        router.push("/admin/login");
-        return;
-      }
+      const res = await adminFetch(`${API_URL}/api/v1/admin/products`);
       if (!res.ok) throw new Error("Error al cargar");
       setProducts(await res.json());
-    } catch {
+    } catch (err) {
+      if (err instanceof AdminSessionExpiredError) return;
       setError("No se pudieron cargar los productos. Verificá que el backend esté activo.");
     } finally {
       setLoading(false);
@@ -61,9 +56,9 @@ export default function AdminProductsPage() {
 
   const toggleActive = async (p: AdminProduct) => {
     try {
-      const res = await fetch(`${API_URL}/api/v1/admin/products/${p.id}`, {
+      const res = await adminFetch(`${API_URL}/api/v1/admin/products/${p.id}`, {
         method: "PUT",
-        headers: { ...adminHeaders(), "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: !p.isActive }),
       });
       if (res.ok) setProducts((prev) => prev.map((x) => x.id === p.id ? { ...x, isActive: !p.isActive } : x));
@@ -74,9 +69,8 @@ export default function AdminProductsPage() {
     if (!confirm("¿Eliminás este producto? La acción no se puede deshacer.")) return;
     setDeleting(id);
     try {
-      const res = await fetch(`${API_URL}/api/v1/admin/products/${id}`, {
+      const res = await adminFetch(`${API_URL}/api/v1/admin/products/${id}`, {
         method: "DELETE",
-        headers: adminHeaders(),
       });
       if (res.ok) setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch { /* silent */ }

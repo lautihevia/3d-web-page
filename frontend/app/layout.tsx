@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "3dENCASA · Impresión 3D Profesional",
+  title: "3Dencasa",
   description:
     "Las mejores impresoras 3D, filamentos y electrónica curada. Precios visibles, asesoramiento técnico real.",
 };

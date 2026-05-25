@@ -75,7 +75,7 @@ function LoginContent() {
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ fontWeight: 800, fontSize: 24, color: "#fff", letterSpacing: "-.02em" }}>
-            3d<span style={{ color: PRIMARY }}>EN</span>CASA
+            3<span style={{ color: PRIMARY }}>D</span>encasa
           </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,.45)", marginTop: 8 }}>
             Panel de administración

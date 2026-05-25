@@ -1,5 +1,6 @@
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { InfoAccordions } from "@/components/products/InfoAccordions";
+import { FilamentProductView } from "@/components/products/FilamentProductView";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Mail } from "lucide-react";
@@ -69,6 +70,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   const price = product.variants[0]?.price;
   const inStock = product.variants.some((v) => v.stockQuantity > 0);
+  const hasColors = (product.colorImages?.length ?? 0) > 0;
 
   return (
     <div
@@ -138,7 +140,20 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Main content */}
+      {hasColors ? (
+        <FilamentProductView
+          productName={product.name}
+          brand={product.brand}
+          description={product.description}
+          technicalSpecs={product.technicalSpecs}
+          compatibilityNotes={product.compatibilityNotes}
+          price={price}
+          onSale={product.onSale}
+          salePrice={product.salePrice}
+          inStock={inStock}
+          colorImages={product.colorImages ?? []}
+        />
+      ) : (
       <section
         className="rsp-2col rsp-section-pad"
         style={{
@@ -157,52 +172,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
             productName={product.name}
             extraImageUrls={[product.imageUrl2, product.imageUrl3, product.imageUrl4].filter(Boolean) as string[]}
           />
-
-          {/* Color swatches for filaments */}
-          {product.colorImages && product.colorImages.length > 0 && (
-            <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(0,0,0,.45)", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 12 }}>
-                Colores disponibles
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                {product.colorImages.map((ci) => (
-                  <div
-                    key={ci.id}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 5,
-                      cursor: "default",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: 10,
-                        overflow: "hidden",
-                        position: "relative",
-                        border: "1px solid rgba(0,0,0,.08)",
-                        background: "#f5f6fa",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={ci.imageUrl}
-                        alt={ci.colorName}
-                        style={{ width: "100%", height: "100%", objectFit: "contain", padding: 4 }}
-                      />
-                    </div>
-                    <span style={{ fontSize: 10, color: "rgba(0,0,0,.55)", textAlign: "center", maxWidth: 60, lineHeight: 1.2 }}>
-                      {ci.colorName}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Info + CTA */}
@@ -342,6 +311,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 }

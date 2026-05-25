@@ -11,9 +11,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
 
 const PRINTER_BRANDS = ["Bambu Lab", "Creality", "Anycubic", "Usados"];
-const ALL_BRANDS = ["Bambu Lab", "Creality", "Anycubic", "W3D", "Arduino", "Filamentos", "Electrónica", "Otro"];
+const FILAMENT_BRANDS = ["W3D", "IID Max", "Creality"];
 const CATEGORIES = ["Impresoras", "Filamentos", "Electrónica", "Kits y Repuestos"];
-const FILAMENT_TYPES = ["", "Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG", "Creality", "Hyper Serie PLA"];
+const CATEGORIES_WITHOUT_BRAND = ["Electrónica", "Kits y Repuestos"];
+const FILAMENT_TYPES = ["", "Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG"];
+
+function brandsForCategory(category: string): string[] {
+  if (category === "Impresoras") return PRINTER_BRANDS;
+  if (category === "Filamentos") return FILAMENT_BRANDS;
+  return [];
+}
 
 const IMAGE_SLOTS = [
   { key: "imageUrl" as const, label: "Imagen principal" },
@@ -38,7 +45,6 @@ export default function EditProductPage() {
   const [form, setForm] = useState({
     name: "",
     brand: "Bambu Lab",
-    customBrand: "",
     category: "Impresoras",
     subcategory: "",
     description: "",
@@ -62,7 +68,8 @@ export default function EditProductPage() {
     setForm((f) => ({ ...f, [key]: val }));
 
   const isFilament = form.category === "Filamentos";
-  const availableBrands = form.category === "Impresoras" ? PRINTER_BRANDS : ALL_BRANDS;
+  const hasBrand = !CATEGORIES_WITHOUT_BRAND.includes(form.category);
+  const availableBrands = brandsForCategory(form.category);
 
   const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "" }]);
   const removeColorRow = (i: number) => setColorImages((prev) => prev.filter((_, idx) => idx !== i));
@@ -78,12 +85,13 @@ export default function EditProductPage() {
         if (!res.ok) throw new Error("Not found");
         const p = await res.json();
         const knownCategory = CATEGORIES.includes(p.category) ? p.category : "Impresoras";
-        const brandsForCat = knownCategory === "Impresoras" ? PRINTER_BRANDS : ALL_BRANDS;
-        const knownBrand = brandsForCat.includes(p.brand ?? "") ? p.brand : (knownCategory === "Impresoras" ? "Bambu Lab" : "Otro");
+        const brandsForCat = brandsForCategory(knownCategory);
+        const knownBrand = brandsForCat.length === 0
+          ? ""
+          : (brandsForCat.includes(p.brand ?? "") ? p.brand : brandsForCat[0]);
         setForm({
           name: p.name || "",
           brand: knownBrand,
-          customBrand: knownBrand === "Otro" ? (p.brand || "") : "",
           category: knownCategory,
           subcategory: p.subcategory || "",
           description: p.description || "",
@@ -123,7 +131,7 @@ export default function EditProductPage() {
     setLoading(true);
 
     try {
-      const brand = form.brand === "Otro" ? form.customBrand : form.brand;
+      const brand = hasBrand ? form.brand : "";
 
       const payload: Record<string, unknown> = {
         name: form.name?.trim(),
@@ -215,33 +223,30 @@ export default function EditProductPage() {
             </Field>
           </div>
 
-          {/* Brand */}
-          <div>
-            <Field label="Marca">
-              <select value={form.brand} onChange={(e) => set("brand", e.target.value)} style={inputStyle}>
-                {availableBrands.map((b) => <option key={b} value={b}>{b}</option>)}
-              </select>
-            </Field>
-          </div>
-
           {/* Category */}
-          <div>
+          <div style={{ gridColumn: hasBrand ? "auto" : "1 / -1" }}>
             <Field label="Categoría">
               <select value={form.category} onChange={(e) => {
                 const newCat = e.target.value;
-                const brands = newCat === "Impresoras" ? PRINTER_BRANDS : ALL_BRANDS;
-                setForm(f => ({ ...f, category: newCat, brand: brands.includes(f.brand) ? f.brand : brands[0] }));
+                const brands = brandsForCategory(newCat);
+                setForm(f => ({
+                  ...f,
+                  category: newCat,
+                  brand: brands.length === 0 ? "" : (brands.includes(f.brand) ? f.brand : brands[0]),
+                }));
               }} style={inputStyle}>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
           </div>
 
-          {/* Custom brand */}
-          {form.brand === "Otro" && (
-            <div style={{ gridColumn: "1 / -1" }}>
-              <Field label="Nombre de marca personalizada">
-                <input value={form.customBrand} onChange={(e) => set("customBrand", e.target.value)} placeholder="Ej: Prusa" style={inputStyle} />
+          {/* Brand (only when category has brand) */}
+          {hasBrand && (
+            <div>
+              <Field label="Marca">
+                <select value={form.brand} onChange={(e) => set("brand", e.target.value)} style={inputStyle}>
+                  {availableBrands.map((b) => <option key={b} value={b}>{b}</option>)}
+                </select>
               </Field>
             </div>
           )}

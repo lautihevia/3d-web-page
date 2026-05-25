@@ -14,6 +14,14 @@ object ProductSpecification {
         }
     }
 
+    /** Filtra productos por categoría (case-insensitive). */
+    fun hasCategory(category: String?): Specification<Product> {
+        return Specification { root, _, cb ->
+            if (category.isNullOrBlank()) null
+            else cb.equal(cb.lower(root.get("category")), category.lowercase())
+        }
+    }
+
     /** Filtra productos con precio mínimo. */
     fun minPrice(minPrice: Double?): Specification<Product> {
         return Specification { root, query, cb ->

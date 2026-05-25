@@ -38,6 +38,7 @@ class ProductController(private val productRepository: ProductRepository) {
             @RequestParam(required = false) maxPrice: Double?,
             @RequestParam(required = false) isActive: Boolean?,
             @RequestParam(required = false) featured: Boolean?,
+            @RequestParam(required = false) category: String?,
             @RequestParam(required = false) subcategory: String?,
             @RequestParam(required = false) onSale: Boolean?
     ): Page<Product> {
@@ -50,6 +51,7 @@ class ProductController(private val productRepository: ProductRepository) {
                 Specification.where(ProductSpecification.hasBrand(if (brandList.isNullOrEmpty()) brand else null))
                         .and(ProductSpecification.hasAnyBrand(brandList))
                         .and(ProductSpecification.hasName(name))
+                        .and(ProductSpecification.hasCategory(category))
                         .and(ProductSpecification.minPrice(minPrice))
                         .and(ProductSpecification.maxPrice(maxPrice))
                         .and(ProductSpecification.isActive(isActive))

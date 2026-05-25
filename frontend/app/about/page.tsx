@@ -12,41 +12,41 @@ const STATS = [
 const TIMELINE = [
   {
     year: "2020",
-    title: "Empezamos en un garage",
-    desc: "Una Ender 3 prestada, mucha curiosidad y cero plan de negocios. Imprimíamos piezas para amigos.",
+    title: "Nace la primera chispa",
+    desc: "Una sola Ender 3, un filamento PLA blanco y ganas infinitas de experimentar y aprender.",
   },
   {
     year: "2022",
-    title: "Abrimos el primer showroom",
-    desc: "Buenos Aires. Probamos cada equipo antes de incorporarlo al catálogo. La filosofía no cambió.",
+    title: "Ampliamos el taller",
+    desc: "Sumamos nuevas máquinas al ecosistema y empezamos a dominar diferentes materiales e insumos.",
   },
   {
     year: "2024",
-    title: "Sumamos electrónica y filamentos",
-    desc: "Porque imprimir es solo el principio. Los makers necesitan stack completo: material, sensores, soporte.",
+    title: "Compartimos la solución",
+    desc: "Empezamos a distribuir repuestos y filamentos en baja escala para ayudar a otros makers.",
   },
   {
     year: "2026",
-    title: "Hoy somos referentes",
-    desc: "Pero seguimos pensando como en 2020. Recomendamos lo que probamos, hablamos como personas.",
+    title: "Abastecemos a la comunidad",
+    desc: "Escalamos a nivel nacional con stock permanente de impresoras, componentes y soporte técnico real.",
   },
 ];
 
 const PRINCIPLES = [
   {
     n: "01",
-    t: "Curamos",
-    d: "Probamos cada equipo antes de incorporarlo. Si no lo recomendaríamos a un amigo, no entra al catálogo.",
+    t: "Testeamos",
+    d: "No vendemos cajas cerradas a ciegas. Pasamos horas probando cada impresora y filamento; si no supera nuestras exigencias en el taller, no entra a la tienda.",
   },
   {
     n: "02",
     t: "Acompañamos",
-    d: "Desde la primera consulta hasta la décima impresión, te ayudamos a sacarle todo el jugo a tu equipo.",
+    d: "Estamos con vos ante cualquier duda, desde la calibración inicial hasta tu impresión más compleja. Te ayudamos a resolver problemas de maker a maker, sin vueltas.",
   },
   {
     n: "03",
-    t: "Resolvemos",
-    d: "Soporte técnico real con humanos. Sin tickets, sin chatbots. Hablamos como makers porque lo somos.",
+    t: "Respondemos",
+    d: "Olvidate de los catálogos vacíos. Si necesitás un repuesto urgente o te quedás sin insumos a mitad de un proyecto, tenemos stock real y permanente en todo el país.",
   },
 ];
 
@@ -110,7 +110,7 @@ export default function AboutPage() {
                 margin: 0,
               }}
             >
-              Pensamos
+              Creamos
               <br />
               como{" "}
               <em
@@ -123,9 +123,9 @@ export default function AboutPage() {
                 makers,
               </em>
               <br />
-              vendemos
+              respaldamos
               <br />
-              como tales.
+              como profesionales.
             </h1>
           </div>
           <div>
@@ -137,9 +137,9 @@ export default function AboutPage() {
                 margin: 0,
               }}
             >
-              No somos una tienda más. Somos un equipo de gente que imprime,
-              repara, modifica y rompe cosas todos los días — y comparte lo que
-              aprendió.
+              No abrimos una tienda tradicional. Pasamos por todas las fallas,
+              pruebas y frustraciones que trae la impresión 3D en el día a día —
+              y acumulamos el conocimiento necesario para guiarte.
             </p>
             <p
               style={{
@@ -149,8 +149,9 @@ export default function AboutPage() {
                 marginTop: 20,
               }}
             >
-              Recomendamos solo lo que nos llevaríamos a casa. Cobramos lo justo.
-              Respondemos como personas. Es así de simple.
+              Elegimos traer solo los insumos que superaron nuestras exigencias.
+              Valores transparentes. Te ayudamos a resolver cualquier problema
+              de maker a maker. Garantizado.
             </p>
           </div>
         </div>
@@ -229,8 +230,8 @@ export default function AboutPage() {
                 lineHeight: 1,
               }}
             >
-              De un garage
-              <br />a un showroom.
+              De la primera pieza
+              <br />a todo el país.
             </h2>
           </div>
           <div style={{ alignSelf: "flex-end" }}>
@@ -243,8 +244,8 @@ export default function AboutPage() {
                 maxWidth: 500,
               }}
             >
-              Cuatro momentos que nos definen. Sin atajos, sin marketing — solo
-              cosas que pasaron.
+              Cuatro hitos de nuestro camino. Sin vueltas, sin misterios — solo
+              nuestra historia real.
             </p>
           </div>
         </div>
@@ -392,66 +393,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA strip */}
-      <section
-        className="rsp-section-pad"
-        style={{ padding: "0 56px 100px", maxWidth: 1400, margin: "0 auto" }}
-      >
-        <div
-          style={{
-            background: PRIMARY,
-            color: "#fff",
-            borderRadius: 24,
-            padding: "56px 48px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 32,
-          }}
-        >
-          <div>
-            <h3
-              style={{
-                fontSize: 44,
-                fontWeight: 700,
-                letterSpacing: "-.03em",
-                margin: 0,
-                lineHeight: 1,
-              }}
-            >
-              ¿Querés conocer
-              <br />
-              el showroom?
-            </h3>
-            <p
-              style={{ fontSize: 16, marginTop: 16, opacity: 0.85, maxWidth: 500 }}
-            >
-              Visitanos en Rafaela Santa Fe y probá los equipos en vivo. Atención
-              personalizada con turno previo.
-            </p>
-          </div>
-          <a
-            href="/contact"
-            style={{
-              background: "#fff",
-              color: PRIMARY,
-              border: "none",
-              padding: "16px 28px",
-              borderRadius: 12,
-              fontWeight: 700,
-              fontSize: 15,
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              flexShrink: 0,
-              textDecoration: "none",
-            }}
-          >
-            Pedir un turno →
-          </a>
-        </div>
-      </section>
     </div>
   );
 }

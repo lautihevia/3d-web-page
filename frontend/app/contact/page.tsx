@@ -5,6 +5,14 @@ import Link from "next/link";
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 
 const PRIMARY = "#3b82f6";
+const WEB3FORMS_ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "";
+
+const ASUNTO_LABELS: Record<string, string> = {
+  consulta: "Consulta general",
+  presupuesto: "Pedido de presupuesto",
+  impresion: "Impresión a medida",
+  soporte: "Soporte técnico",
+};
 
 const CONTACT_INFO = [
   {
@@ -33,6 +41,7 @@ export default function ContactPage() {
   });
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const valid =
     form.nombre.length >= 2 &&
@@ -42,10 +51,40 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!valid) return;
+    setErrorMsg("");
+
+    if (!WEB3FORMS_ACCESS_KEY) {
+      setErrorMsg("El formulario no está configurado todavía. Escribinos directamente a 3dencasastore@gmail.com.");
+      return;
+    }
+
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    setLoading(false);
-    setSent(true);
+    try {
+      const asuntoLabel = ASUNTO_LABELS[form.asunto] ?? form.asunto;
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: `[3dencasa] ${asuntoLabel} — ${form.nombre}`,
+          from_name: form.nombre,
+          replyto: form.email,
+          name: form.nombre,
+          email: form.email,
+          asunto: asuntoLabel,
+          message: form.mensaje,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "No se pudo enviar el mensaje.");
+      }
+      setSent(true);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Ocurrió un error al enviar. Intentá nuevamente o escribinos por mail.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -244,6 +283,7 @@ export default function ContactPage() {
                 <button
                   onClick={() => {
                     setSent(false);
+                    setErrorMsg("");
                     setForm({ nombre: "", email: "", asunto: "consulta", mensaje: "" });
                   }}
                   style={{
@@ -397,6 +437,22 @@ export default function ContactPage() {
                     }}
                   />
                 </div>
+
+                {errorMsg && (
+                  <div
+                    style={{
+                      background: "rgba(239,68,68,.12)",
+                      border: "1px solid rgba(239,68,68,.3)",
+                      color: "#fca5a5",
+                      padding: "10px 14px",
+                      borderRadius: 10,
+                      fontSize: 13,
+                      marginBottom: 14,
+                    }}
+                  >
+                    {errorMsg}
+                  </div>
+                )}
 
                 <button
                   type="submit"

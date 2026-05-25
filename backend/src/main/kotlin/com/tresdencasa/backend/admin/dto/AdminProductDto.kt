@@ -6,7 +6,8 @@ data class ColorImageDto(
         val id: Long,
         val colorName: String,
         val imageUrl: String,
-        val sortOrder: Int
+        val sortOrder: Int,
+        val inStock: Boolean
 )
 
 /** DTO para respuesta de producto en el panel admin. */
@@ -22,6 +23,7 @@ data class AdminProductDto(
         val imageUrl3: String?,
         val imageUrl4: String?,
         val isActive: Boolean,
+        val inStock: Boolean,
         val featured: Boolean,
         val technicalSpecs: String?,
         val compatibilityNotes: String?,

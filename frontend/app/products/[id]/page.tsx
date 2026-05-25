@@ -21,6 +21,7 @@ interface ColorImage {
   colorName: string;
   imageUrl: string;
   sortOrder: number;
+  inStock?: boolean;
 }
 
 interface Product {
@@ -34,6 +35,7 @@ interface Product {
   imageUrl3?: string;
   imageUrl4?: string;
   isActive: boolean;
+  inStock?: boolean;
   onSale?: boolean;
   salePrice?: number;
   technicalSpecs?: string;
@@ -69,8 +71,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
   if (!product) notFound();
 
   const price = product.variants[0]?.price;
-  const inStock = product.variants.some((v) => v.stockQuantity > 0);
   const hasColors = (product.colorImages?.length ?? 0) > 0;
+  const inStock = hasColors
+    ? product.colorImages!.some((c) => c.inStock !== false)
+    : product.inStock !== false;
 
   return (
     <div
@@ -150,7 +154,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
           price={price}
           onSale={product.onSale}
           salePrice={product.salePrice}
-          inStock={inStock}
           colorImages={product.colorImages ?? []}
         />
       ) : (

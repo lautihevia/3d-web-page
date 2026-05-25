@@ -32,6 +32,7 @@ const IMAGE_SLOTS = [
 interface ColorImage {
   colorName: string;
   imageUrl: string;
+  inStock: boolean;
 }
 
 export default function EditProductPage() {
@@ -53,7 +54,7 @@ export default function EditProductPage() {
     imageUrl3: "",
     imageUrl4: "",
     price: "",
-    stock: "0",
+    inStock: true,
     isActive: true,
     featured: false,
     technicalSpecs: "",
@@ -62,7 +63,7 @@ export default function EditProductPage() {
     salePrice: "",
   });
 
-  const [colorImages, setColorImages] = useState<ColorImage[]>([{ colorName: "", imageUrl: "" }]);
+  const [colorImages, setColorImages] = useState<ColorImage[]>([{ colorName: "", imageUrl: "", inStock: true }]);
 
   const set = (key: string, val: string | boolean) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -71,9 +72,9 @@ export default function EditProductPage() {
   const hasBrand = !CATEGORIES_WITHOUT_BRAND.includes(form.category);
   const availableBrands = brandsForCategory(form.category);
 
-  const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "" }]);
+  const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "", inStock: true }]);
   const removeColorRow = (i: number) => setColorImages((prev) => prev.filter((_, idx) => idx !== i));
-  const updateColorRow = (i: number, field: keyof ColorImage, val: string) =>
+  const updateColorRow = (i: number, field: keyof ColorImage, val: string | boolean) =>
     setColorImages((prev) => prev.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
 
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function EditProductPage() {
           imageUrl3: p.imageUrl3 || "",
           imageUrl4: p.imageUrl4 || "",
           price: p.variants?.[0]?.price?.toString() || "",
-          stock: p.variants?.[0]?.stockQuantity?.toString() || "0",
+          inStock: p.inStock ?? true,
           isActive: p.isActive,
           featured: p.featured ?? false,
           technicalSpecs: p.technicalSpecs || "",
@@ -109,9 +110,10 @@ export default function EditProductPage() {
           salePrice: p.salePrice?.toString() || "",
         });
         if (p.colorImages && p.colorImages.length > 0) {
-          setColorImages(p.colorImages.map((c: { colorName: string; imageUrl: string }) => ({
+          setColorImages(p.colorImages.map((c: { colorName: string; imageUrl: string; inStock?: boolean }) => ({
             colorName: c.colorName,
             imageUrl: c.imageUrl,
+            inStock: c.inStock ?? true,
           })));
         }
       } catch {
@@ -140,7 +142,7 @@ export default function EditProductPage() {
         subcategory: form.subcategory || null,
         description: form.description?.trim() || null,
         price: form.price ? parseFloat(form.price) : null,
-        stock: parseInt(form.stock) || 0,
+        inStock: form.inStock ?? true,
         isActive: form.isActive ?? true,
         featured: form.featured ?? false,
         technicalSpecs: form.technicalSpecs?.trim() || null,
@@ -265,16 +267,9 @@ export default function EditProductPage() {
           )}
 
           {/* Price */}
-          <div>
+          <div style={{ gridColumn: "1 / -1" }}>
             <Field label="Precio (ARS)">
               <input type="number" min="0" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="0" style={inputStyle} />
-            </Field>
-          </div>
-
-          {/* Stock */}
-          <div>
-            <Field label="Stock">
-              <input type="number" min="0" value={form.stock} onChange={(e) => set("stock", e.target.value)} placeholder="0" style={inputStyle} />
             </Field>
           </div>
 
@@ -311,6 +306,26 @@ export default function EditProductPage() {
                             style={{ ...inputStyle, background: "#fff" }}
                           />
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => updateColorRow(i, "inStock", !row.inStock)}
+                          title={row.inStock ? "Con stock — click para marcar sin stock" : "Sin stock — click para marcar con stock"}
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: 8,
+                            border: "1px solid",
+                            borderColor: row.inStock ? "#22c55e55" : "#ef444455",
+                            background: row.inStock ? "#22c55e18" : "#ef444418",
+                            color: row.inStock ? "#16a34a" : "#dc2626",
+                            fontSize: 11,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {row.inStock ? "✓ Stock" : "✕ Sin stock"}
+                        </button>
                         <button
                           type="button"
                           onClick={() => removeColorRow(i)}
@@ -404,6 +419,19 @@ export default function EditProductPage() {
               value={form.isActive}
               onChange={(v) => set("isActive", v)}
             />
+            {!isFilament && (
+              <Toggle
+                label="Hay stock"
+                desc={form.inStock ? "Disponible para la venta" : "Sin stock — se muestra con cartel rojo"}
+                value={form.inStock}
+                onChange={(v) => set("inStock", v)}
+              />
+            )}
+            {isFilament && (
+              <div style={{ fontSize: 12, color: "rgba(0,0,0,.5)", padding: "0 2px", lineHeight: 1.4 }}>
+                <strong>Stock por color:</strong> en filamentos, el stock se maneja por color en la sección de arriba (cada color tiene su botón Stock / Sin stock).
+              </div>
+            )}
             <Toggle
               label="Producto destacado"
               desc={form.featured ? "Se muestra en la sección destacados del inicio" : "No aparece en destacados"}

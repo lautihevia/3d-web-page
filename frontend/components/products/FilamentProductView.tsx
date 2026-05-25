@@ -12,6 +12,7 @@ interface ColorImage {
   colorName: string;
   imageUrl: string;
   sortOrder: number;
+  inStock?: boolean;
 }
 
 interface FilamentProductViewProps {
@@ -23,7 +24,6 @@ interface FilamentProductViewProps {
   price?: number;
   onSale?: boolean;
   salePrice?: number;
-  inStock: boolean;
   colorImages: ColorImage[];
 }
 
@@ -40,11 +40,12 @@ export function FilamentProductView({
   price,
   onSale,
   salePrice,
-  inStock,
   colorImages,
 }: FilamentProductViewProps) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const active = colorImages[selectedIdx] ?? colorImages[0];
+  const activeInStock = active?.inStock !== false;
+  const anyInStock = colorImages.some((c) => c.inStock !== false);
 
   return (
     <section
@@ -138,10 +139,10 @@ export function FilamentProductView({
               width: 6,
               height: 6,
               borderRadius: "50%",
-              background: inStock ? "#22c55e" : "#ef4444",
+              background: anyInStock ? "#22c55e" : "#ef4444",
             }}
           />
-          {inStock ? "EN STOCK" : "SIN STOCK"}
+          {anyInStock ? "EN STOCK" : "SIN STOCK"}
           {brand && ` · ${brand.toUpperCase()}`}
         </div>
 
@@ -173,25 +174,41 @@ export function FilamentProductView({
             <span style={{ color: "#0b0d12", textTransform: "none", letterSpacing: 0 }}>
               {active?.colorName ?? "—"}
             </span>
+            {!activeInStock && (
+              <span style={{ color: "#dc2626", textTransform: "none", letterSpacing: 0, marginLeft: 8, fontWeight: 700 }}>
+                · Sin stock
+              </span>
+            )}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {colorImages.map((ci, i) => {
               const isActive = i === selectedIdx;
+              const inStock = ci.inStock !== false;
+              const RED = "#dc2626";
+              const borderColor = !inStock
+                ? (isActive ? RED : "#ef444466")
+                : (isActive ? PRIMARY : "rgba(0,0,0,.12)");
+              const bg = !inStock
+                ? (isActive ? "#ef444418" : "#ef44440a")
+                : (isActive ? `${PRIMARY}12` : "#fff");
+              const textColor = !inStock ? RED : (isActive ? PRIMARY : "#0b0d12");
               return (
                 <button
                   key={ci.id}
                   onClick={() => setSelectedIdx(i)}
+                  title={inStock ? ci.colorName : `${ci.colorName} — sin stock`}
                   style={{
                     padding: "8px 14px",
                     borderRadius: 999,
-                    border: `1.5px solid ${isActive ? PRIMARY : "rgba(0,0,0,.12)"}`,
-                    background: isActive ? `${PRIMARY}12` : "#fff",
-                    color: isActive ? PRIMARY : "#0b0d12",
+                    border: `1.5px solid ${borderColor}`,
+                    background: bg,
+                    color: textColor,
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
                     fontFamily: "inherit",
                     transition: "all .15s",
+                    textDecoration: !inStock ? "line-through" : "none",
                   }}
                 >
                   {ci.colorName}

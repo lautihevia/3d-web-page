@@ -22,6 +22,8 @@ class Product(
         @Column(name = "image_url_3") var imageUrl3: String? = null,
         @Column(name = "image_url_4") var imageUrl4: String? = null,
         @Column(name = "is_active") var isActive: Boolean = true,
+        @Column(name = "in_stock", columnDefinition = "boolean DEFAULT true")
+        var inStock: Boolean = true,
         @Column(name = "is_featured", columnDefinition = "boolean DEFAULT false")
         var featured: Boolean = false,
         @Column(name = "technical_specs", columnDefinition = "TEXT") var technicalSpecs: String? = null,

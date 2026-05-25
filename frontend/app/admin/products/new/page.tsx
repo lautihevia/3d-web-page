@@ -32,6 +32,7 @@ const IMAGE_SLOTS = [
 interface ColorImage {
   colorName: string;
   imageUrl: string;
+  inStock: boolean;
 }
 
 export default function NewProductPage() {
@@ -51,7 +52,7 @@ export default function NewProductPage() {
     imageUrl3: "",
     imageUrl4: "",
     price: "",
-    stock: "0",
+    inStock: true,
     isActive: true,
     featured: false,
     technicalSpecs: "",
@@ -60,7 +61,7 @@ export default function NewProductPage() {
     salePrice: "",
   });
 
-  const [colorImages, setColorImages] = useState<ColorImage[]>([{ colorName: "", imageUrl: "" }]);
+  const [colorImages, setColorImages] = useState<ColorImage[]>([{ colorName: "", imageUrl: "", inStock: true }]);
 
   const set = (key: string, val: string | boolean) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -69,9 +70,9 @@ export default function NewProductPage() {
   const hasBrand = !CATEGORIES_WITHOUT_BRAND.includes(form.category);
   const availableBrands = brandsForCategory(form.category);
 
-  const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "" }]);
+  const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "", inStock: true }]);
   const removeColorRow = (i: number) => setColorImages((prev) => prev.filter((_, idx) => idx !== i));
-  const updateColorRow = (i: number, field: keyof ColorImage, val: string) =>
+  const updateColorRow = (i: number, field: keyof ColorImage, val: string | boolean) =>
     setColorImages((prev) => prev.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,7 +91,8 @@ export default function NewProductPage() {
       if (form.subcategory) body.append("subcategory", form.subcategory);
       if (form.description?.trim()) body.append("description", form.description.trim());
       body.append("price", form.price || "0");
-      body.append("stock", form.stock || "0");
+      body.append("stock", "0");
+      body.append("inStock", String(form.inStock ?? true));
       body.append("featured", String(form.featured ?? false));
       body.append("onSale", String(form.onSale ?? false));
       if (form.onSale && form.salePrice) body.append("salePrice", form.salePrice);
@@ -215,16 +217,9 @@ export default function NewProductPage() {
           )}
 
           {/* Price */}
-          <div>
+          <div style={{ gridColumn: "1 / -1" }}>
             <Field label="Precio (ARS) *">
               <input required type="number" min="0" step="1" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="1290000" style={inputStyle} />
-            </Field>
-          </div>
-
-          {/* Stock */}
-          <div>
-            <Field label="Stock">
-              <input type="number" min="0" value={form.stock} onChange={(e) => set("stock", e.target.value)} placeholder="0" style={inputStyle} />
             </Field>
           </div>
 
@@ -262,6 +257,26 @@ export default function NewProductPage() {
                             style={{ ...inputStyle, background: "#fff" }}
                           />
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => updateColorRow(i, "inStock", !row.inStock)}
+                          title={row.inStock ? "Con stock — click para marcar sin stock" : "Sin stock — click para marcar con stock"}
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: 8,
+                            border: "1px solid",
+                            borderColor: row.inStock ? "#22c55e55" : "#ef444455",
+                            background: row.inStock ? "#22c55e18" : "#ef444418",
+                            color: row.inStock ? "#16a34a" : "#dc2626",
+                            fontSize: 11,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {row.inStock ? "✓ Stock" : "✕ Sin stock"}
+                        </button>
                         <button
                           type="button"
                           onClick={() => removeColorRow(i)}
@@ -355,6 +370,19 @@ export default function NewProductPage() {
               value={form.isActive}
               onChange={(v) => set("isActive", v)}
             />
+            {!isFilament && (
+              <Toggle
+                label="Hay stock"
+                desc={form.inStock ? "Disponible para la venta" : "Sin stock — se muestra con cartel rojo"}
+                value={form.inStock}
+                onChange={(v) => set("inStock", v)}
+              />
+            )}
+            {isFilament && (
+              <div style={{ fontSize: 12, color: "rgba(0,0,0,.5)", padding: "0 2px", lineHeight: 1.4 }}>
+                <strong>Stock por color:</strong> en filamentos, el stock se maneja por color en la sección de arriba (cada color tiene su botón Stock / Sin stock).
+              </div>
+            )}
             <Toggle
               label="Producto destacado"
               desc={form.featured ? "Se muestra en la sección destacados del inicio" : "No aparece en destacados"}

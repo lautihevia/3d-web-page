@@ -18,7 +18,8 @@ import org.springframework.web.multipart.MultipartFile
 data class ColorImageInput(
         val colorName: String = "",
         val imageUrl: String = "",
-        val sortOrder: Int = 0
+        val sortOrder: Int = 0,
+        val inStock: Boolean = true
 )
 
 data class UpdateProductRequest(
@@ -29,6 +30,7 @@ data class UpdateProductRequest(
         val subcategory: String? = null,
         val price: BigDecimal? = null,
         val stock: Int? = null,
+        val inStock: Boolean? = null,
         val imageUrl: String? = null,
         val imageUrl2: String? = null,
         val imageUrl3: String? = null,
@@ -62,6 +64,7 @@ class AdminProductController(
             imageUrl3 = imageUrl3,
             imageUrl4 = imageUrl4,
             isActive = isActive,
+            inStock = inStock,
             featured = featured,
             technicalSpecs = technicalSpecs,
             compatibilityNotes = compatibilityNotes,
@@ -70,7 +73,7 @@ class AdminProductController(
             price = variants.firstOrNull()?.price,
             stock = variants.firstOrNull()?.stockQuantity,
             variantCount = variants.size,
-            colorImages = colorImages.map { ColorImageDto(it.id, it.colorName, it.imageUrl, it.sortOrder) }
+            colorImages = colorImages.map { ColorImageDto(it.id, it.colorName, it.imageUrl, it.sortOrder, it.inStock) }
     )
 
     @GetMapping
@@ -95,7 +98,8 @@ class AdminProductController(
             @RequestParam(required = false) technicalSpecs: String?,
             @RequestParam(required = false) compatibilityNotes: String?,
             @RequestParam(required = false) onSale: Boolean?,
-            @RequestParam(required = false) salePrice: BigDecimal?
+            @RequestParam(required = false) salePrice: BigDecimal?,
+            @RequestParam(required = false) inStock: Boolean?
     ): ResponseEntity<AdminProductDto> {
         val finalImageUrl = when {
             !imageUrl.isNullOrBlank() -> imageUrl.trim()
@@ -117,7 +121,8 @@ class AdminProductController(
                 technicalSpecs = technicalSpecs?.ifBlank { null },
                 compatibilityNotes = compatibilityNotes?.ifBlank { null },
                 onSale = onSale ?: false,
-                salePrice = salePrice
+                salePrice = salePrice,
+                inStock = inStock ?: true
         )
         val defaultVariant = ProductVariant(
                 product = product,
@@ -138,7 +143,8 @@ class AdminProductController(
                         product.addColorImage(ProductColorImage(
                                 colorName = ci.colorName.trim(),
                                 imageUrl = ci.imageUrl.trim(),
-                                sortOrder = ci.sortOrder.takeIf { it > 0 } ?: i
+                                sortOrder = ci.sortOrder.takeIf { it > 0 } ?: i,
+                                inStock = ci.inStock
                         ))
                     }
                 }
@@ -167,6 +173,7 @@ class AdminProductController(
         if (request.imageUrl3 != null) product.imageUrl3 = request.imageUrl3.ifBlank { null }
         if (request.imageUrl4 != null) product.imageUrl4 = request.imageUrl4.ifBlank { null }
         if (request.isActive != null) product.isActive = request.isActive
+        if (request.inStock != null) product.inStock = request.inStock
         if (request.featured != null) product.featured = request.featured
         if (request.technicalSpecs != null) product.technicalSpecs = request.technicalSpecs.ifBlank { null }
         if (request.compatibilityNotes != null) product.compatibilityNotes = request.compatibilityNotes.ifBlank { null }
@@ -189,7 +196,8 @@ class AdminProductController(
                     product.addColorImage(ProductColorImage(
                             colorName = ci.colorName.trim(),
                             imageUrl = ci.imageUrl.trim(),
-                            sortOrder = ci.sortOrder.takeIf { it > 0 } ?: i
+                            sortOrder = ci.sortOrder.takeIf { it > 0 } ?: i,
+                            inStock = ci.inStock
                     ))
                 }
             }

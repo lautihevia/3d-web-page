@@ -10,16 +10,22 @@ import { useRouter } from "next/navigation";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
 
+interface AdminProductColorImage {
+  inStock?: boolean;
+}
+
 interface AdminProduct {
   id: number;
   name: string;
   description?: string;
   brand?: string;
+  category?: string;
   mainImageUrl?: string;
   isActive: boolean;
+  inStock?: boolean;
   price?: number;
-  stock?: number;
   variantCount: number;
+  colorImages?: AdminProductColorImage[];
 }
 
 function formatPrice(n?: number) {
@@ -180,12 +186,28 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Price */}
-              <div style={{ textAlign: "right", flexShrink: 0, minWidth: 100 }}>
+              {/* Price + stock badge */}
+              <div style={{ textAlign: "right", flexShrink: 0, minWidth: 110 }}>
                 <div style={{ fontWeight: 700, fontSize: 16, color: PRIMARY }}>{formatPrice(p.price)}</div>
-                <div style={{ fontSize: 12, color: "rgba(0,0,0,.4)", marginTop: 1 }}>
-                  Stock: {p.stock ?? "—"}
-                </div>
+                {(() => {
+                  const isFilament = p.category === "Filamentos";
+                  if (isFilament && p.colorImages && p.colorImages.length > 0) {
+                    const total = p.colorImages.length;
+                    const withStock = p.colorImages.filter((c) => c.inStock !== false).length;
+                    const allOut = withStock === 0;
+                    return (
+                      <div style={{ fontSize: 11, fontWeight: 600, marginTop: 3, color: allOut ? "#dc2626" : "rgba(0,0,0,.5)" }}>
+                        {withStock}/{total} colores con stock
+                      </div>
+                    );
+                  }
+                  const inStock = p.inStock !== false;
+                  return (
+                    <div style={{ fontSize: 11, fontWeight: 700, marginTop: 3, color: inStock ? "#16a34a" : "#dc2626" }}>
+                      {inStock ? "En stock" : "Sin stock"}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Active toggle */}

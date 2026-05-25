@@ -39,11 +39,13 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   params.set("size", "36");
   if (str(search.brands)) params.set("brands", str(search.brands)!);
   if (str(search.brand)) params.set("brand", str(search.brand)!);
+  if (str(search.category)) params.set("category", str(search.category)!);
   if (str(search.minPrice)) params.set("minPrice", str(search.minPrice)!);
   if (str(search.maxPrice)) params.set("maxPrice", str(search.maxPrice)!);
   if (str(search.isActive)) params.set("isActive", str(search.isActive)!);
 
   const data = await fetchProducts(params);
+  const activeCategory = str(search.category);
 
   return (
     <div style={{ background: "#f7f6f1", minHeight: "100vh" }}>
@@ -97,7 +99,17 @@ export default async function CatalogPage({ searchParams }: PageProps) {
               Inicio
             </Link>
             <span>›</span>
-            <span style={{ color: "#fff" }}>Catálogo</span>
+            {activeCategory ? (
+              <>
+                <Link href="/catalog" style={{ color: "rgba(255,255,255,.5)", textDecoration: "none" }}>
+                  Catálogo
+                </Link>
+                <span>›</span>
+                <span style={{ color: "#fff" }}>{activeCategory}</span>
+              </>
+            ) : (
+              <span style={{ color: "#fff" }}>Catálogo</span>
+            )}
           </div>
 
           <div
@@ -110,7 +122,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
               textTransform: "uppercase",
             }}
           >
-            // Catálogo completo
+            // {activeCategory ? `Categoría · ${activeCategory}` : "Catálogo completo"}
           </div>
           <h1
             style={{
@@ -121,10 +133,16 @@ export default async function CatalogPage({ searchParams }: PageProps) {
               lineHeight: 1,
             }}
           >
-            Todos los <span style={{ color: PRIMARY }}>productos</span>
+            {activeCategory ? (
+              <span style={{ color: PRIMARY }}>{activeCategory}</span>
+            ) : (
+              <>Todos los <span style={{ color: PRIMARY }}>productos</span></>
+            )}
           </h1>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,.6)", marginTop: 14 }}>
-            Filtrá por marca, precio y disponibilidad para encontrar lo que necesitás.
+            {activeCategory
+              ? `Todos los productos en ${activeCategory}. Filtrá por marca, precio y disponibilidad.`
+              : "Filtrá por marca, precio y disponibilidad para encontrar lo que necesitás."}
           </p>
         </div>
       </div>

@@ -24,6 +24,9 @@ export interface Product {
     brand: string | null;
     mainImageUrl: string | null;
     isActive: boolean;
+    featured: boolean;
+    onSale: boolean;
+    salePrice: number | null;
     createdAt: string;
     variants: ProductVariant[];
 }

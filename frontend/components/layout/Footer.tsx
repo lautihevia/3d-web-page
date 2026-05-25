@@ -42,7 +42,7 @@ export function Footer() {
       >
         <div>
           <div style={{ fontWeight: 800, fontSize: 18 }}>
-            3d<span style={{ color: "#3b82f6" }}>EN</span>CASA
+            3<span style={{ color: "#3b82f6" }}>D</span>encasa
           </div>
           <p
             style={{
@@ -110,7 +110,7 @@ export function Footer() {
           marginInline: "auto",
         }}
       >
-        © {new Date().getFullYear()} 3dENCASA. Todos los derechos reservados.
+        © {new Date().getFullYear()} 3Dencasa. Todos los derechos reservados.
       </div>
     </footer>
   );

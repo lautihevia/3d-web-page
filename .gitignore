@@ -18,6 +18,8 @@ out/
 bin/
 */build/
 */.gradle/
+.kotlin/
+*/.kotlin/
 *.log
 
 # --- FRONTEND (Node / Next.js) ---

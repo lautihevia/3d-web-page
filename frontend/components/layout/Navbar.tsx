@@ -14,9 +14,9 @@ const IMPRESORAS = [
 ];
 
 const INSUMOS = [
-  { label: "Filamentos", href: "/store/filamentos" },
-  { label: "Electrónica", href: "/store/electronica" },
-  { label: "Herramientas", href: "/store/herramientas" },
+  { label: "Filamentos", href: "/catalog?category=Filamentos" },
+  { label: "Electrónica", href: "/catalog?category=Electrónica" },
+  { label: "Repuestos y Kits", href: "/catalog?category=Kits y Repuestos" },
 ];
 
 interface DropdownProps {
@@ -91,7 +91,7 @@ export function Navbar() {
         }}
       >
         <Link href="/" style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-.02em", color: "#fff", textDecoration: "none" }}>
-          3d<span style={{ color: PRIMARY }}>EN</span>CASA
+          3<span style={{ color: PRIMARY }}>D</span>encasa
         </Link>
 
         {/* Desktop nav */}
@@ -142,7 +142,7 @@ export function Navbar() {
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
             <span style={{ fontWeight: 800, fontSize: 18, color: "#fff", letterSpacing: "-.02em" }}>
-              3d<span style={{ color: PRIMARY }}>EN</span>CASA
+              3<span style={{ color: PRIMARY }}>D</span>encasa
             </span>
             <button onClick={() => setMobileOpen(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 4 }}>
               <X size={24} />

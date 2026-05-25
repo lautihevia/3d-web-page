@@ -14,10 +14,15 @@ object ProductSpecification {
         }
     }
 
-    /**
-     * Filtra productos con precio mínimo. Compara contra el precio de la primera variante del
-     * producto.
-     */
+    /** Filtra productos por categoría (case-insensitive). */
+    fun hasCategory(category: String?): Specification<Product> {
+        return Specification { root, _, cb ->
+            if (category.isNullOrBlank()) null
+            else cb.equal(cb.lower(root.get("category")), category.lowercase())
+        }
+    }
+
+    /** Filtra productos con precio mínimo. */
     fun minPrice(minPrice: Double?): Specification<Product> {
         return Specification { root, query, cb ->
             if (minPrice == null) null
@@ -48,6 +53,13 @@ object ProductSpecification {
         }
     }
 
+    /** Filtra productos destacados (featured = true). */
+    fun isFeatured(featured: Boolean?): Specification<Product> {
+        return Specification { root, _, cb ->
+            if (featured == true) cb.equal(root.get<Boolean>("featured"), true) else null
+        }
+    }
+
     /** Filtra productos por nombre (case-insensitive, búsqueda parcial). */
     fun hasName(name: String?): Specification<Product> {
         return Specification { root, _, cb ->
@@ -56,11 +68,26 @@ object ProductSpecification {
         }
     }
 
-    /** Filtra productos cuya marca esté en la lista (OR). Ignora si la lista es vacía. */
+    /** Filtra productos cuya marca esté en la lista (OR, case-insensitive). */
     fun hasAnyBrand(brands: List<String>?): Specification<Product> {
-        return Specification { root, _, _ ->
+        return Specification { root, _, cb ->
             if (brands.isNullOrEmpty()) null
-            else root.get<String>("brand").`in`(brands.map { it.lowercase() })
+            else cb.lower(root.get("brand")).`in`(brands.map { it.lowercase() })
+        }
+    }
+
+    /** Filtra productos cuya subcategoría esté en la lista (OR, case-insensitive). */
+    fun hasAnySubcategory(subcategories: List<String>?): Specification<Product> {
+        return Specification { root, _, cb ->
+            if (subcategories.isNullOrEmpty()) null
+            else cb.lower(root.get("subcategory")).`in`(subcategories.map { it.lowercase() })
+        }
+    }
+
+    /** Filtra productos en oferta (onSale = true). */
+    fun isOnSale(onSale: Boolean?): Specification<Product> {
+        return Specification { root, _, cb ->
+            if (onSale == true) cb.equal(root.get<Boolean>("onSale"), true) else null
         }
     }
 }

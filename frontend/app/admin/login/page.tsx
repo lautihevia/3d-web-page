@@ -1,18 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { setAdminToken } from "@/lib/adminAuth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
 
-export default function AdminLoginPage() {
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const expired = searchParams.get("expired") === "1";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +75,7 @@ export default function AdminLoginPage() {
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ fontWeight: 800, fontSize: 24, color: "#fff", letterSpacing: "-.02em" }}>
-            3d<span style={{ color: PRIMARY }}>EN</span>CASA
+            3<span style={{ color: PRIMARY }}>D</span>encasa
           </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,.45)", marginTop: 8 }}>
             Panel de administración
@@ -92,6 +94,22 @@ export default function AdminLoginPage() {
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "#fff", margin: "0 0 24px" }}>
             Iniciar sesión
           </h1>
+
+          {expired && !error && (
+            <div
+              style={{
+                background: "rgba(251,191,36,.12)",
+                border: "1px solid rgba(251,191,36,.35)",
+                borderRadius: 10,
+                padding: "10px 14px",
+                fontSize: 13,
+                color: "#fbbf24",
+                marginBottom: 16,
+              }}
+            >
+              Tu sesión expiró o no tiene permisos suficientes. Ingresá nuevamente para continuar.
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 16 }}>
@@ -183,5 +201,13 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
   );
 }

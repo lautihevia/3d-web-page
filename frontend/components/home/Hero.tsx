@@ -116,10 +116,9 @@ export function Hero() {
               letterSpacing: "-.03em",
             }}
           >
-            Hardware{" "}
-            <span style={{ color: PRIMARY }}>para hacer</span>
+            Todo para imprimir
             <br />
-            cosas reales.
+            <span style={{ color: PRIMARY }}>sin límites.</span>
           </h1>
 
           <p
@@ -131,8 +130,9 @@ export function Hero() {
               lineHeight: 1.55,
             }}
           >
-            Curamos las mejores marcas de impresión 3D y electrónica. Mirá los
-            productos, consultá precios y recibí asesoramiento técnico real.
+            Encontrá repuestos garantizados, filamentos de primera calidad y las
+            impresoras 3D más confiables. Impulsá tu taller o emprendimiento con
+            stock permanente y soporte experto.
           </p>
 
           <div style={{ display: "flex", gap: 12, marginTop: 36, flexWrap: "wrap" }}>

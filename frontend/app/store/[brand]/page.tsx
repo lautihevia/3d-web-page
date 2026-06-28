@@ -13,6 +13,8 @@ interface Product {
   brand?: string;
   mainImageUrl?: string;
   isActive: boolean;
+  onSale?: boolean;
+  salePrice?: number;
   variants: {
     id: number;
     sku: string;
@@ -128,6 +130,8 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
                   imageUrl={product.mainImageUrl}
                   price={product.variants[0]?.price}
                   brand={product.brand}
+                  onSale={product.onSale}
+                  salePrice={product.salePrice}
                 />
               ))}
             </div>

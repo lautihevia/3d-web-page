@@ -10,8 +10,17 @@ const BRAND_OPTIONS = [
   { label: "Creality", value: "creality", group: "Impresoras" },
   { label: "Anycubic", value: "anycubic", group: "Impresoras" },
   { label: "W3D", value: "w3d", group: "Filamentos" },
-  { label: "Arduino", value: "arduino", group: "Electrónica" },
+  { label: "IID Max", value: "iid max", group: "Filamentos" },
 ];
+
+// Marcas relevantes según la categoría activa (valores en minúscula, match con la API).
+const BRANDS_BY_CATEGORY: Record<string, string[]> = {
+  Impresoras: ["bambu lab", "creality", "anycubic"],
+  Filamentos: ["w3d", "iid max", "creality"],
+};
+
+// Tipos de filamento (campo subcategory). Solo se muestran en la categoría Filamentos.
+const FILAMENT_TYPES = ["Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG"];
 
 const PRICE_PRESETS = [
   { label: "Hasta $500k", min: "", max: "500000" },
@@ -21,18 +30,33 @@ const PRICE_PRESETS = [
 
 interface CatalogFiltersProps {
   className?: string;
+  category?: string;
 }
 
-export function CatalogFilters({ className }: CatalogFiltersProps) {
+export function CatalogFilters({ className, category }: CatalogFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Marcas a mostrar: si hay categoría con marcas definidas, solo esas; si no, todas.
+  const brandOptions = category
+    ? BRAND_OPTIONS.filter((b) =>
+        (BRANDS_BY_CATEGORY[category] ?? []).includes(b.value)
+      )
+    : BRAND_OPTIONS;
+  const showBrands = brandOptions.length > 0;
+  const showTypes = category === "Filamentos";
 
   const initialBrands = (searchParams.get("brands") || "")
     .split(",")
     .map((b) => b.trim())
     .filter(Boolean);
+  const initialTypes = (searchParams.get("subcategory") || "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
 
   const [selectedBrands, setSelectedBrands] = useState<string[]>(initialBrands);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(initialTypes);
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
   const [onlyAvailable, setOnlyAvailable] = useState(
@@ -45,6 +69,12 @@ export function CatalogFilters({ className }: CatalogFiltersProps) {
     );
   };
 
+  const toggleType = (val: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(val) ? prev.filter((t) => t !== val) : [...prev, val]
+    );
+  };
+
   const applyPreset = (min: string, max: string) => {
     setMinPrice(min);
     setMaxPrice(max);
@@ -52,23 +82,31 @@ export function CatalogFilters({ className }: CatalogFiltersProps) {
 
   const apply = useCallback(() => {
     const params = new URLSearchParams();
+    if (category) params.set("category", category);
     if (selectedBrands.length) params.set("brands", selectedBrands.join(","));
+    if (showTypes && selectedTypes.length)
+      params.set("subcategory", selectedTypes.join(","));
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (onlyAvailable) params.set("isActive", "true");
     router.push(`/catalog${params.toString() ? `?${params}` : ""}`);
-  }, [selectedBrands, minPrice, maxPrice, onlyAvailable, router]);
+  }, [category, selectedBrands, selectedTypes, showTypes, minPrice, maxPrice, onlyAvailable, router]);
 
   const clear = () => {
     setSelectedBrands([]);
+    setSelectedTypes([]);
     setMinPrice("");
     setMaxPrice("");
     setOnlyAvailable(false);
-    router.push("/catalog");
+    router.push(`/catalog${category ? `?category=${encodeURIComponent(category)}` : ""}`);
   };
 
   const hasFilters =
-    selectedBrands.length > 0 || minPrice || maxPrice || onlyAvailable;
+    selectedBrands.length > 0 ||
+    selectedTypes.length > 0 ||
+    minPrice ||
+    maxPrice ||
+    onlyAvailable;
 
   return (
     <aside
@@ -167,55 +205,109 @@ export function CatalogFilters({ className }: CatalogFiltersProps) {
         </div>
 
         {/* Marca */}
-        <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(0,0,0,.06)" }}>
-          <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
-            Marca
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {BRAND_OPTIONS.map((b) => {
-              const checked = selectedBrands.includes(b.value);
-              return (
-                <label
-                  key={b.value}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    cursor: "pointer",
-                    fontSize: 14,
-                    color: checked ? "#0b0d12" : "rgba(0,0,0,.65)",
-                  }}
-                >
-                  <div
-                    onClick={() => toggleBrand(b.value)}
+        {showBrands && (
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(0,0,0,.06)" }}>
+            <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
+              Marca
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {brandOptions.map((b) => {
+                const checked = selectedBrands.includes(b.value);
+                return (
+                  <label
+                    key={b.value}
                     style={{
-                      width: 18,
-                      height: 18,
-                      borderRadius: 5,
-                      border: `2px solid ${checked ? PRIMARY : "rgba(0,0,0,.2)"}`,
-                      background: checked ? PRIMARY : "transparent",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                      transition: "all .15s",
+                      gap: 10,
+                      cursor: "pointer",
+                      fontSize: 14,
+                      color: checked ? "#0b0d12" : "rgba(0,0,0,.65)",
                     }}
                   >
-                    {checked && (
-                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4l2.5 2.5L9 1" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                    <div
+                      onClick={() => toggleBrand(b.value)}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: 5,
+                        border: `2px solid ${checked ? PRIMARY : "rgba(0,0,0,.2)"}`,
+                        background: checked ? PRIMARY : "transparent",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        transition: "all .15s",
+                      }}
+                    >
+                      {checked && (
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4l2.5 2.5L9 1" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <span style={{ flex: 1 }}>{b.label}</span>
+                    {!category && (
+                      <span style={{ fontSize: 11, color: "rgba(0,0,0,.35)", background: "rgba(0,0,0,.05)", padding: "1px 6px", borderRadius: 999 }}>
+                        {b.group}
+                      </span>
                     )}
-                  </div>
-                  <span style={{ flex: 1 }}>{b.label}</span>
-                  <span style={{ fontSize: 11, color: "rgba(0,0,0,.35)", background: "rgba(0,0,0,.05)", padding: "1px 6px", borderRadius: 999 }}>
-                    {b.group}
-                  </span>
-                </label>
-              );
-            })}
+                  </label>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Tipo de filamento — solo en la categoría Filamentos */}
+        {showTypes && (
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(0,0,0,.06)" }}>
+            <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
+              Tipo
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {FILAMENT_TYPES.map((t) => {
+                const checked = selectedTypes.includes(t);
+                return (
+                  <label
+                    key={t}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      cursor: "pointer",
+                      fontSize: 14,
+                      color: checked ? "#0b0d12" : "rgba(0,0,0,.65)",
+                    }}
+                  >
+                    <div
+                      onClick={() => toggleType(t)}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: 5,
+                        border: `2px solid ${checked ? PRIMARY : "rgba(0,0,0,.2)"}`,
+                        background: checked ? PRIMARY : "transparent",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        transition: "all .15s",
+                      }}
+                    >
+                      {checked && (
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4l2.5 2.5L9 1" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <span style={{ flex: 1 }}>{t}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Precio */}
         <div style={{ padding: "16px 20px" }}>

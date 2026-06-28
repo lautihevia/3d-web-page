@@ -84,42 +84,44 @@ export function FilamentProductView({
           )}
         </div>
 
-        {/* Thumbnails — one per color */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${Math.min(colorImages.length, 4)}, 1fr)`,
-            gap: 8,
-            marginTop: 10,
-          }}
-        >
-          {colorImages.map((ci, i) => (
-            <button
-              key={ci.id}
-              onClick={() => setSelectedIdx(i)}
-              title={ci.colorName}
-              style={{
-                position: "relative",
-                aspectRatio: "1/1",
-                background: "#f5f6fa",
-                borderRadius: 12,
-                border: `2px solid ${i === selectedIdx ? PRIMARY : "rgba(0,0,0,.07)"}`,
-                overflow: "hidden",
-                cursor: "pointer",
-                padding: 0,
-                transition: "border-color .15s",
-              }}
-            >
-              <Image
-                src={ci.imageUrl}
-                alt={`${productName} — ${ci.colorName}`}
-                fill
-                sizes="15vw"
-                className="object-contain p-2"
-              />
-            </button>
-          ))}
-        </div>
+        {/* Thumbnails — one per color (only when there is more than one) */}
+        {colorImages.length > 1 && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: 8,
+              marginTop: 10,
+            }}
+          >
+            {colorImages.map((ci, i) => (
+              <button
+                key={ci.id}
+                onClick={() => setSelectedIdx(i)}
+                title={ci.colorName}
+                style={{
+                  position: "relative",
+                  aspectRatio: "1/1",
+                  background: "#f5f6fa",
+                  borderRadius: 12,
+                  border: `2px solid ${i === selectedIdx ? PRIMARY : "rgba(0,0,0,.07)"}`,
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  padding: 0,
+                  transition: "border-color .15s",
+                }}
+              >
+                <Image
+                  src={ci.imageUrl}
+                  alt={`${productName} — ${ci.colorName}`}
+                  fill
+                  sizes="15vw"
+                  className="object-contain p-2"
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Info + CTA */}

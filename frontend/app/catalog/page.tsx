@@ -13,6 +13,8 @@ interface Product {
   brand?: string;
   mainImageUrl?: string;
   isActive: boolean;
+  onSale?: boolean;
+  salePrice?: number;
   variants: { id: number; sku: string; price: number; stock: number }[];
 }
 
@@ -40,6 +42,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   if (str(search.brands)) params.set("brands", str(search.brands)!);
   if (str(search.brand)) params.set("brand", str(search.brand)!);
   if (str(search.category)) params.set("category", str(search.category)!);
+  if (str(search.subcategory)) params.set("subcategory", str(search.subcategory)!);
   if (str(search.minPrice)) params.set("minPrice", str(search.minPrice)!);
   if (str(search.maxPrice)) params.set("maxPrice", str(search.maxPrice)!);
   if (str(search.isActive)) params.set("isActive", str(search.isActive)!);
@@ -161,7 +164,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
       >
         <div className="rsp-filter-sidebar">
           <Suspense fallback={null}>
-            <CatalogFilters />
+            <CatalogFilters category={activeCategory} />
           </Suspense>
         </div>
 
@@ -195,6 +198,8 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                   imageUrl={p.mainImageUrl}
                   price={p.variants[0]?.price}
                   brand={p.brand}
+                  onSale={p.onSale}
+                  salePrice={p.salePrice}
                 />
               ))}
             </div>

@@ -15,11 +15,19 @@ const FILAMENT_BRANDS = ["W3D", "IID Max", "Creality"];
 const CATEGORIES = ["Impresoras", "Filamentos", "Electrónica", "Kits y Repuestos"];
 const CATEGORIES_WITHOUT_BRAND = ["Electrónica", "Kits y Repuestos"];
 const FILAMENT_TYPES = ["", "Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG"];
+const ELECTRONICA_TYPES = ["", "Placas", "Sensores", "Insumos"];
 
 function brandsForCategory(category: string): string[] {
   if (category === "Impresoras") return PRINTER_BRANDS;
   if (category === "Filamentos") return FILAMENT_BRANDS;
   return [];
+}
+
+// Campo "tipo" (subcategory) según la categoría. null = la categoría no usa subcategoría.
+function subcategoryFieldFor(category: string): { label: string; options: string[] } | null {
+  if (category === "Filamentos") return { label: "Tipo de filamento", options: FILAMENT_TYPES };
+  if (category === "Electrónica") return { label: "Tipo", options: ELECTRONICA_TYPES };
+  return null;
 }
 
 const IMAGE_SLOTS = [
@@ -69,6 +77,7 @@ export default function NewProductPage() {
   const isFilament = form.category === "Filamentos";
   const hasBrand = !CATEGORIES_WITHOUT_BRAND.includes(form.category);
   const availableBrands = brandsForCategory(form.category);
+  const subcatField = subcategoryFieldFor(form.category);
 
   const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "", inStock: true }]);
   const removeColorRow = (i: number) => setColorImages((prev) => prev.filter((_, idx) => idx !== i));
@@ -185,6 +194,7 @@ export default function NewProductPage() {
                   ...f,
                   category: newCat,
                   brand: brands.length === 0 ? "" : (brands.includes(f.brand) ? f.brand : brands[0]),
+                  subcategory: "",
                 }));
               }} style={inputStyle}>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -203,12 +213,12 @@ export default function NewProductPage() {
             </div>
           )}
 
-          {/* Subcategory (filament type) — only for filaments */}
-          {isFilament && (
+          {/* Subcategory (tipo) — para categorías que lo usan (filamentos, electrónica) */}
+          {subcatField && (
             <div style={{ gridColumn: "1 / -1" }}>
-              <Field label="Tipo de filamento">
+              <Field label={subcatField.label}>
                 <select value={form.subcategory} onChange={(e) => set("subcategory", e.target.value)} style={inputStyle}>
-                  {FILAMENT_TYPES.map((t) => (
+                  {subcatField.options.map((t) => (
                     <option key={t} value={t}>{t || "— Seleccioná el tipo —"}</option>
                   ))}
                 </select>

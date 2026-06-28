@@ -19,8 +19,11 @@ const BRANDS_BY_CATEGORY: Record<string, string[]> = {
   Filamentos: ["w3d", "iid max", "creality"],
 };
 
-// Tipos de filamento (campo subcategory). Solo se muestran en la categoría Filamentos.
-const FILAMENT_TYPES = ["Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG"];
+// Subcategorías (campo subcategory) por categoría. Solo se muestran en las categorías listadas.
+const SUBCATEGORIES_BY_CATEGORY: Record<string, string[]> = {
+  Filamentos: ["Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG"],
+  Electrónica: ["Placas", "Sensores", "Insumos"],
+};
 
 const PRICE_PRESETS = [
   { label: "Hasta $500k", min: "", max: "500000" },
@@ -44,7 +47,8 @@ export function CatalogFilters({ className, category }: CatalogFiltersProps) {
       )
     : BRAND_OPTIONS;
   const showBrands = brandOptions.length > 0;
-  const showTypes = category === "Filamentos";
+  const typeOptions = category ? (SUBCATEGORIES_BY_CATEGORY[category] ?? []) : [];
+  const showTypes = typeOptions.length > 0;
 
   const initialBrands = (searchParams.get("brands") || "")
     .split(",")
@@ -259,14 +263,14 @@ export function CatalogFilters({ className, category }: CatalogFiltersProps) {
           </div>
         )}
 
-        {/* Tipo de filamento — solo en la categoría Filamentos */}
+        {/* Tipo (subcategory) — en categorías que lo usan (filamentos, electrónica) */}
         {showTypes && (
           <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(0,0,0,.06)" }}>
             <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
               Tipo
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {FILAMENT_TYPES.map((t) => {
+              {typeOptions.map((t) => {
                 const checked = selectedTypes.includes(t);
                 return (
                   <label

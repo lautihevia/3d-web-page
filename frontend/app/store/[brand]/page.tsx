@@ -3,6 +3,7 @@ import { BrandHeader } from "@/components/store/BrandHeader";
 import { FilterSidebar } from "@/components/store/FilterSidebar";
 import { MobileFilterDrawer } from "@/components/store/MobileFilterDrawer";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -55,6 +56,80 @@ async function getProducts(
   }
 }
 
+const GRID_CLASS = "rsp-3col-to-2";
+const GRID_COLUMNS = "repeat(3,1fr)";
+
+/** Aislado en su propio componente para poder suspenderlo detrás del esqueleto. */
+async function BrandResults(props: {
+  brand: string;
+  minPrice?: string;
+  maxPrice?: string;
+  isActive?: string;
+  subcategory?: string;
+}) {
+  const products = await getProducts(
+    props.brand,
+    props.minPrice,
+    props.maxPrice,
+    props.isActive,
+    props.subcategory
+  );
+
+  return (
+    <>
+      <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)", marginBottom: 16, marginTop: 16 }}>
+        {products.length} producto{products.length !== 1 ? "s" : ""} encontrado
+        {products.length !== 1 ? "s" : ""}
+      </div>
+
+      {products.length > 0 ? (
+        <div
+          className={GRID_CLASS}
+          style={{ display: "grid", gridTemplateColumns: GRID_COLUMNS, gap: 16 }}
+        >
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              description={product.description}
+              imageUrl={product.mainImageUrl}
+              price={product.variants[0]?.price}
+              brand={product.brand}
+              onSale={product.onSale}
+              salePrice={product.salePrice}
+            />
+          ))}
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: 60,
+            textAlign: "center",
+            background: "#fff",
+            borderRadius: 16,
+            color: "rgba(0,0,0,.5)",
+          }}
+        >
+          No hay productos con esos filtros.
+        </div>
+      )}
+    </>
+  );
+}
+
+function BrandResultsFallback() {
+  return (
+    <>
+      <div
+        className="skeleton-box"
+        style={{ height: 13, width: 160, marginBottom: 16, marginTop: 16 }}
+      />
+      <ProductGridSkeleton count={9} className={GRID_CLASS} columns={GRID_COLUMNS} gap={16} />
+    </>
+  );
+}
+
 export default async function BrandPage({ params, searchParams }: PageProps) {
   const { brand } = await params;
   const search = await searchParams;
@@ -69,7 +144,7 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
     typeof search.subcategory === "string" ? search.subcategory : undefined;
 
   const decodedBrand = decodeURIComponent(brand);
-  const products = await getProducts(decodedBrand, minPrice, maxPrice, isActive, subcategory);
+  const suspenseKey = `${decodedBrand}|${minPrice}|${maxPrice}|${isActive}|${subcategory}`;
 
   return (
     <div style={{ background: "#f7f6f1", minHeight: "100vh" }}>
@@ -100,54 +175,15 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
             </Suspense>
           </div>
 
-          <div
-            style={{
-              fontSize: 13,
-              color: "rgba(0,0,0,.55)",
-              marginBottom: 16,
-              marginTop: 16,
-            }}
-          >
-            {products.length} producto{products.length !== 1 ? "s" : ""} encontrado
-            {products.length !== 1 ? "s" : ""}
-          </div>
-
-          {products.length > 0 ? (
-            <div
-              className="rsp-3col-to-2"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3,1fr)",
-                gap: 16,
-              }}
-            >
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  description={product.description}
-                  imageUrl={product.mainImageUrl}
-                  price={product.variants[0]?.price}
-                  brand={product.brand}
-                  onSale={product.onSale}
-                  salePrice={product.salePrice}
-                />
-              ))}
-            </div>
-          ) : (
-            <div
-              style={{
-                padding: 60,
-                textAlign: "center",
-                background: "#fff",
-                borderRadius: 16,
-                color: "rgba(0,0,0,.5)",
-              }}
-            >
-              No hay productos con esos filtros.
-            </div>
-          )}
+          <Suspense key={suspenseKey} fallback={<BrandResultsFallback />}>
+            <BrandResults
+              brand={decodedBrand}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              isActive={isActive}
+              subcategory={subcategory}
+            />
+          </Suspense>
         </main>
       </div>
     </div>

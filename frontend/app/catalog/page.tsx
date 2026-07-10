@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import { CatalogFilters } from "./CatalogFilters";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -32,6 +33,69 @@ async function fetchProducts(params: URLSearchParams): Promise<{ content: Produc
   }
 }
 
+const GRID_CLASS = "rsp-3col-to-2";
+const GRID_COLUMNS = "repeat(3, 1fr)";
+
+/**
+ * Hace el fetch y dibuja la grilla. Vive en su propio componente para que el
+ * <Suspense> de la página pueda mostrar el esqueleto sin bloquear la navegación.
+ */
+async function ProductResults({ query }: { query: string }) {
+  const data = await fetchProducts(new URLSearchParams(query));
+
+  return (
+    <>
+      <div style={{ fontSize: 13, color: "rgba(0,0,0,.5)", marginBottom: 20 }}>
+        {data.totalElements} producto{data.totalElements !== 1 ? "s" : ""} encontrado
+        {data.totalElements !== 1 ? "s" : ""}
+      </div>
+
+      {data.content.length > 0 ? (
+        <div
+          className={GRID_CLASS}
+          style={{ display: "grid", gridTemplateColumns: GRID_COLUMNS, gap: 16 }}
+        >
+          {data.content.map((p) => (
+            <ProductCard
+              key={p.id}
+              id={p.id}
+              name={p.name}
+              description={p.description}
+              imageUrl={p.mainImageUrl}
+              price={p.variants[0]?.price}
+              brand={p.brand}
+              onSale={p.onSale}
+              salePrice={p.salePrice}
+            />
+          ))}
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: 60,
+            textAlign: "center",
+            background: "#fff",
+            borderRadius: 16,
+            color: "rgba(0,0,0,.5)",
+            fontSize: 16,
+          }}
+        >
+          No hay productos con esos filtros.
+        </div>
+      )}
+    </>
+  );
+}
+
+function ResultsFallback() {
+  return (
+    <>
+      <div className="skeleton-box" style={{ height: 13, width: 160, marginBottom: 20 }} />
+      <ProductGridSkeleton count={9} className={GRID_CLASS} columns={GRID_COLUMNS} gap={16} />
+    </>
+  );
+}
+
 export default async function CatalogPage({ searchParams }: PageProps) {
   const search = await searchParams;
 
@@ -47,7 +111,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   if (str(search.maxPrice)) params.set("maxPrice", str(search.maxPrice)!);
   if (str(search.isActive)) params.set("isActive", str(search.isActive)!);
 
-  const data = await fetchProducts(params);
+  const query = params.toString();
   const activeCategory = str(search.category);
 
   return (
@@ -169,54 +233,10 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         </div>
 
         <main style={{ flex: 1 }}>
-          <div
-            style={{
-              fontSize: 13,
-              color: "rgba(0,0,0,.5)",
-              marginBottom: 20,
-            }}
-          >
-            {data.totalElements} producto{data.totalElements !== 1 ? "s" : ""} encontrado
-            {data.totalElements !== 1 ? "s" : ""}
-          </div>
-
-          {data.content.length > 0 ? (
-            <div
-              className="rsp-3col-to-1"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 16,
-              }}
-            >
-              {data.content.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  id={p.id}
-                  name={p.name}
-                  description={p.description}
-                  imageUrl={p.mainImageUrl}
-                  price={p.variants[0]?.price}
-                  brand={p.brand}
-                  onSale={p.onSale}
-                  salePrice={p.salePrice}
-                />
-              ))}
-            </div>
-          ) : (
-            <div
-              style={{
-                padding: 60,
-                textAlign: "center",
-                background: "#fff",
-                borderRadius: 16,
-                color: "rgba(0,0,0,.5)",
-                fontSize: 16,
-              }}
-            >
-              No hay productos con esos filtros.
-            </div>
-          )}
+          {/* key = query: al cambiar los filtros se vuelve a mostrar el esqueleto */}
+          <Suspense key={query} fallback={<ResultsFallback />}>
+            <ProductResults query={query} />
+          </Suspense>
         </main>
       </div>
     </div>

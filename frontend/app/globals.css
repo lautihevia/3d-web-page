@@ -136,6 +136,22 @@ body {
 .nav-links-desktop { display: flex; }
 .nav-search-btn { display: flex; }
 
+/* Placeholder de carga. Respeta prefers-reduced-motion. */
+.skeleton-box {
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 6px;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-box { animation: none; }
+}
+
 @media (max-width: 900px) {
   .nav-hamburger { display: flex !important; }
   .nav-links-desktop { display: none !important; }
@@ -201,9 +217,10 @@ body {
 }
 
 @media (max-width: 520px) {
-  .rsp-4col-to-2 { grid-template-columns: 1fr !important; }
+  /* Las grillas de productos se mantienen en 2 columnas; solo se achica el gap. */
+  .rsp-4col-to-2,
+  .rsp-3col-to-2 { gap: 10px !important; }
   .rsp-5col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
   .rsp-stats-4col { grid-template-columns: repeat(2, 1fr) !important; }
-  .rsp-3col-to-2 { grid-template-columns: 1fr !important; }
   .rsp-footer-grid { grid-template-columns: 1fr !important; }
 }

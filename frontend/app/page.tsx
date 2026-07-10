@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Hero } from "@/components/home/Hero";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import type { PaginatedProducts } from "@/types/product";
 import Link from "next/link";
 import Image from "next/image";
@@ -85,9 +87,123 @@ async function getOnSaleProducts(): Promise<PaginatedProducts | null> {
   } catch { return null; }
 }
 
-export default async function HomePage() {
-  const [featuredData, onSaleData] = await Promise.all([getFeaturedProducts(), getOnSaleProducts()]);
+const HOME_GRID_CLASS = "rsp-4col-to-2";
+const HOME_GRID_COLUMNS = "repeat(4,1fr)";
 
+/** Cabecera compartida por la sección real y por su esqueleto. */
+function SectionHeading({ kicker, title, color }: { kicker: string; title: string; color: string }) {
+  return (
+    <div style={{ marginBottom: 32 }}>
+      <div
+        style={{
+          fontFamily: "var(--font-geist-mono), monospace",
+          fontSize: 11,
+          letterSpacing: ".18em",
+          color,
+          marginBottom: 8,
+          textTransform: "uppercase",
+        }}
+      >
+        // {kicker}
+      </div>
+      <h2 style={{ fontSize: 36, fontWeight: 700, margin: 0, letterSpacing: "-.025em", color: "#0b0d12" }}>
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+function HomeSectionFallback({
+  kicker,
+  title,
+  color,
+  background,
+  count,
+}: {
+  kicker: string;
+  title: string;
+  color: string;
+  background: string;
+  count: number;
+}) {
+  return (
+    <section className="rsp-section-pad" style={{ padding: "80px 48px", background }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+        <SectionHeading kicker={kicker} title={title} color={color} />
+        <ProductGridSkeleton
+          count={count}
+          className={HOME_GRID_CLASS}
+          columns={HOME_GRID_COLUMNS}
+          gap={16}
+        />
+      </div>
+    </section>
+  );
+}
+
+async function FeaturedSection() {
+  const featuredData = await getFeaturedProducts();
+  if (!featuredData) return null;
+
+  return (
+    <section id="productos" className="rsp-section-pad" style={{ padding: "80px 48px", background: "#f7f6f1" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+        <SectionHeading kicker="Catálogo" title="Productos Destacados" color={PRIMARY} />
+        <div
+          className={HOME_GRID_CLASS}
+          style={{ display: "grid", gridTemplateColumns: HOME_GRID_COLUMNS, gap: 16 }}
+        >
+          {featuredData.content.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              description={product.description ?? undefined}
+              imageUrl={product.mainImageUrl ?? undefined}
+              price={product.variants[0]?.price}
+              brand={product.brand}
+              onSale={product.onSale}
+              salePrice={product.salePrice ?? undefined}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+async function OnSaleSection() {
+  const onSaleData = await getOnSaleProducts();
+  if (!onSaleData) return null;
+
+  return (
+    <section className="rsp-section-pad" style={{ padding: "80px 48px", background: "#fff" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+        <SectionHeading kicker="Ofertas" title="Ofertas Especiales" color="#ef4444" />
+        <div
+          className={HOME_GRID_CLASS}
+          style={{ display: "grid", gridTemplateColumns: HOME_GRID_COLUMNS, gap: 16 }}
+        >
+          {onSaleData.content.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              description={product.description ?? undefined}
+              imageUrl={product.mainImageUrl ?? undefined}
+              price={product.variants[0]?.price}
+              brand={product.brand}
+              onSale={product.onSale}
+              salePrice={product.salePrice ?? undefined}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function HomePage() {
   return (
     <>
       <Hero />
@@ -252,114 +368,34 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Products Grid */}
-      {featuredData && (
-        <section id="productos" className="rsp-section-pad" style={{ padding: "80px 48px", background: "#f7f6f1" }}>
-          <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-            <div style={{ marginBottom: 32 }}>
-              <div
-                style={{
-                  fontFamily: "var(--font-geist-mono), monospace",
-                  fontSize: 11,
-                  letterSpacing: ".18em",
-                  color: PRIMARY,
-                  marginBottom: 8,
-                  textTransform: "uppercase",
-                }}
-              >
-                // Catálogo
-              </div>
-              <h2
-                style={{
-                  fontSize: 36,
-                  fontWeight: 700,
-                  margin: 0,
-                  letterSpacing: "-.025em",
-                  color: "#0b0d12",
-                }}
-              >
-                Productos Destacados
-              </h2>
-            </div>
-            <div
-              className="rsp-4col-to-2"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4,1fr)",
-                gap: 16,
-              }}
-            >
-              {featuredData.content.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  description={product.description ?? undefined}
-                  imageUrl={product.mainImageUrl ?? undefined}
-                  price={product.variants[0]?.price}
-                  brand={product.brand}
-                  onSale={product.onSale}
-                  salePrice={product.salePrice ?? undefined}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <Suspense
+        fallback={
+          <HomeSectionFallback
+            kicker="Catálogo"
+            title="Productos Destacados"
+            color={PRIMARY}
+            background="#f7f6f1"
+            count={8}
+          />
+        }
+      >
+        <FeaturedSection />
+      </Suspense>
 
       {/* On Sale Section */}
-      {onSaleData && (
-        <section className="rsp-section-pad" style={{ padding: "80px 48px", background: "#fff" }}>
-          <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-            <div style={{ marginBottom: 32 }}>
-              <div
-                style={{
-                  fontFamily: "var(--font-geist-mono), monospace",
-                  fontSize: 11,
-                  letterSpacing: ".18em",
-                  color: "#ef4444",
-                  marginBottom: 8,
-                  textTransform: "uppercase",
-                }}
-              >
-                // Ofertas
-              </div>
-              <h2
-                style={{
-                  fontSize: 36,
-                  fontWeight: 700,
-                  margin: 0,
-                  letterSpacing: "-.025em",
-                  color: "#0b0d12",
-                }}
-              >
-                Ofertas Especiales
-              </h2>
-            </div>
-            <div
-              className="rsp-4col-to-2"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4,1fr)",
-                gap: 16,
-              }}
-            >
-              {onSaleData.content.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  description={product.description ?? undefined}
-                  imageUrl={product.mainImageUrl ?? undefined}
-                  price={product.variants[0]?.price}
-                  brand={product.brand}
-                  onSale={product.onSale}
-                  salePrice={product.salePrice ?? undefined}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <Suspense
+        fallback={
+          <HomeSectionFallback
+            kicker="Ofertas"
+            title="Ofertas Especiales"
+            color="#ef4444"
+            background="#fff"
+            count={4}
+          />
+        }
+      >
+        <OnSaleSection />
+      </Suspense>
     </>
   );
 }

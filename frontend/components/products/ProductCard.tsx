@@ -114,6 +114,7 @@ export function ProductCard({
           )}
           {onSale && salePrice && (
             <div
+              className="pc-sale-badge"
               style={{
                 position: "absolute",
                 top: 10,
@@ -148,6 +149,7 @@ export function ProductCard({
             </div>
           )}
           <div
+            className="pc-title"
             style={{
               fontWeight: 700,
               fontSize: 17,
@@ -199,9 +201,13 @@ export function ProductCard({
               color: "#0b0d12",
               opacity: hover ? 1 : 0.6,
               transition: ".2s",
+              whiteSpace: "nowrap",
             }}
           >
-            Ver detalle <ArrowRight size={14} />
+            {/* En mobile se acorta a "Ver" para que no pise al precio (ver globals.css) */}
+            <span className="pc-cta-long">Ver detalle</span>
+            <span className="pc-cta-short">Ver</span>
+            <ArrowRight size={14} />
           </div>
         </div>
       </div>

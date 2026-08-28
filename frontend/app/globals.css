@@ -155,6 +155,9 @@ body {
   .skeleton-box { animation: none; }
 }
 
+/* Botón de filtros del catálogo: solo visible cuando se oculta la barra lateral. */
+.rsp-filter-drawer { display: none; }
+
 @media (max-width: 900px) {
   .nav-hamburger { display: flex !important; }
   .nav-links-desktop { display: none !important; }
@@ -189,6 +192,10 @@ body {
   .rsp-catalog-layout { flex-direction: column !important; }
 
   .rsp-filter-sidebar { display: none !important; }
+
+  .rsp-filter-drawer { display: block !important; }
+
+  .rsp-admin-grid { grid-template-columns: 1fr !important; }
 
   .rsp-footer-grid {
     grid-template-columns: 1fr 1fr !important;

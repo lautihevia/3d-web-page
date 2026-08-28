@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Trash2, Pencil, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Pencil, AlertCircle, Search, X } from "lucide-react";
 import { adminFetch, AdminSessionExpiredError, getAdminToken } from "@/lib/adminAuth";
 import { useRouter } from "next/navigation";
 
@@ -38,7 +38,19 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [query, setQuery] = useState("");
   const router = useRouter();
+
+  // El backend devuelve el catálogo completo sin paginar, así que filtramos acá.
+  const q = query.trim().toLowerCase();
+  const visible = q
+    ? products.filter((p) =>
+        [p.name, p.brand ?? "", p.category ?? "", `#${p.id}`, String(p.id)]
+          .join(" ")
+          .toLowerCase()
+          .includes(q)
+      )
+    : products;
 
   const load = async () => {
     setLoading(true);
@@ -84,7 +96,7 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1100 }}>
+    <div style={{ padding: "32px 40px", maxWidth: 1400 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
@@ -92,7 +104,9 @@ export default function AdminProductsPage() {
             Productos
           </h1>
           <p style={{ fontSize: 13, color: "rgba(0,0,0,.5)", marginTop: 4 }}>
-            {products.length} producto{products.length !== 1 ? "s" : ""} en catálogo
+            {q
+              ? `${visible.length} de ${products.length} producto${products.length !== 1 ? "s" : ""}`
+              : `${products.length} producto${products.length !== 1 ? "s" : ""} en catálogo`}
           </p>
         </div>
         <Link
@@ -115,6 +129,55 @@ export default function AdminProductsPage() {
         </Link>
       </div>
 
+      {/* Buscador */}
+      <div style={{ position: "relative", marginBottom: 20, maxWidth: 460 }}>
+        <Search
+          size={16}
+          style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "rgba(0,0,0,.35)" }}
+        />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar por nombre, marca o #ID..."
+          style={{
+            width: "100%",
+            padding: "11px 38px 11px 40px",
+            borderRadius: 12,
+            border: "1px solid rgba(0,0,0,.1)",
+            background: "#fff",
+            fontSize: 14,
+            fontFamily: "inherit",
+            color: "#0b0d12",
+            outline: "none",
+            boxSizing: "border-box",
+          }}
+        />
+        {query && (
+          <button
+            onClick={() => setQuery("")}
+            title="Limpiar búsqueda"
+            style={{
+              position: "absolute",
+              right: 10,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(0,0,0,.06)",
+              border: "none",
+              borderRadius: 6,
+              width: 24,
+              height: 24,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: "rgba(0,0,0,.5)",
+            }}
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
+
       {/* Error */}
       {error && (
         <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)", borderRadius: 12, padding: "16px 20px", display: "flex", gap: 12, alignItems: "center", marginBottom: 20, color: "#dc2626" }}>
@@ -132,9 +195,12 @@ export default function AdminProductsPage() {
 
       {/* Product list */}
       {!loading && !error && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div
+          className="rsp-admin-grid"
+          style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, alignItems: "start" }}
+        >
           {products.length === 0 && (
-            <div style={{ textAlign: "center", padding: "60px 0", color: "rgba(0,0,0,.4)", background: "#fff", borderRadius: 16, border: "1px solid rgba(0,0,0,.06)" }}>
+            <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "60px 0", color: "rgba(0,0,0,.4)", background: "#fff", borderRadius: 16, border: "1px solid rgba(0,0,0,.06)" }}>
               <p style={{ fontSize: 16 }}>No hay productos. ¡Cargá el primero!</p>
               <Link href="/admin/products/new" style={{ color: PRIMARY, fontSize: 14, fontWeight: 600 }}>
                 Crear producto →
@@ -142,24 +208,30 @@ export default function AdminProductsPage() {
             </div>
           )}
 
-          {products.map((p) => (
+          {products.length > 0 && visible.length === 0 && (
+            <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "48px 0", color: "rgba(0,0,0,.45)", background: "#fff", borderRadius: 16, border: "1px solid rgba(0,0,0,.06)", fontSize: 15 }}>
+              Ningún producto coincide con “{query}”.
+            </div>
+          )}
+
+          {visible.map((p) => (
             <div
               key={p.id}
               style={{
                 background: "#fff",
                 borderRadius: 14,
                 border: "1px solid rgba(0,0,0,.06)",
-                padding: "14px 20px",
+                padding: "12px 14px",
                 display: "flex",
                 alignItems: "center",
-                gap: 16,
+                gap: 12,
               }}
             >
               {/* Thumbnail */}
               <div
                 style={{
-                  width: 52,
-                  height: 52,
+                  width: 44,
+                  height: 44,
                   borderRadius: 10,
                   background: "#f5f6fa",
                   flexShrink: 0,
@@ -178,7 +250,7 @@ export default function AdminProductsPage() {
 
               {/* Info */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 600, fontSize: 15, color: "#0b0d12", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <div style={{ fontWeight: 600, fontSize: 14, color: "#0b0d12", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {p.name}
                 </div>
                 <div style={{ fontSize: 12, color: "rgba(0,0,0,.5)", marginTop: 2 }}>
@@ -187,8 +259,8 @@ export default function AdminProductsPage() {
               </div>
 
               {/* Price + stock badge */}
-              <div style={{ textAlign: "right", flexShrink: 0, minWidth: 110 }}>
-                <div style={{ fontWeight: 700, fontSize: 16, color: PRIMARY }}>{formatPrice(p.price)}</div>
+              <div style={{ textAlign: "right", flexShrink: 0, minWidth: 92 }}>
+                <div style={{ fontWeight: 700, fontSize: 15, color: PRIMARY }}>{formatPrice(p.price)}</div>
                 {(() => {
                   const isFilament = p.category === "Filamentos";
                   if (isFilament && p.colorImages && p.colorImages.length > 0) {
@@ -245,8 +317,8 @@ export default function AdminProductsPage() {
                 <Link
                   href={`/admin/products/edit/${p.id}`}
                   style={{
-                    width: 34,
-                    height: 34,
+                    width: 32,
+                    height: 32,
                     borderRadius: 8,
                     border: "1px solid rgba(0,0,0,.08)",
                     display: "flex",
@@ -263,8 +335,8 @@ export default function AdminProductsPage() {
                   onClick={() => deleteProduct(p.id)}
                   disabled={deleting === p.id}
                   style={{
-                    width: 34,
-                    height: 34,
+                    width: 32,
+                    height: 32,
                     borderRadius: 8,
                     border: "1px solid rgba(239,68,68,.2)",
                     display: "flex",

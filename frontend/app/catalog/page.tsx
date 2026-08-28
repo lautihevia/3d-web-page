@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import { CatalogFilters } from "./CatalogFilters";
+import { CatalogFilterDrawer } from "./CatalogFilterDrawer";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
@@ -233,6 +234,13 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         </div>
 
         <main style={{ flex: 1 }}>
+          {/* Filtros en mobile: la barra lateral se oculta bajo 900px */}
+          <div className="rsp-filter-drawer" style={{ marginBottom: 16 }}>
+            <Suspense fallback={null}>
+              <CatalogFilterDrawer category={activeCategory} />
+            </Suspense>
+          </div>
+
           {/* key = query: al cambiar los filtros se vuelve a mostrar el esqueleto */}
           <Suspense key={query} fallback={<ResultsFallback />}>
             <ProductResults query={query} />

@@ -36,3 +36,19 @@ Implementar el módulo de administración de productos (`/admin/products`), perm
 
 ### 3. Sidebar Link
 * Actualizar `Sidebar.tsx` para que el link "Productos" apunte a `/admin/products`.
+
+---
+
+## Actualización (ver Feature 013)
+
+La pantalla de lista vive en `app/admin/page.tsx` (no `app/admin/products/`) y
+no usa tabla sino tarjetas. Cambios:
+
+* **Grilla de 2 columnas** (`repeat(2, 1fr)`), una sola columna bajo 900px vía
+  `.rsp-admin-grid`. Tarjetas compactadas para entrar a media hoja.
+* **Buscador** por nombre, marca, categoría e ID. Filtra client-side sobre el
+  array completo que devuelve `GET /api/v1/admin/products` (`findAll()`, sin
+  paginar), sin tocar la API. El contador del header pasa a "X de Y productos"
+  con búsqueda activa.
+* Los selects de tipo de los formularios `new` y `edit` incorporan **TPU** y
+  **ABS** (filamentos) y **Motores** y **Display** (electrónica).

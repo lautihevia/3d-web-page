@@ -14,8 +14,8 @@ const PRINTER_BRANDS = ["Bambu Lab", "Creality", "Anycubic", "Usados"];
 const FILAMENT_BRANDS = ["W3D", "IID Max", "Creality"];
 const CATEGORIES = ["Impresoras", "Filamentos", "Electrónica", "Kits y Repuestos"];
 const CATEGORIES_WITHOUT_BRAND = ["Electrónica", "Kits y Repuestos"];
-const FILAMENT_TYPES = ["", "Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG"];
-const ELECTRONICA_TYPES = ["", "Placas", "Sensores", "Insumos"];
+const FILAMENT_TYPES = ["", "Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG", "TPU", "ABS"];
+const ELECTRONICA_TYPES = ["", "Placas", "Sensores", "Motores", "Display", "Insumos"];
 
 function brandsForCategory(category: string): string[] {
   if (category === "Impresoras") return PRINTER_BRANDS;

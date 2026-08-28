@@ -43,3 +43,23 @@ Este es el componente interactivo complejo.
 * El frontend debe recibir el array de `variants`.
 * Debe extraer dinámicamente las "Keys" (ej: Color, RAM) para renderizar los grupos de opciones.
 * Al hacer clic en una opción, debe filtrar las variantes para encontrar la combinación correcta y actualizar el precio.
+
+---
+
+## Actualización (ver Feature 013)
+
+La doble columna descrita arriba sigue vigente para productos **sin colores**
+(`ProductGallery` + configurador, en `app/products/[id]/page.tsx`).
+
+Los **filamentos** (productos con `colorImages`) usan `FilamentProductView.tsx`,
+que pasó a **una sola columna centrada** (`maxWidth: 780px`):
+
+1. Badge de stock + marca
+2. Título (32px, antes 48px)
+3. Imagen grande del color seleccionado
+4. Chips de color por texto — único selector
+5. Precio + CTA
+6. `InfoAccordions`
+
+**Se eliminó la fila de miniaturas por color:** el color se elige solo con los
+chips de texto y la imagen grande refleja la selección.

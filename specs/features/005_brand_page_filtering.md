@@ -40,3 +40,18 @@ Modificar el endpoint existente para aceptar parámetros de filtrado opcionales:
 
 ### 4. Integración en Home
 * En la Home actual (`page.tsx`), las "Tarjetas de Marca" (Creality, Bambu Lab, etc.) deben ser links `Link href="/store/creality"`.
+
+---
+
+## Actualización (ver Feature 013)
+
+* **Excepción en las tarjetas de marca:** Arduino ya no apunta a
+  `/store/arduino` sino a `/catalog?category=Electrónica`, para que la tarjeta,
+  la card de categoría y el menú superior lleven al mismo lugar. Bambu Lab,
+  Creality, W3D y Anycubic siguen yendo a su página de marca.
+* **Filtro "Tipo" en `FilterSidebar.tsx`:** se agregan **TPU** y **ABS** a
+  `FILAMENT_TYPES`. La sección solo se muestra para marcas de filamento
+  (`FILAMENT_BRAND_SLUGS`).
+* **Filtros en mobile:** `MobileFilterDrawer` cubría solo `/store/[brand]`.
+  `/catalog` ahora tiene su equivalente (`app/catalog/CatalogFilterDrawer.tsx`),
+  así que todas las categorías tienen filtros en el celular, no solo impresoras.

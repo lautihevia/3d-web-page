@@ -17,6 +17,8 @@ const FILAMENT_TYPES = [
   "PLA Mate",
   "PLA",
   "PETG",
+  "TPU",
+  "ABS",
   "Creality",
   "Hyper Serie PLA",
 ];

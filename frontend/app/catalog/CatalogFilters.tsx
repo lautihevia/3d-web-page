@@ -21,8 +21,8 @@ const BRANDS_BY_CATEGORY: Record<string, string[]> = {
 
 // Subcategorías (campo subcategory) por categoría. Solo se muestran en las categorías listadas.
 const SUBCATEGORIES_BY_CATEGORY: Record<string, string[]> = {
-  Filamentos: ["Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG"],
-  Electrónica: ["Placas", "Sensores", "Insumos"],
+  Filamentos: ["Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG", "TPU", "ABS"],
+  Electrónica: ["Placas", "Sensores", "Motores", "Display", "Insumos"],
 };
 
 const PRICE_PRESETS = [
@@ -34,9 +34,13 @@ const PRICE_PRESETS = [
 interface CatalogFiltersProps {
   className?: string;
   category?: string;
+  /** En el drawer mobile el panel ocupa todo el ancho y no queda sticky. */
+  compact?: boolean;
+  /** Se llama después de navegar con los filtros aplicados (para cerrar el drawer). */
+  onApplied?: () => void;
 }
 
-export function CatalogFilters({ className, category }: CatalogFiltersProps) {
+export function CatalogFilters({ className, category, compact = false, onApplied }: CatalogFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -94,7 +98,8 @@ export function CatalogFilters({ className, category }: CatalogFiltersProps) {
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (onlyAvailable) params.set("isActive", "true");
     router.push(`/catalog${params.toString() ? `?${params}` : ""}`);
-  }, [category, selectedBrands, selectedTypes, showTypes, minPrice, maxPrice, onlyAvailable, router]);
+    onApplied?.();
+  }, [category, selectedBrands, selectedTypes, showTypes, minPrice, maxPrice, onlyAvailable, router, onApplied]);
 
   const clear = () => {
     setSelectedBrands([]);
@@ -103,6 +108,7 @@ export function CatalogFilters({ className, category }: CatalogFiltersProps) {
     setMaxPrice("");
     setOnlyAvailable(false);
     router.push(`/catalog${category ? `?category=${encodeURIComponent(category)}` : ""}`);
+    onApplied?.();
   };
 
   const hasFilters =
@@ -115,13 +121,17 @@ export function CatalogFilters({ className, category }: CatalogFiltersProps) {
   return (
     <aside
       className={className}
-      style={{
-        width: 240,
-        flexShrink: 0,
-        position: "sticky",
-        top: 80,
-        alignSelf: "flex-start",
-      }}
+      style={
+        compact
+          ? { width: "100%" }
+          : {
+              width: 240,
+              flexShrink: 0,
+              position: "sticky",
+              top: 80,
+              alignSelf: "flex-start",
+            }
+      }
     >
       <div
         style={{

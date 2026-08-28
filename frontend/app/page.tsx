@@ -15,35 +15,35 @@ const BRANDS = [
     id: "bambu",
     name: "Bambu Lab",
     tag: "Impresoras Premium",
-    slug: "bambu lab",
+    href: "/store/bambu%20lab",
     imageUrl: "/categorias/bambulab.jpeg",
   },
   {
     id: "creality",
     name: "Creality",
     tag: "Impresoras",
-    slug: "creality",
+    href: "/store/creality",
     imageUrl: "/categorias/creality.jpeg",
   },
   {
     id: "w3d",
     name: "W3D",
     tag: "Filamentos",
-    slug: "w3d",
+    href: "/store/w3d",
     imageUrl: "/categorias/W3d.jpeg",
   },
   {
     id: "anycubic",
     name: "Anycubic",
     tag: "Impresoras",
-    slug: "anycubic",
+    href: "/store/anycubic",
     imageUrl: "/categorias/anycubic.webp",
   },
   {
     id: "arduino",
     name: "Arduino",
     tag: "Electrónica",
-    slug: "arduino",
+    href: "/catalog?category=Electr%C3%B3nica",
     imageUrl: "/categorias/arduino.jpeg",
   },
 ];
@@ -53,19 +53,19 @@ const CATEGORIES = [
     Icon: Printer,
     title: "Impresoras 3D",
     desc: "FDM, resina y modelos industriales",
-    href: "/catalog?brands=bambu+lab,creality,anycubic",
+    href: "/catalog?category=Impresoras",
   },
   {
     Icon: Layers,
     title: "Filamentos & Insumos",
     desc: "PLA, PETG, ABS, TPU y especiales",
-    href: "/catalog?brands=w3d,filamentos",
+    href: "/catalog?category=Filamentos",
   },
   {
     Icon: Cpu,
     title: "Electrónica",
     desc: "Arduino, sensores y módulos",
-    href: "/catalog?brands=arduino,electronica",
+    href: "/catalog?category=Electr%C3%B3nica",
   },
 ];
 
@@ -246,7 +246,7 @@ export default function HomePage() {
             {BRANDS.map((b) => (
               <Link
                 key={b.id}
-                href={`/store/${encodeURIComponent(b.slug)}`}
+                href={b.href}
                 className="group block"
                 style={{ textDecoration: "none", color: "inherit" }}
               >

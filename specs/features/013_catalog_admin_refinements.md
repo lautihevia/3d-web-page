@@ -108,3 +108,18 @@ formularios del admin.
 TPU, ABS, Motores y Display son solo opciones de filtro. Hasta que no se editen
 productos existentes asignándoles esos tipos desde el admin, esos filtros
 devuelven cero resultados.
+
+---
+
+## Actualización (ver Feature 014)
+
+La deuda que este documento dejaba anotada sigue abierta: los tipos de filamento
+continúan definidos por separado en `FilterSidebar`, `CatalogFilters` y los dos
+formularios del admin.
+
+En cambio, la **paleta de colores** que agrega la Feature 014 sí nació
+centralizada en `lib/filamentColors.ts` (frontend) y `FilamentPalette.kt`
+(backend) — es el patrón a seguir si alguna vez se unifican los tipos.
+
+El filtro de **Precio** dejó de mostrarse en las secciones de filamento. Sigue
+intacto en impresoras y en el catálogo sin categoría.

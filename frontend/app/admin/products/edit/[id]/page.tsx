@@ -5,13 +5,14 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ImageIcon, Plus, Trash2 } from "lucide-react";
+import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
 import { adminFetch, AdminSessionExpiredError, getAdminToken } from "@/lib/adminAuth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
 
 const PRINTER_BRANDS = ["Bambu Lab", "Creality", "Anycubic", "Usados"];
-const FILAMENT_BRANDS = ["W3D", "IID Max", "Creality"];
+const FILAMENT_BRANDS = ["W3D", "FilAr", "IID Max"];
 const CATEGORIES = ["Impresoras", "Filamentos", "Electrónica", "Kits y Repuestos"];
 const CATEGORIES_WITHOUT_BRAND = ["Electrónica", "Kits y Repuestos"];
 const FILAMENT_TYPES = ["", "Multicolor", "Tricolor", "PLA Mate", "PLA", "PETG", "TPU", "ABS"];
@@ -41,6 +42,8 @@ interface ColorImage {
   colorName: string;
   imageUrl: string;
   inStock: boolean;
+  /** Claves de la paleta; varias por color (ver lib/filamentColors). */
+  paletteColors: string[];
 }
 
 export default function EditProductPage() {
@@ -71,7 +74,7 @@ export default function EditProductPage() {
     salePrice: "",
   });
 
-  const [colorImages, setColorImages] = useState<ColorImage[]>([{ colorName: "", imageUrl: "", inStock: true }]);
+  const [colorImages, setColorImages] = useState<ColorImage[]>([{ colorName: "", imageUrl: "", inStock: true, paletteColors: [] }]);
 
   const set = (key: string, val: string | boolean) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -81,9 +84,22 @@ export default function EditProductPage() {
   const availableBrands = brandsForCategory(form.category);
   const subcatField = subcategoryFieldFor(form.category);
 
-  const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "", inStock: true }]);
+  const addColorRow = () => setColorImages((prev) => [...prev, { colorName: "", imageUrl: "", inStock: true, paletteColors: [] }]);
+  const toggleColorPalette = (i: number, key: string) =>
+    setColorImages((prev) =>
+      prev.map((row, idx) =>
+        idx === i
+          ? {
+              ...row,
+              paletteColors: row.paletteColors.includes(key)
+                ? row.paletteColors.filter((k) => k !== key)
+                : [...row.paletteColors, key],
+            }
+          : row
+      )
+    );
   const removeColorRow = (i: number) => setColorImages((prev) => prev.filter((_, idx) => idx !== i));
-  const updateColorRow = (i: number, field: keyof ColorImage, val: string | boolean) =>
+  const updateColorRow = (i: number, field: keyof ColorImage, val: string | boolean | string[]) =>
     setColorImages((prev) => prev.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
 
   useEffect(() => {
@@ -119,10 +135,11 @@ export default function EditProductPage() {
           salePrice: p.salePrice?.toString() || "",
         });
         if (p.colorImages && p.colorImages.length > 0) {
-          setColorImages(p.colorImages.map((c: { colorName: string; imageUrl: string; inStock?: boolean }) => ({
+          setColorImages(p.colorImages.map((c: { colorName: string; imageUrl: string; inStock?: boolean; paletteColors?: string[] }) => ({
             colorName: c.colorName,
             imageUrl: c.imageUrl,
             inStock: c.inStock ?? true,
+            paletteColors: c.paletteColors ?? [],
           })));
         }
       } catch {
@@ -294,7 +311,8 @@ export default function EditProductPage() {
                   {colorImages.map((row, i) => {
                     const url = row.imageUrl.trim().startsWith("http") ? row.imageUrl.trim() : null;
                     return (
-                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", background: "#f9fafb", border: "1px solid rgba(0,0,0,.07)", borderRadius: 12, padding: "10px 14px" }}>
+                      <div key={i} style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,.07)", borderRadius: 12, padding: "10px 14px" }}>
+                        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                         <div style={{ width: 56, height: 56, borderRadius: 8, background: "#fff", border: "1px solid rgba(0,0,0,.08)", overflow: "hidden", position: "relative", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {url ? (
                             <Image src={url} alt={row.colorName || `Color ${i + 1}`} fill className="object-contain p-1" />
@@ -344,6 +362,12 @@ export default function EditProductPage() {
                         >
                           <Trash2 size={15} />
                         </button>
+                        </div>
+
+                        <ColorPalettePicker
+                          selected={row.paletteColors}
+                          onToggle={(key) => toggleColorPalette(i, key)}
+                        />
                       </div>
                     );
                   })}

@@ -55,3 +55,11 @@ Modificar el endpoint existente para aceptar parámetros de filtrado opcionales:
 * **Filtros en mobile:** `MobileFilterDrawer` cubría solo `/store/[brand]`.
   `/catalog` ahora tiene su equivalente (`app/catalog/CatalogFilterDrawer.tsx`),
   así que todas las categorías tienen filtros en el celular, no solo impresoras.
+
+## Actualización (ver Feature 014)
+
+* `FILAMENT_BRAND_SLUGS` ahora es `["w3d", "filar", "filamentos"]`. **Creality
+  salió**: volvió a ser marca de máquinas, con filtro de precio y sin paleta.
+* En las marcas de filamento el panel **no muestra Precio**; en su lugar muestra
+  la paleta de **Color** (`ColorPaletteFilter`). Para las marcas de impresoras
+  no cambia nada.

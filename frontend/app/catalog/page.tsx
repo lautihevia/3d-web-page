@@ -111,6 +111,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   if (str(search.minPrice)) params.set("minPrice", str(search.minPrice)!);
   if (str(search.maxPrice)) params.set("maxPrice", str(search.maxPrice)!);
   if (str(search.isActive)) params.set("isActive", str(search.isActive)!);
+  if (str(search.colors)) params.set("colors", str(search.colors)!);
 
   const query = params.toString();
   const activeCategory = str(search.category);

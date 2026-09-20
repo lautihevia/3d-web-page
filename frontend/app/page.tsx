@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Hero } from "@/components/home/Hero";
+import { DistributorMarquee } from "@/components/home/DistributorMarquee";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import type { PaginatedProducts } from "@/types/product";
@@ -45,6 +46,14 @@ const BRANDS = [
     tag: "Electrónica",
     href: "/catalog?category=Electr%C3%B3nica",
     imageUrl: "/categorias/arduino.jpeg",
+  },
+  {
+    id: "filar",
+    name: "FilAr",
+    tag: "Filamentos",
+    href: "/store/FilAr",
+    imageUrl:
+      "https://res.cloudinary.com/dlykb1mb6/image/upload/v1789857517/filar_logo_zondmc.png",
   },
 ];
 
@@ -208,6 +217,9 @@ export default function HomePage() {
     <>
       <Hero />
 
+      {/* Cinta de distribuidor, en la división entre el hero y el fondo blanco */}
+      <DistributorMarquee />
+
       {/* Brands Section */}
       <section className="rsp-section-pad" style={{ padding: "72px 48px", background: "#fff" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
@@ -236,10 +248,10 @@ export default function HomePage() {
           </div>
 
           <div
-            className="rsp-5col-to-2"
+            className="rsp-6col-to-2"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(5,1fr)",
+              gridTemplateColumns: "repeat(6,1fr)",
               gap: 12,
             }}
           >
@@ -265,7 +277,7 @@ export default function HomePage() {
                       src={b.imageUrl}
                       alt={b.name}
                       fill
-                      sizes="20vw"
+                      sizes="(max-width: 900px) 50vw, 16vw"
                       className="object-contain p-2"
                       style={{ mixBlendMode: "multiply" }}
                     />

@@ -7,7 +7,9 @@ data class ColorImageDto(
         val colorName: String,
         val imageUrl: String,
         val sortOrder: Int,
-        val inStock: Boolean
+        val inStock: Boolean,
+        /** Claves de la paleta con las que está etiquetado (ver FilamentPalette). */
+        val paletteColors: List<String> = emptyList()
 )
 
 /** DTO para respuesta de producto en el panel admin. */

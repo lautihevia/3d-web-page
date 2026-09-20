@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useCallback } from "react";
+import { ColorPaletteFilter } from "./ColorPaletteFilter";
+import { sanitizeColorKeys } from "@/lib/filamentColors";
 
 const PRIMARY = "#3b82f6";
 
@@ -23,7 +25,7 @@ const FILAMENT_TYPES = [
   "Hyper Serie PLA",
 ];
 
-const FILAMENT_BRAND_SLUGS = ["w3d", "filamentos", "creality"];
+const FILAMENT_BRAND_SLUGS = ["w3d", "filar", "filamentos"];
 
 interface FilterSidebarProps {
   brand: string;
@@ -47,6 +49,14 @@ export function FilterSidebar({ brand, compact = false }: FilterSidebarProps) {
     searchParams.get("isActive") === "true"
   );
   const [selectedTypes, setSelectedTypes] = useState<string[]>(initialTypes);
+  const [selectedColors, setSelectedColors] = useState<string[]>(
+    sanitizeColorKeys((searchParams.get("colors") || "").split(","))
+  );
+
+  const toggleColor = (val: string) =>
+    setSelectedColors((prev) =>
+      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val]
+    );
 
   const toggleType = (val: string) =>
     setSelectedTypes((prev) =>
@@ -60,22 +70,28 @@ export function FilterSidebar({ brand, compact = false }: FilterSidebarProps) {
 
   const apply = useCallback(() => {
     const params = new URLSearchParams();
-    if (minPrice) params.set("minPrice", minPrice);
-    if (maxPrice) params.set("maxPrice", maxPrice);
+    if (!isFilamentBrand && minPrice) params.set("minPrice", minPrice);
+    if (!isFilamentBrand && maxPrice) params.set("maxPrice", maxPrice);
     if (onlyAvailable) params.set("isActive", "true");
     if (selectedTypes.length) params.set("subcategory", selectedTypes.join(","));
+    if (isFilamentBrand && selectedColors.length)
+      params.set("colors", selectedColors.join(","));
     router.push(`/store/${brand}${params.toString() ? `?${params}` : ""}`);
-  }, [brand, minPrice, maxPrice, onlyAvailable, selectedTypes, router]);
+  }, [brand, isFilamentBrand, minPrice, maxPrice, onlyAvailable, selectedTypes, selectedColors, router]);
 
   const clear = () => {
     setMinPrice("");
     setMaxPrice("");
     setOnlyAvailable(false);
     setSelectedTypes([]);
+    setSelectedColors([]);
     router.push(`/store/${brand}`);
   };
 
-  const hasFilters = minPrice || maxPrice || onlyAvailable || selectedTypes.length > 0;
+  const hasFilters =
+    onlyAvailable ||
+    selectedTypes.length > 0 ||
+    (isFilamentBrand ? selectedColors.length > 0 : Boolean(minPrice || maxPrice));
 
   return (
     <aside style={compact ? { width: "100%" } : { width: 220, flexShrink: 0, position: "sticky", top: 80, alignSelf: "flex-start" }}>
@@ -203,66 +219,80 @@ export function FilterSidebar({ brand, compact = false }: FilterSidebarProps) {
           </label>
         </div>
 
-        {/* Precio */}
-        <div style={{ padding: "16px 20px" }}>
-          <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
-            Precio
+        {/* Color — solo filamentos. Reemplaza al precio, que para filamentos no aporta. */}
+        {isFilamentBrand && (
+          <div style={{ padding: "16px 20px" }}>
+            <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
+              Color
+            </div>
+            <ColorPaletteFilter selected={selectedColors} onToggle={toggleColor} />
           </div>
+        )}
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-            {PRICE_PRESETS.map((p) => {
-              const active = minPrice === p.min && maxPrice === p.max;
-              return (
-                <button
-                  key={p.label}
-                  onClick={() => applyPreset(p.min, p.max)}
-                  style={{
-                    fontSize: 11,
-                    padding: "4px 9px",
-                    borderRadius: 999,
-                    border: `1px solid ${active ? PRIMARY : "rgba(0,0,0,.12)"}`,
-                    background: active ? `${PRIMARY}12` : "transparent",
-                    color: active ? PRIMARY : "rgba(0,0,0,.6)",
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    fontWeight: active ? 600 : 400,
-                    transition: "all .15s",
-                  }}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
-          </div>
+        {!isFilamentBrand && (
+          <>
+          {/* Precio */}
+          <div style={{ padding: "16px 20px" }}>
+            <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
+              Precio
+            </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            {[
-              { label: "Mín", value: minPrice, set: setMinPrice, placeholder: "$0" },
-              { label: "Máx", value: maxPrice, set: setMaxPrice, placeholder: "∞" },
-            ].map(({ label, value, set, placeholder }) => (
-              <div key={label}>
-                <div style={{ fontSize: 11, color: "rgba(0,0,0,.45)", marginBottom: 4 }}>{label}</div>
-                <input
-                  type="number"
-                  value={value}
-                  onChange={(e) => set(e.target.value)}
-                  placeholder={placeholder}
-                  style={{
-                    width: "100%",
-                    padding: "7px 10px",
-                    borderRadius: 8,
-                    border: "1px solid rgba(0,0,0,.1)",
-                    fontSize: 13,
-                    fontFamily: "inherit",
-                    outline: "none",
-                    boxSizing: "border-box",
-                    color: "#0b0d12",
-                  }}
-                />
-              </div>
-            ))}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+              {PRICE_PRESETS.map((p) => {
+                const active = minPrice === p.min && maxPrice === p.max;
+                return (
+                  <button
+                    key={p.label}
+                    onClick={() => applyPreset(p.min, p.max)}
+                    style={{
+                      fontSize: 11,
+                      padding: "4px 9px",
+                      borderRadius: 999,
+                      border: `1px solid ${active ? PRIMARY : "rgba(0,0,0,.12)"}`,
+                      background: active ? `${PRIMARY}12` : "transparent",
+                      color: active ? PRIMARY : "rgba(0,0,0,.6)",
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                      fontWeight: active ? 600 : 400,
+                      transition: "all .15s",
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {[
+                { label: "Mín", value: minPrice, set: setMinPrice, placeholder: "$0" },
+                { label: "Máx", value: maxPrice, set: setMaxPrice, placeholder: "∞" },
+              ].map(({ label, value, set, placeholder }) => (
+                <div key={label}>
+                  <div style={{ fontSize: 11, color: "rgba(0,0,0,.45)", marginBottom: 4 }}>{label}</div>
+                  <input
+                    type="number"
+                    value={value}
+                    onChange={(e) => set(e.target.value)}
+                    placeholder={placeholder}
+                    style={{
+                      width: "100%",
+                      padding: "7px 10px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(0,0,0,.1)",
+                      fontSize: 13,
+                      fontFamily: "inherit",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      color: "#0b0d12",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+          </>
+        )}
       </div>
 
       <button

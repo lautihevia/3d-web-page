@@ -34,7 +34,8 @@ async function getProducts(
   minPrice?: string,
   maxPrice?: string,
   isActive?: string,
-  subcategory?: string
+  subcategory?: string,
+  colors?: string
 ): Promise<Product[]> {
   const params = new URLSearchParams();
   params.set("brand", brand);
@@ -43,6 +44,7 @@ async function getProducts(
   if (maxPrice) params.set("maxPrice", maxPrice);
   if (isActive) params.set("isActive", isActive);
   if (subcategory) params.set("subcategory", subcategory);
+  if (colors) params.set("colors", colors);
 
   try {
     const res = await fetch(`${API_URL}/api/v1/products?${params.toString()}`, {
@@ -66,13 +68,15 @@ async function BrandResults(props: {
   maxPrice?: string;
   isActive?: string;
   subcategory?: string;
+  colors?: string;
 }) {
   const products = await getProducts(
     props.brand,
     props.minPrice,
     props.maxPrice,
     props.isActive,
-    props.subcategory
+    props.subcategory,
+    props.colors
   );
 
   return (
@@ -142,9 +146,11 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
     typeof search.isActive === "string" ? search.isActive : undefined;
   const subcategory =
     typeof search.subcategory === "string" ? search.subcategory : undefined;
+  const colors =
+    typeof search.colors === "string" ? search.colors : undefined;
 
   const decodedBrand = decodeURIComponent(brand);
-  const suspenseKey = `${decodedBrand}|${minPrice}|${maxPrice}|${isActive}|${subcategory}`;
+  const suspenseKey = `${decodedBrand}|${minPrice}|${maxPrice}|${isActive}|${subcategory}|${colors}`;
 
   return (
     <div style={{ background: "#f7f6f1", minHeight: "100vh" }}>
@@ -182,6 +188,7 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
               maxPrice={maxPrice}
               isActive={isActive}
               subcategory={subcategory}
+              colors={colors}
             />
           </Suspense>
         </main>

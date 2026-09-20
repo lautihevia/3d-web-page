@@ -26,6 +26,8 @@ class ProductController(private val productRepository: ProductRepository) {
      * @param minPrice Precio mínimo (opcional)
      * @param maxPrice Precio máximo (opcional)
      * @param isActive Solo productos activos (opcional)
+     * @param colors Claves de paleta separadas por coma; matchea si el producto
+     *   tiene algún color etiquetado con alguna de ellas (opcional)
      */
     @GetMapping
     fun getAllProducts(
@@ -40,12 +42,14 @@ class ProductController(private val productRepository: ProductRepository) {
             @RequestParam(required = false) featured: Boolean?,
             @RequestParam(required = false) category: String?,
             @RequestParam(required = false) subcategory: String?,
-            @RequestParam(required = false) onSale: Boolean?
+            @RequestParam(required = false) onSale: Boolean?,
+            @RequestParam(required = false) colors: String?
     ): Page<Product> {
         val pageable = PageRequest.of(page, size)
 
         val brandList = brands?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
         val subcategoryList = subcategory?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
+        val colorList = colors?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
 
         val spec =
                 Specification.where(ProductSpecification.hasBrand(if (brandList.isNullOrEmpty()) brand else null))
@@ -58,6 +62,7 @@ class ProductController(private val productRepository: ProductRepository) {
                         .and(ProductSpecification.isFeatured(featured))
                         .and(ProductSpecification.hasAnySubcategory(subcategoryList))
                         .and(ProductSpecification.isOnSale(onSale))
+                        .and(ProductSpecification.hasAnyPaletteColor(colorList))
 
         return productRepository.findAll(spec, pageable)
     }

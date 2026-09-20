@@ -155,6 +155,32 @@ body {
   .skeleton-box { animation: none; }
 }
 
+/* Cinta de distribuidores. La pista lleva la secuencia dos veces; al ir de
+   -50% (= una copia entera) a 0, el contenido viaja hacia la derecha y el
+   empalme entre copias es invisible. */
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 42s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
 /* Botón de filtros del catálogo: solo visible cuando se oculta la barra lateral. */
 .rsp-filter-drawer { display: none; }
 
@@ -183,7 +209,7 @@ body {
 
   .rsp-4col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
 
-  .rsp-5col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
+  .rsp-6col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
 
   .rsp-stats-4col { grid-template-columns: repeat(2, 1fr) !important; }
 
@@ -236,7 +262,7 @@ body {
   .pc-sale-badge { font-size: 9px !important; padding: 3px 7px !important; }
   .pc-cta-long { display: none !important; }
   .pc-cta-short { display: inline !important; }
-  .rsp-5col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
+  .rsp-6col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }
   .rsp-stats-4col { grid-template-columns: repeat(2, 1fr) !important; }
   .rsp-footer-grid { grid-template-columns: 1fr !important; }
 }

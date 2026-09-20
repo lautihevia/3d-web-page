@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.tresdencasa.backend.admin.dto.AdminProductDto
 import com.tresdencasa.backend.admin.dto.ColorImageDto
+import com.tresdencasa.backend.catalog.FilamentPalette
 import com.tresdencasa.backend.catalog.FileUploadService
 import com.tresdencasa.backend.catalog.entity.Product
 import com.tresdencasa.backend.catalog.entity.ProductColorImage
@@ -19,7 +20,13 @@ data class ColorImageInput(
         val colorName: String = "",
         val imageUrl: String = "",
         val sortOrder: Int = 0,
-        val inStock: Boolean = true
+        val inStock: Boolean = true,
+        /**
+         * Claves de paleta elegidas en el admin. Si viene vacío se deducen del
+         * nombre, para que cargar un color sin tocar la paleta igual lo deje
+         * filtrable.
+         */
+        val paletteColors: List<String> = emptyList()
 )
 
 data class UpdateProductRequest(
@@ -52,6 +59,15 @@ class AdminProductController(
 ) {
     private val objectMapper = jacksonObjectMapper()
 
+    /**
+     * Paleta de una fila de color: lo que eligió el admin, y si no eligió nada,
+     * lo que se deduzca del nombre.
+     */
+    private fun paletteFor(input: ColorImageInput): MutableSet<String> {
+        val chosen = FilamentPalette.sanitize(input.paletteColors)
+        return if (chosen.isNotEmpty()) chosen else FilamentPalette.inferFrom(input.colorName)
+    }
+
     private fun Product.toDto() = AdminProductDto(
             id = id,
             name = name,
@@ -73,7 +89,9 @@ class AdminProductController(
             price = variants.firstOrNull()?.price,
             stock = variants.firstOrNull()?.stockQuantity,
             variantCount = variants.size,
-            colorImages = colorImages.map { ColorImageDto(it.id, it.colorName, it.imageUrl, it.sortOrder, it.inStock) }
+            colorImages = colorImages.map {
+                ColorImageDto(it.id, it.colorName, it.imageUrl, it.sortOrder, it.inStock, it.paletteColors.toList())
+            }
     )
 
     @GetMapping
@@ -144,7 +162,8 @@ class AdminProductController(
                                 colorName = ci.colorName.trim(),
                                 imageUrl = ci.imageUrl.trim(),
                                 sortOrder = ci.sortOrder.takeIf { it > 0 } ?: i,
-                                inStock = ci.inStock
+                                inStock = ci.inStock,
+                                paletteColors = paletteFor(ci)
                         ))
                     }
                 }
@@ -197,7 +216,8 @@ class AdminProductController(
                             colorName = ci.colorName.trim(),
                             imageUrl = ci.imageUrl.trim(),
                             sortOrder = ci.sortOrder.takeIf { it > 0 } ?: i,
-                            inStock = ci.inStock
+                            inStock = ci.inStock,
+                            paletteColors = paletteFor(ci)
                     ))
                 }
             }

@@ -84,6 +84,23 @@ object ProductSpecification {
         }
     }
 
+    /**
+     * Filtra productos que tengan al menos un color etiquetado con alguna de las
+     * claves de paleta pedidas. Un producto puede matchear por varios colores a
+     * la vez, de ahí el distinct.
+     */
+    fun hasAnyPaletteColor(colors: List<String>?): Specification<Product> {
+        return Specification { root, query, cb ->
+            if (colors.isNullOrEmpty()) null
+            else {
+                val colorImages = root.join<Product, Any>("colorImages")
+                val palette = colorImages.join<Any, String>("paletteColors")
+                query.distinct(true)
+                cb.lower(palette).`in`(colors.map { it.trim().lowercase() })
+            }
+        }
+    }
+
     /** Filtra productos en oferta (onSale = true). */
     fun isOnSale(onSale: Boolean?): Specification<Product> {
         return Specification { root, _, cb ->

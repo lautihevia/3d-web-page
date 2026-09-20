@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useCallback } from "react";
+import { ColorPaletteFilter } from "@/components/store/ColorPaletteFilter";
+import { sanitizeColorKeys } from "@/lib/filamentColors";
 
 const PRIMARY = "#3b82f6";
 
@@ -10,13 +12,14 @@ const BRAND_OPTIONS = [
   { label: "Creality", value: "creality", group: "Impresoras" },
   { label: "Anycubic", value: "anycubic", group: "Impresoras" },
   { label: "W3D", value: "w3d", group: "Filamentos" },
+  { label: "FilAr", value: "filar", group: "Filamentos" },
   { label: "IID Max", value: "iid max", group: "Filamentos" },
 ];
 
 // Marcas relevantes según la categoría activa (valores en minúscula, match con la API).
 const BRANDS_BY_CATEGORY: Record<string, string[]> = {
   Impresoras: ["bambu lab", "creality", "anycubic"],
-  Filamentos: ["w3d", "iid max", "creality"],
+  Filamentos: ["w3d", "filar", "iid max"],
 };
 
 // Subcategorías (campo subcategory) por categoría. Solo se muestran en las categorías listadas.
@@ -53,6 +56,8 @@ export function CatalogFilters({ className, category, compact = false, onApplied
   const showBrands = brandOptions.length > 0;
   const typeOptions = category ? (SUBCATEGORIES_BY_CATEGORY[category] ?? []) : [];
   const showTypes = typeOptions.length > 0;
+  // En filamentos el precio no aporta: se reemplaza por la paleta de colores.
+  const isFilamentCategory = category === "Filamentos";
 
   const initialBrands = (searchParams.get("brands") || "")
     .split(",")
@@ -70,6 +75,15 @@ export function CatalogFilters({ className, category, compact = false, onApplied
   const [onlyAvailable, setOnlyAvailable] = useState(
     searchParams.get("isActive") === "true"
   );
+  const [selectedColors, setSelectedColors] = useState<string[]>(
+    sanitizeColorKeys((searchParams.get("colors") || "").split(","))
+  );
+
+  const toggleColor = (val: string) => {
+    setSelectedColors((prev) =>
+      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val]
+    );
+  };
 
   const toggleBrand = (val: string) => {
     setSelectedBrands((prev) =>
@@ -94,12 +108,14 @@ export function CatalogFilters({ className, category, compact = false, onApplied
     if (selectedBrands.length) params.set("brands", selectedBrands.join(","));
     if (showTypes && selectedTypes.length)
       params.set("subcategory", selectedTypes.join(","));
-    if (minPrice) params.set("minPrice", minPrice);
-    if (maxPrice) params.set("maxPrice", maxPrice);
+    if (!isFilamentCategory && minPrice) params.set("minPrice", minPrice);
+    if (!isFilamentCategory && maxPrice) params.set("maxPrice", maxPrice);
     if (onlyAvailable) params.set("isActive", "true");
+    if (isFilamentCategory && selectedColors.length)
+      params.set("colors", selectedColors.join(","));
     router.push(`/catalog${params.toString() ? `?${params}` : ""}`);
     onApplied?.();
-  }, [category, selectedBrands, selectedTypes, showTypes, minPrice, maxPrice, onlyAvailable, router, onApplied]);
+  }, [category, selectedBrands, selectedTypes, showTypes, isFilamentCategory, minPrice, maxPrice, onlyAvailable, selectedColors, router, onApplied]);
 
   const clear = () => {
     setSelectedBrands([]);
@@ -107,6 +123,7 @@ export function CatalogFilters({ className, category, compact = false, onApplied
     setMinPrice("");
     setMaxPrice("");
     setOnlyAvailable(false);
+    setSelectedColors([]);
     router.push(`/catalog${category ? `?category=${encodeURIComponent(category)}` : ""}`);
     onApplied?.();
   };
@@ -114,9 +131,10 @@ export function CatalogFilters({ className, category, compact = false, onApplied
   const hasFilters =
     selectedBrands.length > 0 ||
     selectedTypes.length > 0 ||
-    minPrice ||
-    maxPrice ||
-    onlyAvailable;
+    onlyAvailable ||
+    (isFilamentCategory
+      ? selectedColors.length > 0
+      : Boolean(minPrice || maxPrice));
 
   return (
     <aside
@@ -323,68 +341,82 @@ export function CatalogFilters({ className, category, compact = false, onApplied
           </div>
         )}
 
-        {/* Precio */}
-        <div style={{ padding: "16px 20px" }}>
-          <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
-            Precio
+        {/* Color — solo filamentos, en lugar del precio */}
+        {isFilamentCategory && (
+          <div style={{ padding: "16px 20px" }}>
+            <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
+              Color
+            </div>
+            <ColorPaletteFilter selected={selectedColors} onToggle={toggleColor} />
           </div>
+        )}
 
-          {/* Presets */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-            {PRICE_PRESETS.map((p) => {
-              const active = minPrice === p.min && maxPrice === p.max;
-              return (
-                <button
-                  key={p.label}
-                  onClick={() => applyPreset(p.min, p.max)}
-                  style={{
-                    fontSize: 12,
-                    padding: "4px 10px",
-                    borderRadius: 999,
-                    border: `1px solid ${active ? PRIMARY : "rgba(0,0,0,.12)"}`,
-                    background: active ? `${PRIMARY}12` : "transparent",
-                    color: active ? PRIMARY : "rgba(0,0,0,.6)",
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    fontWeight: active ? 600 : 400,
-                    transition: "all .15s",
-                  }}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
-          </div>
+        {!isFilamentCategory && (
+          <>
+          {/* Precio */}
+          <div style={{ padding: "16px 20px" }}>
+            <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "rgba(0,0,0,.45)", marginBottom: 12, fontWeight: 600 }}>
+              Precio
+            </div>
 
-          {/* Manual range */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            {[
-              { label: "Mín", value: minPrice, set: setMinPrice, placeholder: "$0" },
-              { label: "Máx", value: maxPrice, set: setMaxPrice, placeholder: "Sin límite" },
-            ].map(({ label, value, set, placeholder }) => (
-              <div key={label}>
-                <div style={{ fontSize: 11, color: "rgba(0,0,0,.45)", marginBottom: 4 }}>{label}</div>
-                <input
-                  type="number"
-                  value={value}
-                  onChange={(e) => set(e.target.value)}
-                  placeholder={placeholder}
-                  style={{
-                    width: "100%",
-                    padding: "7px 10px",
-                    borderRadius: 8,
-                    border: "1px solid rgba(0,0,0,.1)",
-                    fontSize: 13,
-                    fontFamily: "inherit",
-                    outline: "none",
-                    boxSizing: "border-box",
-                    color: "#0b0d12",
-                  }}
-                />
-              </div>
-            ))}
+            {/* Presets */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+              {PRICE_PRESETS.map((p) => {
+                const active = minPrice === p.min && maxPrice === p.max;
+                return (
+                  <button
+                    key={p.label}
+                    onClick={() => applyPreset(p.min, p.max)}
+                    style={{
+                      fontSize: 12,
+                      padding: "4px 10px",
+                      borderRadius: 999,
+                      border: `1px solid ${active ? PRIMARY : "rgba(0,0,0,.12)"}`,
+                      background: active ? `${PRIMARY}12` : "transparent",
+                      color: active ? PRIMARY : "rgba(0,0,0,.6)",
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                      fontWeight: active ? 600 : 400,
+                      transition: "all .15s",
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Manual range */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {[
+                { label: "Mín", value: minPrice, set: setMinPrice, placeholder: "$0" },
+                { label: "Máx", value: maxPrice, set: setMaxPrice, placeholder: "Sin límite" },
+              ].map(({ label, value, set, placeholder }) => (
+                <div key={label}>
+                  <div style={{ fontSize: 11, color: "rgba(0,0,0,.45)", marginBottom: 4 }}>{label}</div>
+                  <input
+                    type="number"
+                    value={value}
+                    onChange={(e) => set(e.target.value)}
+                    placeholder={placeholder}
+                    style={{
+                      width: "100%",
+                      padding: "7px 10px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(0,0,0,.1)",
+                      fontSize: 13,
+                      fontFamily: "inherit",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      color: "#0b0d12",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+          </>
+        )}
       </div>
 
       {/* Apply button */}

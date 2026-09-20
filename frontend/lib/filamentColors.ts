@@ -79,3 +79,51 @@ export function paletteColor(key: string): PaletteColor | undefined {
 export function sanitizeColorKeys(keys: string[]): string[] {
     return keys.map((k) => k.trim().toLowerCase()).filter((k) => BY_KEY.has(k));
 }
+
+/** Forma mínima de un color de producto tal como lo devuelve la API. */
+export interface ProductColorImage {
+    colorName: string;
+    imageUrl: string;
+    sortOrder?: number;
+    paletteColors?: string[];
+}
+
+export interface MatchedColor {
+    imageUrl: string;
+    colorName: string;
+    swatch: string;
+}
+
+/**
+ * Primer color del producto que cruce con los colores filtrados, para que la
+ * tarjeta muestre la bobina de ese color y no la foto principal. Se ordena por
+ * sortOrder para que el resultado sea estable entre recargas.
+ *
+ * Devuelve null si no hay filtro o si nada matchea; en ese caso la tarjeta se
+ * queda con la imagen principal.
+ */
+export function matchingColor(
+    colorImages: ProductColorImage[] | undefined,
+    selectedKeys: string[]
+): MatchedColor | null {
+    if (!colorImages?.length) return null;
+
+    const wanted = new Set(sanitizeColorKeys(selectedKeys));
+    if (wanted.size === 0) return null;
+
+    const hit = [...colorImages]
+        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+        .find((ci) => (ci.paletteColors ?? []).some((k) => wanted.has(k)));
+
+    if (!hit?.imageUrl) return null;
+
+    // El punto de color usa la clave por la que entró, no la primera del color:
+    // si filtrás amarillo, un "Dorado" (dorado+amarillo) muestra punto amarillo.
+    const matchedKey = (hit.paletteColors ?? []).find((k) => wanted.has(k));
+
+    return {
+        imageUrl: hit.imageUrl,
+        colorName: hit.colorName,
+        swatch: (matchedKey && paletteColor(matchedKey)?.swatch) || "#d1d5db",
+    };
+}

@@ -15,6 +15,12 @@ interface ProductCardProps {
   tag?: string;
   onSale?: boolean;
   salePrice?: number;
+  /**
+   * Color con el que el producto entró en el filtro. Cuando viene, la imagen
+   * ya es la de ese color y acá se aclara cuál es, para no tener que abrir el
+   * producto para saberlo.
+   */
+  color?: { colorName: string; swatch: string };
 }
 
 function formatPrice(price: number): string {
@@ -30,6 +36,7 @@ export function ProductCard({
   tag,
   onSale,
   salePrice,
+  color,
 }: ProductCardProps) {
   const [hover, setHover] = useState(false);
   const primary = "#3b82f6";
@@ -160,6 +167,31 @@ export function ProductCard({
           >
             {name}
           </div>
+
+          {color && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                marginTop: 6,
+                fontSize: 12,
+                color: "rgba(0,0,0,.6)",
+              }}
+            >
+              <span
+                style={{
+                  width: 11,
+                  height: 11,
+                  borderRadius: "50%",
+                  background: color.swatch,
+                  border: "1px solid rgba(0,0,0,.18)",
+                  flexShrink: 0,
+                }}
+              />
+              {color.colorName}
+            </div>
+          )}
         </div>
 
         {/* Price + CTA */}

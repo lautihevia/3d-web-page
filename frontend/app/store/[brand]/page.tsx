@@ -4,6 +4,7 @@ import { FilterSidebar } from "@/components/store/FilterSidebar";
 import { MobileFilterDrawer } from "@/components/store/MobileFilterDrawer";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
+import { matchingColor, sanitizeColorKeys, type ProductColorImage } from "@/lib/filamentColors";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -22,6 +23,7 @@ interface Product {
     price: number;
     stock: number;
   }[];
+  colorImages?: ProductColorImage[];
 }
 
 interface PageProps {
@@ -79,6 +81,9 @@ async function BrandResults(props: {
     props.colors
   );
 
+  // Con el filtro de color activo la tarjeta muestra la bobina de ese color.
+  const selectedColors = sanitizeColorKeys((props.colors || "").split(","));
+
   return (
     <>
       <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)", marginBottom: 16, marginTop: 16 }}>
@@ -91,19 +96,23 @@ async function BrandResults(props: {
           className={GRID_CLASS}
           style={{ display: "grid", gridTemplateColumns: GRID_COLUMNS, gap: 16 }}
         >
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              description={product.description}
-              imageUrl={product.mainImageUrl}
-              price={product.variants[0]?.price}
-              brand={product.brand}
-              onSale={product.onSale}
-              salePrice={product.salePrice}
-            />
-          ))}
+          {products.map((product) => {
+            const color = matchingColor(product.colorImages, selectedColors);
+            return (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                description={product.description}
+                imageUrl={color?.imageUrl ?? product.mainImageUrl}
+                price={product.variants[0]?.price}
+                brand={product.brand}
+                onSale={product.onSale}
+                salePrice={product.salePrice}
+                color={color ?? undefined}
+              />
+            );
+          })}
         </div>
       ) : (
         <div

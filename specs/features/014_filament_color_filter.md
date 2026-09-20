@@ -114,3 +114,30 @@ Contra Postgres local con datos de prueba:
 * Las 3 secciones de filamento muestran Color y no muestran Precio;
   `/store/creality` y `/catalog?category=Impresoras` siguen con Precio y sin
   Color.
+
+---
+
+## Adenda: la tarjeta muestra la foto del color filtrado
+
+La primera versión dejaba la imagen principal en las tarjetas. En uso resultó
+confuso: filtrabas azul, veías una bobina negra y tenías que abrir el producto
+para encontrar el azul.
+
+**No hizo falta tocar el backend**: el listado ya serializa `colorImages`
+completo (con `paletteColors` e `imageUrl`), porque `Product.colorImages` es
+EAGER y el endpoint devuelve la entidad.
+
+* `matchingColor()` en `lib/filamentColors.ts` busca el primer color —ordenado
+  por `sortOrder`, para que el resultado sea estable entre recargas— cuyas
+  etiquetas crucen con lo filtrado.
+* `/catalog` y `/store/[brand]` le pasan esa `imageUrl` a `ProductCard` en vez
+  de `mainImageUrl`. Sin filtro de color, o si nada matchea, la tarjeta queda
+  como estaba.
+* `ProductCard` suma la prop opcional `color`, que dibuja un punto y el nombre
+  debajo del título.
+
+El punto usa **la clave por la que el producto entró al filtro**, no la primera
+etiqueta del color: si filtrás `amarillo`, un color llamado "Dorado" (etiquetado
+dorado + amarillo) muestra punto amarillo, y un "Amarillo, Azul, Rojo" filtrado
+por `azul` muestra punto azul. Así el punto siempre explica por qué ese producto
+está en los resultados.

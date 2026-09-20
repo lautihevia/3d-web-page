@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/products/ProductCard";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogFilterDrawer } from "./CatalogFilterDrawer";
+import { matchingColor, sanitizeColorKeys, type ProductColorImage } from "@/lib/filamentColors";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
@@ -18,6 +19,7 @@ interface Product {
   onSale?: boolean;
   salePrice?: number;
   variants: { id: number; sku: string; price: number; stock: number }[];
+  colorImages?: ProductColorImage[];
 }
 
 interface PageProps {
@@ -42,7 +44,10 @@ const GRID_COLUMNS = "repeat(3, 1fr)";
  * <Suspense> de la página pueda mostrar el esqueleto sin bloquear la navegación.
  */
 async function ProductResults({ query }: { query: string }) {
-  const data = await fetchProducts(new URLSearchParams(query));
+  const params = new URLSearchParams(query);
+  const data = await fetchProducts(params);
+  // Con el filtro de color activo la tarjeta muestra la bobina de ese color.
+  const selectedColors = sanitizeColorKeys((params.get("colors") || "").split(","));
 
   return (
     <>
@@ -56,19 +61,23 @@ async function ProductResults({ query }: { query: string }) {
           className={GRID_CLASS}
           style={{ display: "grid", gridTemplateColumns: GRID_COLUMNS, gap: 16 }}
         >
-          {data.content.map((p) => (
-            <ProductCard
-              key={p.id}
-              id={p.id}
-              name={p.name}
-              description={p.description}
-              imageUrl={p.mainImageUrl}
-              price={p.variants[0]?.price}
-              brand={p.brand}
-              onSale={p.onSale}
-              salePrice={p.salePrice}
-            />
-          ))}
+          {data.content.map((p) => {
+            const color = matchingColor(p.colorImages, selectedColors);
+            return (
+              <ProductCard
+                key={p.id}
+                id={p.id}
+                name={p.name}
+                description={p.description}
+                imageUrl={color?.imageUrl ?? p.mainImageUrl}
+                price={p.variants[0]?.price}
+                brand={p.brand}
+                onSale={p.onSale}
+                salePrice={p.salePrice}
+                color={color ?? undefined}
+              />
+            );
+          })}
         </div>
       ) : (
         <div

@@ -25,6 +25,8 @@ interface FilamentProductViewProps {
   onSale?: boolean;
   salePrice?: number;
   colorImages: ColorImage[];
+  /** Color con el que abrir, si se llegó desde una tarjeta filtrada por color. */
+  initialColorName?: string;
 }
 
 function formatPrice(price: number): string {
@@ -47,8 +49,15 @@ export function FilamentProductView({
   onSale,
   salePrice,
   colorImages,
+  initialColorName,
 }: FilamentProductViewProps) {
-  const [selectedIdx, setSelectedIdx] = useState(0);
+  // findIndex devuelve -1 si el color no existe; ahí se cae al primero.
+  const [selectedIdx, setSelectedIdx] = useState(() =>
+    Math.max(
+      0,
+      colorImages.findIndex((c) => c.colorName === initialColorName)
+    )
+  );
   const active = colorImages[selectedIdx] ?? colorImages[0];
   const activeInStock = active?.inStock !== false;
   const anyInStock = colorImages.some((c) => c.inStock !== false);

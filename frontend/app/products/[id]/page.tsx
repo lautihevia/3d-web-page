@@ -46,6 +46,7 @@ interface Product {
 
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 function formatPrice(price: number): string {
@@ -64,8 +65,12 @@ async function getProduct(id: string): Promise<Product | null> {
   }
 }
 
-export default async function ProductDetailPage({ params }: PageProps) {
+export default async function ProductDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const search = await searchParams;
+  // Las tarjetas filtradas por color linkean con ?color=... para abrir en ese.
+  const initialColorName =
+    typeof search.color === "string" ? search.color : undefined;
   const product = await getProduct(id);
 
   if (!product) notFound();
@@ -155,6 +160,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
           onSale={product.onSale}
           salePrice={product.salePrice}
           colorImages={product.colorImages ?? []}
+          initialColorName={initialColorName}
         />
       ) : (
       <section

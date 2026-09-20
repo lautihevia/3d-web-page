@@ -4,7 +4,12 @@ import { FilterSidebar } from "@/components/store/FilterSidebar";
 import { MobileFilterDrawer } from "@/components/store/MobileFilterDrawer";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
-import { matchingColor, sanitizeColorKeys, type ProductColorImage } from "@/lib/filamentColors";
+import {
+  matchingColors,
+  sanitizeColorKeys,
+  type MatchedColor,
+  type ProductColorImage,
+} from "@/lib/filamentColors";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -25,6 +30,9 @@ interface Product {
   }[];
   colorImages?: ProductColorImage[];
 }
+
+/** Una tarjeta del listado: el producto y, si hay filtro, el color que matcheó. */
+type ProductCardEntry = { product: Product; color: MatchedColor | null };
 
 interface PageProps {
   params: Promise<{ brand: string }>;
@@ -83,24 +91,36 @@ async function BrandResults(props: {
 
   // Con el filtro de color activo la tarjeta muestra la bobina de ese color.
   const selectedColors = sanitizeColorKeys((props.colors || "").split(","));
+  const filteringByColor = selectedColors.length > 0;
+
+  // Con filtro de color el listado se abre por color: un mismo filamento que
+  // matchee celeste y rojo sale dos veces, una con cada foto.
+  const cards = products.flatMap((p): ProductCardEntry[] => {
+    const colors = matchingColors(p.colorImages, selectedColors);
+    return colors.length > 0
+      ? colors.map((color) => ({ product: p, color }))
+      : [{ product: p, color: null }];
+  });
+
+  const total = filteringByColor ? cards.length : products.length;
+  const noun = filteringByColor ? "resultado" : "producto";
 
   return (
     <>
       <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)", marginBottom: 16, marginTop: 16 }}>
-        {products.length} producto{products.length !== 1 ? "s" : ""} encontrado
-        {products.length !== 1 ? "s" : ""}
+        {total} {noun}
+        {total !== 1 ? "s" : ""} encontrado{total !== 1 ? "s" : ""}
       </div>
 
-      {products.length > 0 ? (
+      {cards.length > 0 ? (
         <div
           className={GRID_CLASS}
           style={{ display: "grid", gridTemplateColumns: GRID_COLUMNS, gap: 16 }}
         >
-          {products.map((product) => {
-            const color = matchingColor(product.colorImages, selectedColors);
+          {cards.map(({ product, color }) => {
             return (
               <ProductCard
-                key={product.id}
+                key={`${product.id}-${color?.colorName ?? "main"}`}
                 id={product.id}
                 name={product.name}
                 description={product.description}

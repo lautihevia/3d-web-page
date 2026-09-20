@@ -4,7 +4,12 @@ import { ProductCard } from "@/components/products/ProductCard";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogFilterDrawer } from "./CatalogFilterDrawer";
-import { matchingColor, sanitizeColorKeys, type ProductColorImage } from "@/lib/filamentColors";
+import {
+  matchingColors,
+  sanitizeColorKeys,
+  type MatchedColor,
+  type ProductColorImage,
+} from "@/lib/filamentColors";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const PRIMARY = "#3b82f6";
@@ -21,6 +26,9 @@ interface Product {
   variants: { id: number; sku: string; price: number; stock: number }[];
   colorImages?: ProductColorImage[];
 }
+
+/** Una tarjeta del listado: el producto y, si hay filtro, el color que matcheó. */
+type ProductCardEntry = { product: Product; color: MatchedColor | null };
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -48,24 +56,37 @@ async function ProductResults({ query }: { query: string }) {
   const data = await fetchProducts(params);
   // Con el filtro de color activo la tarjeta muestra la bobina de ese color.
   const selectedColors = sanitizeColorKeys((params.get("colors") || "").split(","));
+  const filteringByColor = selectedColors.length > 0;
+
+  // Con filtro de color el listado se abre por color: un mismo filamento que
+  // matchee celeste y rojo sale dos veces, una con cada foto.
+  const cards = data.content.flatMap((p): ProductCardEntry[] => {
+    const colors = matchingColors(p.colorImages, selectedColors);
+    return colors.length > 0
+      ? colors.map((color) => ({ product: p, color }))
+      : [{ product: p, color: null }];
+  });
+
+  // Al abrirse por color, contar productos mentiría: se cuentan resultados.
+  const total = filteringByColor ? cards.length : data.totalElements;
+  const noun = filteringByColor ? "resultado" : "producto";
 
   return (
     <>
       <div style={{ fontSize: 13, color: "rgba(0,0,0,.5)", marginBottom: 20 }}>
-        {data.totalElements} producto{data.totalElements !== 1 ? "s" : ""} encontrado
-        {data.totalElements !== 1 ? "s" : ""}
+        {total} {noun}
+        {total !== 1 ? "s" : ""} encontrado{total !== 1 ? "s" : ""}
       </div>
 
-      {data.content.length > 0 ? (
+      {cards.length > 0 ? (
         <div
           className={GRID_CLASS}
           style={{ display: "grid", gridTemplateColumns: GRID_COLUMNS, gap: 16 }}
         >
-          {data.content.map((p) => {
-            const color = matchingColor(p.colorImages, selectedColors);
+          {cards.map(({ product: p, color }) => {
             return (
               <ProductCard
-                key={p.id}
+                key={`${p.id}-${color?.colorName ?? "main"}`}
                 id={p.id}
                 name={p.name}
                 description={p.description}

@@ -20,7 +20,7 @@ interface ProductCardProps {
    * ya es la de ese color y acá se aclara cuál es, para no tener que abrir el
    * producto para saberlo.
    */
-  color?: { colorName: string; swatch: string };
+  color?: { colorName: string; swatches: string[] };
 }
 
 function formatPrice(price: number): string {
@@ -42,7 +42,14 @@ export function ProductCard({
   const primary = "#3b82f6";
 
   return (
-    <Link href={`/products/${id}`} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+    <Link
+      href={
+        color
+          ? `/products/${id}?color=${encodeURIComponent(color.colorName)}`
+          : `/products/${id}`
+      }
+      style={{ textDecoration: "none", color: "inherit", display: "block" }}
+    >
       <div
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
@@ -179,16 +186,21 @@ export function ProductCard({
                 color: "rgba(0,0,0,.6)",
               }}
             >
-              <span
-                style={{
-                  width: 11,
-                  height: 11,
-                  borderRadius: "50%",
-                  background: color.swatch,
-                  border: "1px solid rgba(0,0,0,.18)",
-                  flexShrink: 0,
-                }}
-              />
+              <span style={{ display: "flex", gap: 3, flexShrink: 0 }}>
+                {color.swatches.map((swatch, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      width: 11,
+                      height: 11,
+                      borderRadius: "50%",
+                      background: swatch,
+                      border: "1px solid rgba(0,0,0,.18)",
+                      flexShrink: 0,
+                    }}
+                  />
+                ))}
+              </span>
               {color.colorName}
             </div>
           )}

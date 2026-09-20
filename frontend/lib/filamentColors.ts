@@ -91,39 +91,43 @@ export interface ProductColorImage {
 export interface MatchedColor {
     imageUrl: string;
     colorName: string;
-    swatch: string;
+    /** Puntitos a dibujar: uno por cada color filtrado que matcheó esta fila. */
+    swatches: string[];
 }
 
 /**
- * Primer color del producto que cruce con los colores filtrados, para que la
- * tarjeta muestre la bobina de ese color y no la foto principal. Se ordena por
- * sortOrder para que el resultado sea estable entre recargas.
+ * Todos los colores del producto que crucen con lo filtrado, ordenados por
+ * sortOrder para que el listado sea estable entre recargas.
  *
- * Devuelve null si no hay filtro o si nada matchea; en ese caso la tarjeta se
- * queda con la imagen principal.
+ * Devuelve uno por fila de color, no por color filtrado: si filtrás celeste y
+ * rojo y el filamento tiene los dos, salen dos tarjetas. Pero si una sola fila
+ * matchea por varias claves (un "Amarillo, Azul, Rojo" filtrado por amarillo y
+ * azul) sale una sola tarjeta con dos puntitos, porque sería la misma foto
+ * repetida.
+ *
+ * Vacío si no hay filtro o si nada matchea; ahí la tarjeta usa la imagen
+ * principal y no muestra etiqueta.
  */
-export function matchingColor(
+export function matchingColors(
     colorImages: ProductColorImage[] | undefined,
     selectedKeys: string[]
-): MatchedColor | null {
-    if (!colorImages?.length) return null;
+): MatchedColor[] {
+    if (!colorImages?.length) return [];
 
     const wanted = new Set(sanitizeColorKeys(selectedKeys));
-    if (wanted.size === 0) return null;
+    if (wanted.size === 0) return [];
 
-    const hit = [...colorImages]
+    return [...colorImages]
         .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-        .find((ci) => (ci.paletteColors ?? []).some((k) => wanted.has(k)));
-
-    if (!hit?.imageUrl) return null;
-
-    // El punto de color usa la clave por la que entró, no la primera del color:
-    // si filtrás amarillo, un "Dorado" (dorado+amarillo) muestra punto amarillo.
-    const matchedKey = (hit.paletteColors ?? []).find((k) => wanted.has(k));
-
-    return {
-        imageUrl: hit.imageUrl,
-        colorName: hit.colorName,
-        swatch: (matchedKey && paletteColor(matchedKey)?.swatch) || "#d1d5db",
-    };
+        .flatMap((ci) => {
+            const hits = (ci.paletteColors ?? []).filter((k) => wanted.has(k));
+            if (hits.length === 0 || !ci.imageUrl) return [];
+            return [
+                {
+                    imageUrl: ci.imageUrl,
+                    colorName: ci.colorName,
+                    swatches: hits.map((k) => paletteColor(k)?.swatch ?? "#d1d5db"),
+                },
+            ];
+        });
 }

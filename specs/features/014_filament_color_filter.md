@@ -141,3 +141,46 @@ etiqueta del color: si filtrás `amarillo`, un color llamado "Dorado" (etiquetad
 dorado + amarillo) muestra punto amarillo, y un "Amarillo, Azul, Rojo" filtrado
 por `azul` muestra punto azul. Así el punto siempre explica por qué ese producto
 está en los resultados.
+
+---
+
+## Adenda 2: el listado se abre por color
+
+Con la adenda anterior, un producto que matcheaba varios colores seleccionados
+salía una sola vez con el primero: filtrabas celeste + rojo, veías la foto
+celeste, y el rojo de ese mismo filamento quedaba invisible.
+
+Ahora **el listado se abre por color**: `matchingColors()` (plural) devuelve
+todas las filas que crucen con el filtro, y `/catalog` y `/store/[brand]` hacen
+`flatMap` para emitir una tarjeta por cada una.
+
+El criterio es **una tarjeta por fila de color, no por color filtrado**:
+
+* Filtrás `celeste` + `rojo` y el filamento tiene las dos filas → **dos
+  tarjetas**, cada una con su foto.
+* Filtrás `amarillo` + `azul` y una sola fila llamada "Amarillo, Azul, Rojo"
+  matchea las dos → **una tarjeta con dos puntitos**, porque si no sería la
+  misma foto repetida.
+
+`ProductCard.color.swatch` pasó a ser `swatches: string[]`, uno por clave
+filtrada que matcheó esa fila.
+
+### El contador cambia de unidad
+
+Al abrirse por color, contar productos mentiría. Con filtro de color el texto
+dice "N resultados encontrados"; sin filtro sigue diciendo "N productos".
+
+> **Limitación conocida:** con filtro de color el total se calcula sobre las
+> tarjetas de la página actual, no sobre `totalElements`. Hoy no se nota
+> (`size=36` contra 11 filamentos), pero si el catálogo de filamentos superara
+> el tamaño de página el número quedaría corto.
+
+### El detalle abre en el color clickeado
+
+Las tarjetas linkean a `/products/{id}?color={colorName}`, y
+`FilamentProductView` acepta `initialColorName` para arrancar en ese color en
+vez del primero. Sin esto el salto perdía el color: clickeabas la bobina roja y
+se abría en blanco, o sea el mismo problema un paso después.
+
+`findIndex` devuelve -1 si el color no existe, así que un `?color=` inválido
+cae al primero en lugar de romper.

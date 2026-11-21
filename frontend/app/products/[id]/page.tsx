@@ -3,6 +3,7 @@ import { InfoAccordions } from "@/components/products/InfoAccordions";
 import { FilamentProductView } from "@/components/products/FilamentProductView";
 import { InstallmentPlans } from "@/components/products/InstallmentPlans";
 import { fetchInstallments } from "@/lib/installments";
+import { WholesaleLink } from "@/components/products/WholesaleLink";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Mail } from "lucide-react";
@@ -81,6 +82,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // Precio sobre el que se calculan las cuotas: el de oferta si la hay.
   const cashPrice = product.onSale && product.salePrice ? product.salePrice : price;
   const showInstallments = product.category === "Impresoras" && !!installments && !!cashPrice;
+  const isFilament = product.category === "Filamentos";
   const hasColors = (product.colorImages?.length ?? 0) > 0;
   const inStock = hasColors
     ? product.colorImages!.some((c) => c.inStock !== false)
@@ -157,6 +159,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
       {hasColors ? (
         <FilamentProductView
           productName={product.name}
+          showWholesale={isFilament}
           brand={product.brand}
           description={product.description}
           technicalSpecs={product.technicalSpecs}
@@ -283,6 +286,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
               Consultá disponibilidad y formas de pago.
             </div>
             {showInstallments && <InstallmentPlans price={cashPrice!} settings={installments!} />}
+            {isFilament && <WholesaleLink productName={product.name} />}
 
             {/* CTA buttons */}
             <div className="rsp-cta-stack" style={{ display: "flex", gap: 10, marginTop: 20 }}>

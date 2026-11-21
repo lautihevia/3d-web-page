@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Mail } from "lucide-react";
 import { InfoAccordions } from "@/components/products/InfoAccordions";
+import { WholesaleLink } from "@/components/products/WholesaleLink";
 
 const PRIMARY = "#3b82f6";
 
@@ -17,6 +18,8 @@ interface ColorImage {
 
 interface FilamentProductViewProps {
   productName: string;
+  /** Muestra "Consultá por precio mayorista" (solo categoría Filamentos). */
+  showWholesale?: boolean;
   brand?: string;
   description?: string;
   technicalSpecs?: string;
@@ -41,6 +44,7 @@ function formatPrice(price: number): string {
  */
 export function FilamentProductView({
   productName,
+  showWholesale = false,
   brand,
   description,
   technicalSpecs,
@@ -228,6 +232,7 @@ export function FilamentProductView({
         <div style={{ fontSize: 13, color: "rgba(0,0,0,.5)", marginTop: 8 }}>
           Consultá disponibilidad y formas de pago.
         </div>
+        {showWholesale && <WholesaleLink productName={productName} />}
 
         <div className="rsp-cta-stack" style={{ display: "flex", gap: 10, marginTop: 20 }}>
           <a

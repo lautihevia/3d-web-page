@@ -260,6 +260,7 @@ body {
   /* ProductCard en 2 columnas: hay poco ancho, se compacta el texto. */
   .pc-title { font-size: 14px !important; line-height: 1.25 !important; }
   .pc-sale-badge { font-size: 9px !important; padding: 3px 7px !important; }
+  .pc-soldout-badge { font-size: 10px !important; padding: 4px 9px !important; }
   .pc-cta-long { display: none !important; }
   .pc-cta-short { display: inline !important; }
   .rsp-6col-to-2 { grid-template-columns: repeat(2, 1fr) !important; }

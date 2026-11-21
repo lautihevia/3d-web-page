@@ -46,7 +46,7 @@ export function FilterSidebar({ brand, compact = false }: FilterSidebarProps) {
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
   const [onlyAvailable, setOnlyAvailable] = useState(
-    searchParams.get("isActive") === "true"
+    searchParams.get("inStock") === "true"
   );
   const [selectedTypes, setSelectedTypes] = useState<string[]>(initialTypes);
   const [selectedColors, setSelectedColors] = useState<string[]>(
@@ -72,7 +72,7 @@ export function FilterSidebar({ brand, compact = false }: FilterSidebarProps) {
     const params = new URLSearchParams();
     if (!isFilamentBrand && minPrice) params.set("minPrice", minPrice);
     if (!isFilamentBrand && maxPrice) params.set("maxPrice", maxPrice);
-    if (onlyAvailable) params.set("isActive", "true");
+    if (onlyAvailable) params.set("inStock", "true");
     if (selectedTypes.length) params.set("subcategory", selectedTypes.join(","));
     if (isFilamentBrand && selectedColors.length)
       params.set("colors", selectedColors.join(","));

@@ -53,6 +53,13 @@ object ProductSpecification {
         }
     }
 
+    /** Solo productos con stock (ver `Product.available`). */
+    fun isAvailable(onlyAvailable: Boolean?): Specification<Product> {
+        return Specification { root, _, cb ->
+            if (onlyAvailable == true) cb.isTrue(root.get("available")) else null
+        }
+    }
+
     /** Filtra productos destacados (featured = true). */
     fun isFeatured(featured: Boolean?): Specification<Product> {
         return Specification { root, _, cb ->

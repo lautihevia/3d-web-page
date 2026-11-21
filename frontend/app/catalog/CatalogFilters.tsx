@@ -73,7 +73,7 @@ export function CatalogFilters({ className, category, compact = false, onApplied
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
   const [onlyAvailable, setOnlyAvailable] = useState(
-    searchParams.get("isActive") === "true"
+    searchParams.get("inStock") === "true"
   );
   const [selectedColors, setSelectedColors] = useState<string[]>(
     sanitizeColorKeys((searchParams.get("colors") || "").split(","))
@@ -110,7 +110,7 @@ export function CatalogFilters({ className, category, compact = false, onApplied
       params.set("subcategory", selectedTypes.join(","));
     if (!isFilamentCategory && minPrice) params.set("minPrice", minPrice);
     if (!isFilamentCategory && maxPrice) params.set("maxPrice", maxPrice);
-    if (onlyAvailable) params.set("isActive", "true");
+    if (onlyAvailable) params.set("inStock", "true");
     if (isFilamentCategory && selectedColors.length)
       params.set("colors", selectedColors.join(","));
     router.push(`/catalog${params.toString() ? `?${params}` : ""}`);

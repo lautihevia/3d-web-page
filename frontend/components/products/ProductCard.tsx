@@ -21,6 +21,11 @@ interface ProductCardProps {
    * producto para saberlo.
    */
   color?: { colorName: string; swatches: string[] };
+  /**
+   * Disponibilidad a nivel producto (la calcula el backend). En `false` la
+   * tarjeta se ve en gris con el cartel "Sin stock"; el listado ya la manda al final.
+   */
+  available?: boolean;
 }
 
 function formatPrice(price: number): string {
@@ -37,7 +42,9 @@ export function ProductCard({
   onSale,
   salePrice,
   color,
+  available = true,
 }: ProductCardProps) {
+  const soldOut = !available;
   const [hover, setHover] = useState(false);
   const primary = "#3b82f6";
 
@@ -81,6 +88,8 @@ export function ProductCard({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              filter: soldOut ? "grayscale(1)" : undefined,
+              opacity: soldOut ? 0.5 : 1,
             }}
           >
             {imageUrl ? (
@@ -107,6 +116,29 @@ export function ProductCard({
               </span>
             )}
           </div>
+
+          {soldOut && (
+            <div
+              className="pc-soldout-badge"
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                padding: "6px 14px",
+                borderRadius: 999,
+                background: "rgba(11,13,18,.82)",
+                color: "#fff",
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: ".06em",
+                whiteSpace: "nowrap",
+                boxShadow: "0 2px 10px rgba(0,0,0,.18)",
+              }}
+            >
+              SIN STOCK
+            </div>
+          )}
 
           {brand && (
             <div
@@ -209,6 +241,7 @@ export function ProductCard({
         {/* Price + CTA */}
         <div
           style={{
+            opacity: soldOut ? 0.55 : 1,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",

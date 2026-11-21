@@ -26,6 +26,8 @@ export interface Product {
     isActive: boolean;
     featured: boolean;
     onSale: boolean;
+    /** false = sin stock a nivel producto (lo calcula el backend). */
+    available?: boolean;
     salePrice: number | null;
     createdAt: string;
     variants: ProductVariant[];

@@ -173,6 +173,7 @@ async function FeaturedSection() {
               brand={product.brand}
               onSale={product.onSale}
               salePrice={product.salePrice ?? undefined}
+              available={product.available}
             />
           ))}
         </div>
@@ -204,6 +205,7 @@ async function OnSaleSection() {
               brand={product.brand}
               onSale={product.onSale}
               salePrice={product.salePrice ?? undefined}
+              available={product.available}
             />
           ))}
         </div>

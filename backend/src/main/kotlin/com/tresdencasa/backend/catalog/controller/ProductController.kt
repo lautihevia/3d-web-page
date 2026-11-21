@@ -5,6 +5,7 @@ import com.tresdencasa.backend.catalog.repository.ProductRepository
 import com.tresdencasa.backend.catalog.repository.ProductSpecification
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -43,9 +44,16 @@ class ProductController(private val productRepository: ProductRepository) {
             @RequestParam(required = false) category: String?,
             @RequestParam(required = false) subcategory: String?,
             @RequestParam(required = false) onSale: Boolean?,
-            @RequestParam(required = false) colors: String?
+            @RequestParam(required = false) colors: String?,
+            @RequestParam(required = false) inStock: Boolean?
     ): Page<Product> {
-        val pageable = PageRequest.of(page, size)
+        // Los sin stock van al final; dentro de cada grupo, el más antiguo primero.
+        val pageable =
+                PageRequest.of(
+                        page,
+                        size,
+                        Sort.by(Sort.Direction.DESC, "available").and(Sort.by(Sort.Direction.ASC, "id"))
+                )
 
         val brandList = brands?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
         val subcategoryList = subcategory?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
@@ -63,6 +71,7 @@ class ProductController(private val productRepository: ProductRepository) {
                         .and(ProductSpecification.hasAnySubcategory(subcategoryList))
                         .and(ProductSpecification.isOnSale(onSale))
                         .and(ProductSpecification.hasAnyPaletteColor(colorList))
+                        .and(ProductSpecification.isAvailable(inStock))
 
         return productRepository.findAll(spec, pageable)
     }

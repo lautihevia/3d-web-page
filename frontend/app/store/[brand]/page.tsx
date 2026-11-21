@@ -21,6 +21,7 @@ interface Product {
   mainImageUrl?: string;
   isActive: boolean;
   onSale?: boolean;
+  available?: boolean;
   salePrice?: number;
   variants: {
     id: number;
@@ -43,7 +44,7 @@ async function getProducts(
   brand: string,
   minPrice?: string,
   maxPrice?: string,
-  isActive?: string,
+  inStock?: string,
   subcategory?: string,
   colors?: string
 ): Promise<Product[]> {
@@ -52,7 +53,7 @@ async function getProducts(
   params.set("size", "50");
   if (minPrice) params.set("minPrice", minPrice);
   if (maxPrice) params.set("maxPrice", maxPrice);
-  if (isActive) params.set("isActive", isActive);
+  if (inStock) params.set("inStock", inStock);
   if (subcategory) params.set("subcategory", subcategory);
   if (colors) params.set("colors", colors);
 
@@ -76,7 +77,7 @@ async function BrandResults(props: {
   brand: string;
   minPrice?: string;
   maxPrice?: string;
-  isActive?: string;
+  inStock?: string;
   subcategory?: string;
   colors?: string;
 }) {
@@ -84,7 +85,7 @@ async function BrandResults(props: {
     props.brand,
     props.minPrice,
     props.maxPrice,
-    props.isActive,
+    props.inStock,
     props.subcategory,
     props.colors
   );
@@ -130,6 +131,7 @@ async function BrandResults(props: {
                 onSale={product.onSale}
                 salePrice={product.salePrice}
                 color={color ?? undefined}
+                available={product.available}
               />
             );
           })}
@@ -171,15 +173,15 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
     typeof search.minPrice === "string" ? search.minPrice : undefined;
   const maxPrice =
     typeof search.maxPrice === "string" ? search.maxPrice : undefined;
-  const isActive =
-    typeof search.isActive === "string" ? search.isActive : undefined;
+  const inStock =
+    typeof search.inStock === "string" ? search.inStock : undefined;
   const subcategory =
     typeof search.subcategory === "string" ? search.subcategory : undefined;
   const colors =
     typeof search.colors === "string" ? search.colors : undefined;
 
   const decodedBrand = decodeURIComponent(brand);
-  const suspenseKey = `${decodedBrand}|${minPrice}|${maxPrice}|${isActive}|${subcategory}|${colors}`;
+  const suspenseKey = `${decodedBrand}|${minPrice}|${maxPrice}|${inStock}|${subcategory}|${colors}`;
 
   return (
     <div style={{ background: "#f7f6f1", minHeight: "100vh" }}>
@@ -215,7 +217,7 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
               brand={decodedBrand}
               minPrice={minPrice}
               maxPrice={maxPrice}
-              isActive={isActive}
+              inStock={inStock}
               subcategory={subcategory}
               colors={colors}
             />

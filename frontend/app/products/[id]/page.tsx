@@ -1,6 +1,9 @@
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { InfoAccordions } from "@/components/products/InfoAccordions";
 import { FilamentProductView } from "@/components/products/FilamentProductView";
+import { InstallmentPlans } from "@/components/products/InstallmentPlans";
+import { PriceInfoTooltip } from "@/components/products/PriceInfoTooltip";
+import { fetchInstallments } from "@/lib/installments";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Mail } from "lucide-react";
@@ -71,11 +74,14 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // Las tarjetas filtradas por color linkean con ?color=... para abrir en ese.
   const initialColorName =
     typeof search.color === "string" ? search.color : undefined;
-  const product = await getProduct(id);
+  const [product, installments] = await Promise.all([getProduct(id), fetchInstallments(API_URL)]);
 
   if (!product) notFound();
 
   const price = product.variants[0]?.price;
+  // Precio sobre el que se calculan las cuotas: el de oferta si la hay.
+  const cashPrice = product.onSale && product.salePrice ? product.salePrice : price;
+  const showInstallments = product.category === "Impresoras" && !!installments && !!cashPrice;
   const hasColors = (product.colorImages?.length ?? 0) > 0;
   const inStock = hasColors
     ? product.colorImages!.some((c) => c.inStock !== false)
@@ -231,8 +237,9 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
               border: "1px solid rgba(0,0,0,.05)",
             }}
           >
-            <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)" }}>
+            <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)", display: "flex", alignItems: "center", gap: 6 }}>
               {product.onSale && product.salePrice ? "Precio de oferta" : "Precio de referencia"}
+              <PriceInfoTooltip text="Precio en efectivo o transferencia" />
             </div>
             {product.onSale && product.salePrice ? (
               <>
@@ -261,6 +268,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
             >
               Consultá disponibilidad y formas de pago.
             </div>
+            {showInstallments && <InstallmentPlans price={cashPrice!} settings={installments!} />}
 
             {/* CTA buttons */}
             <div className="rsp-cta-stack" style={{ display: "flex", gap: 10, marginTop: 20 }}>

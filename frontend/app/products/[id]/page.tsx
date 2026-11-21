@@ -2,7 +2,6 @@ import { ProductGallery } from "@/components/products/ProductGallery";
 import { InfoAccordions } from "@/components/products/InfoAccordions";
 import { FilamentProductView } from "@/components/products/FilamentProductView";
 import { InstallmentPlans } from "@/components/products/InstallmentPlans";
-import { PriceInfoTooltip } from "@/components/products/PriceInfoTooltip";
 import { fetchInstallments } from "@/lib/installments";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -237,9 +236,24 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
               border: "1px solid rgba(0,0,0,.05)",
             }}
           >
-            <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)", display: "flex", alignItems: "center", gap: 6 }}>
-              {product.onSale && product.salePrice ? "Precio de oferta" : "Precio de referencia"}
-              <PriceInfoTooltip text="Precio en efectivo o transferencia" />
+            <div style={{ fontSize: 13, color: "rgba(0,0,0,.55)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+              <span style={{ whiteSpace: "nowrap" }}>
+                {product.onSale && product.salePrice ? "Precio de oferta" : "Precio de referencia"}
+              </span>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: "#15803d",
+                  background: "#f0fdf4",
+                  border: "1px solid #bbf7d0",
+                  borderRadius: 999,
+                  padding: "2px 8px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Efectivo o transferencia
+              </span>
             </div>
             {product.onSale && product.salePrice ? (
               <>

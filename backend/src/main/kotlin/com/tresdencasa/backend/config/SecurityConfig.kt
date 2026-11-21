@@ -1,6 +1,7 @@
 package com.tresdencasa.backend.config
 
 import com.tresdencasa.backend.auth.JwtAuthenticationFilter
+import org.springframework.http.HttpMethod
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -53,6 +54,8 @@ class SecurityConfig(
                     auth.requestMatchers("/api/v1/auth/**")
                             .permitAll()
                             .requestMatchers("/api/v1/products/**")
+                            .permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/installments")
                             .permitAll()
                             .requestMatchers("/ping")
                             .permitAll()

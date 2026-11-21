@@ -44,7 +44,8 @@ class ProductController(private val productRepository: ProductRepository) {
             @RequestParam(required = false) category: String?,
             @RequestParam(required = false) subcategory: String?,
             @RequestParam(required = false) onSale: Boolean?,
-            @RequestParam(required = false) colors: String?
+            @RequestParam(required = false) colors: String?,
+            @RequestParam(required = false) inStock: Boolean?
     ): Page<Product> {
         // Los sin stock van al final; dentro de cada grupo, el más antiguo primero.
         val pageable =
@@ -70,6 +71,7 @@ class ProductController(private val productRepository: ProductRepository) {
                         .and(ProductSpecification.hasAnySubcategory(subcategoryList))
                         .and(ProductSpecification.isOnSale(onSale))
                         .and(ProductSpecification.hasAnyPaletteColor(colorList))
+                        .and(ProductSpecification.isAvailable(inStock))
 
         return productRepository.findAll(spec, pageable)
     }

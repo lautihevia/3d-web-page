@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Package, LogOut, Plus } from "lucide-react";
+import { Package, LogOut, Plus, CreditCard } from "lucide-react";
 import { clearAdminToken } from "@/lib/adminAuth";
 import { AdminSessionGuard } from "@/components/admin/AdminSessionGuard";
 
@@ -10,6 +10,7 @@ const PRIMARY = "#3b82f6";
 
 const NAV = [
   { label: "Productos", href: "/admin", icon: Package },
+  { label: "Cuotas", href: "/admin/installments", icon: CreditCard },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

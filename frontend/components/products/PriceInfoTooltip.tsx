@@ -24,8 +24,10 @@ export function PriceInfoTooltip({ text }: { text: string }) {
     <span
       ref={ref}
       className="relative inline-flex align-middle"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      // Solo el mouse abre por hover: en pantallas táctiles el tap emula un
+      // "mouseenter" justo antes del click, y el click lo volvería a cerrar.
+      onPointerEnter={(e) => e.pointerType === "mouse" && setOpen(true)}
+      onPointerLeave={(e) => e.pointerType === "mouse" && setOpen(false)}
     >
       <button
         type="button"

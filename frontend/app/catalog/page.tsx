@@ -22,6 +22,7 @@ interface Product {
   mainImageUrl?: string;
   isActive: boolean;
   onSale?: boolean;
+  available?: boolean;
   salePrice?: number;
   variants: { id: number; sku: string; price: number; stock: number }[];
   colorImages?: ProductColorImage[];
@@ -96,6 +97,7 @@ async function ProductResults({ query }: { query: string }) {
                 onSale={p.onSale}
                 salePrice={p.salePrice}
                 color={color ?? undefined}
+                available={p.available}
               />
             );
           })}

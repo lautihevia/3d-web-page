@@ -21,6 +21,7 @@ interface Product {
   mainImageUrl?: string;
   isActive: boolean;
   onSale?: boolean;
+  available?: boolean;
   salePrice?: number;
   variants: {
     id: number;
@@ -130,6 +131,7 @@ async function BrandResults(props: {
                 onSale={product.onSale}
                 salePrice={product.salePrice}
                 color={color ?? undefined}
+                available={product.available}
               />
             );
           })}

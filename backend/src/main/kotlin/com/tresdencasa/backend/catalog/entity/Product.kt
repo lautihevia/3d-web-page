@@ -1,6 +1,7 @@
 package com.tresdencasa.backend.catalog.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Formula
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -47,6 +48,20 @@ class Product(
         @OrderBy("sortOrder ASC")
         val colorImages: MutableList<ProductColorImage> = mutableListOf()
 ) {
+    /**
+     * Disponibilidad a nivel producto, con la misma regla que la ficha: si tiene
+     * colores, alcanza con que uno tenga stock; si no, manda `in_stock`. La
+     * calcula la base al leer, así nunca queda desincronizada y el listado puede
+     * ordenar por ella (los sin stock al final).
+     */
+    @Formula(
+            """(case when exists (select 1 from product_color_images c where c.product_id = id)
+                then exists (select 1 from product_color_images c where c.product_id = id and c.in_stock)
+                else coalesce(in_stock, true) end)"""
+    )
+    var available: Boolean = true
+        protected set
+
     fun addVariant(variant: ProductVariant) {
         variants.add(variant)
         variant.product = this

@@ -21,7 +21,7 @@ const SECTIONS = [
   {
     title: "Contacto",
     items: [
-      { label: "3dencasa@gmail.com", href: null },
+      { label: "3dencasastore@gmail.com", href: null },
       { label: "+54 3492 280435", href: null },
       { label: "Rafaela, Santa Fe, Argentina", href: null },
     ],

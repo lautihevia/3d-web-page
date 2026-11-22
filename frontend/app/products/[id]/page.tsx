@@ -291,7 +291,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
             {/* CTA buttons */}
             <div className="rsp-cta-stack" style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <a
-                href="mailto:3dencasa@gmail.com"
+                href="mailto:3dencasastore@gmail.com"
                 style={{
                   flex: 1,
                   background: "#0b0d12",

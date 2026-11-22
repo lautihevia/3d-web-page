@@ -267,3 +267,21 @@ body {
   .rsp-stats-4col { grid-template-columns: repeat(2, 1fr) !important; }
   .rsp-footer-grid { grid-template-columns: 1fr !important; }
 }
+
+/* Curso: tarjetas de video que abren YouTube. */
+.course-card { transition: transform .2s ease, box-shadow .2s ease; }
+.course-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,.35); border-color: rgba(59,130,246,.45) !important; }
+.course-syllabus summary { list-style: none; }
+.course-syllabus summary::-webkit-details-marker { display: none; }
+.course-syllabus-chevron { transition: transform .2s ease; opacity: .7; }
+.course-syllabus[open] .course-syllabus-chevron { transform: rotate(180deg); }
+.course-syllabus-item:hover { background: rgba(255,255,255,.06); }
+@media (max-width: 900px) {
+  .course-hero { gap: 24px !important; }
+}
+.course-thumb { transition: transform .3s ease; }
+.course-card:hover .course-thumb { transform: scale(1.04); }
+@media (prefers-reduced-motion: reduce) {
+  .course-card, .course-thumb { transition: none; }
+  .course-card:hover, .course-card:hover .course-thumb { transform: none; }
+}

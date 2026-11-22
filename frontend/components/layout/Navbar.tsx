@@ -99,6 +99,7 @@ export function Navbar() {
           <NavDropdown label="Impresoras" items={IMPRESORAS} />
           <NavDropdown label="Insumos" items={INSUMOS} />
           <Link href="/about" style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.75)", textDecoration: "none" }}>Sobre nosotros</Link>
+          <Link href="/curso" style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.75)", textDecoration: "none" }}>Curso</Link>
           <Link href="/contact" style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,.75)", textDecoration: "none" }}>Contacto</Link>
         </nav>
 
@@ -194,7 +195,7 @@ export function Navbar() {
             <div style={{ height: 1, background: "rgba(255,255,255,.06)", margin: "8px 0" }} />
 
             {/* Main links */}
-            {[{ label: "Catálogo completo", href: "/catalog" }, { label: "Sobre nosotros", href: "/about" }, { label: "Contacto", href: "/contact" }].map((item) => (
+            {[{ label: "Catálogo completo", href: "/catalog" }, { label: "Sobre nosotros", href: "/about" }, { label: "Curso", href: "/curso" }, { label: "Contacto", href: "/contact" }].map((item) => (
               <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
                 style={{ display: "block", padding: "13px 12px", borderRadius: 12, color: "#fff", textDecoration: "none", fontSize: 15, fontWeight: 500 }}>
                 {item.label}

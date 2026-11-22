@@ -57,6 +57,8 @@ class SecurityConfig(
                             .permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/installments")
                             .permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/course-videos")
+                            .permitAll()
                             .requestMatchers("/ping")
                             .permitAll()
                             .requestMatchers("/error")

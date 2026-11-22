@@ -14,6 +14,7 @@ const SECTIONS = [
     title: "Empresa",
     items: [
       { label: "Sobre nosotros", href: "/about" },
+      { label: "Curso", href: "/curso" },
       { label: "Contacto", href: "/contact" },
     ],
   },

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFAB } from "@/components/layout/WhatsAppFAB";
+import { SiteAnalytics } from "@/components/layout/SiteAnalytics";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -41,6 +42,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <WhatsAppFAB />
+        <SiteAnalytics />
       </body>
     </html>
   );
